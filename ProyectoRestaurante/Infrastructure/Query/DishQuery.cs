@@ -25,7 +25,7 @@ namespace Infrastructure.Query
 
             if (categoryId>=1 && categoryId <= 10)
             {
-                query = query.Where(d => d.CategoryId == categoryId.Value);
+                query = query.Where(d => d.Category == categoryId.Value);
             }
 
             switch (onlyActive)
@@ -53,7 +53,7 @@ namespace Infrastructure.Query
                     throw new InvalidOperationException("Valor de ordenamiento inválido");
 
             }
-            return await query.Include(d => d.Category).ToListAsync();
+            return await query.Include(d => d.CategoryEnt).ToListAsync();
 
         }
         public async Task<bool> FoundDish(string name)

@@ -42,7 +42,7 @@ namespace Application.Services.DishService
                 Name = dishRequest.Name,
                 Description = dishRequest.Description,
                 Price = dishRequest.Price,
-                CategoryId = dishRequest.Category,
+                Category = dishRequest.Category,
                 Available = true,
                 ImageUrl = dishRequest.Image,
                 // Otras propiedades como CreateDate, UpdateDate, etc.
@@ -63,7 +63,7 @@ namespace Application.Services.DishService
                 price = createdDish.Price,
                 isActive = createdDish.Available,
                 image = createdDish.ImageUrl,
-                category = new GenericResponse { Id= createdDish.CategoryId, Name = category.Name },
+                category = new GenericResponse { Id= createdDish.Category, Name = category.Name },
                 createdAt = createdDish.CreateDate,
                 updatedAt = createdDish.UpdateDate
                 // Mapear la categoría

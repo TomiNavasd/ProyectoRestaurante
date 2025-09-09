@@ -29,7 +29,7 @@ namespace Application.Services.DishService
                 price = dishes.Price,
                 isActive = dishes.Available,
                 image = dishes.ImageUrl,
-                category = new GenericResponse { Id = dishes.CategoryId, Name = dishes.Category?.Name },
+                category = new GenericResponse { Id = dishes.Category, Name = dishes.CategoryEnt?.Name },
                 createdAt = dishes.CreateDate,
                 updatedAt = dishes.UpdateDate
             }).ToList();

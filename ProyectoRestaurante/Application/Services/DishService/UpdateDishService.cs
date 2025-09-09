@@ -33,21 +33,23 @@ namespace Application.Services.DishService
                 return new UpdateDishResult { NotFound = true };
             }
             var alreadyExist = await _dishQuery.FoundDish(DishUpdateRequest.Name);
-            if (alreadyExist == null)
+            if (alreadyExist )
             {
                 return new UpdateDishResult { NameConflict = true };
             }
+
+            
 
             existDish.Name = DishUpdateRequest.Name;
             existDish.Description = DishUpdateRequest.Description;
             existDish.Price = DishUpdateRequest.Price;
             existDish.Available = DishUpdateRequest.IsActive;
-            existDish.CategoryId = DishUpdateRequest.Category;
+            existDish.Category = DishUpdateRequest.Category;
             existDish.ImageUrl = DishUpdateRequest.Image;
             existDish.UpdateDate = DateTime.UtcNow;
 
             await _dishCommand.UpdateDish(existDish);
-            var category = await _categoryQuery.GetCategoryById(existDish.CategoryId);
+            var category = await _categoryQuery.GetCategoryById(existDish.Category);
 
             return new UpdateDishResult
             {
@@ -60,7 +62,7 @@ namespace Application.Services.DishService
                     price = existDish.Price,
                     isActive = existDish.Available,
                     image = existDish.ImageUrl,
-                    category = new GenericResponse { Id = existDish.CategoryId, Name = category.Name },
+                    category = new GenericResponse { Id = existDish.Category, Name = category.Name },
                     createdAt = existDish.CreateDate,
                     updatedAt = existDish.UpdateDate
 

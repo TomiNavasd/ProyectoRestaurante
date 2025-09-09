@@ -55,9 +55,9 @@ namespace Infrastructure.Data
                 entity.Property(s => s.UpdateDate);
 
                 //Relation with Category
-                entity.HasOne(s => s.Category)
+                entity.HasOne(s => s.CategoryEnt)
                       .WithMany(c => c.Dishes)
-                      .HasForeignKey(s => s.CategoryId)
+                      .HasForeignKey(s => s.Category)
                       .OnDelete(DeleteBehavior.Restrict);
 
 
