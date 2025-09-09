@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Services.DishService
-{
+{ 
     public class UpdateDishService : IUpdateDishService
     {
         private readonly IDishQuery _dishQuery;
@@ -46,7 +46,7 @@ namespace Application.Services.DishService
             existDish.Available = DishUpdateRequest.IsActive;
             existDish.Category = DishUpdateRequest.Category;
             existDish.ImageUrl = DishUpdateRequest.Image;
-            existDish.UpdateDate = DateTime.UtcNow;
+            existDish.UpdateDate = DateTime.Now;
 
             await _dishCommand.UpdateDish(existDish);
             var category = await _categoryQuery.GetCategoryById(existDish.Category);

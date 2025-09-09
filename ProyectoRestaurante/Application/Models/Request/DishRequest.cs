@@ -12,7 +12,7 @@ namespace Application.Models.Request
     public class DishRequest
     {
         [Required(ErrorMessage = "El nombre del plato es requerido.")]
-        [MaxLength(255, ErrorMessage = "El nombre no puede tener más de 255 caracteres.")]
+        [MaxLength(255, ErrorMessage = "El nombre no puede tener más de 255 caracteres.")] 
         public string Name { get; set; }
 
         public string Description { get; set; }

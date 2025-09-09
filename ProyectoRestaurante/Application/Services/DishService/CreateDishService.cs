@@ -46,8 +46,8 @@ namespace Application.Services.DishService
                 Available = true,
                 ImageUrl = dishRequest.Image,
                 // Otras propiedades como CreateDate, UpdateDate, etc.
-                CreateDate = DateTime.UtcNow,
-                UpdateDate = DateTime.UtcNow
+                CreateDate = DateTime.Now,
+                UpdateDate = DateTime.Now
             };
 
             // Paso 3: Usar el comando para agregar el nuevo plato.

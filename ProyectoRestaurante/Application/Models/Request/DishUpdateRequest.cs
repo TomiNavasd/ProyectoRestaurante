@@ -18,8 +18,8 @@ namespace Application.Models.Request
         public int Category { get; set; }
 
         public string? Image { get; set; }
-
-        public bool IsActive { get; set; }
+         
+        public bool IsActive { get; set; } 
     }
 }
 

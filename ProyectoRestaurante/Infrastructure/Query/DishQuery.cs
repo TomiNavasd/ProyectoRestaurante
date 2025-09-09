@@ -13,7 +13,7 @@ namespace Infrastructure.Query
         {
             _context = context;
         }
-
+         
         public async Task<IEnumerable<Dish>> GetAllAsync(string? name = null, int? categoryId = null, bool? onlyActive = null, OrderPrice? priceOrder = OrderPrice.ASC)
         {
             var query = _context.Dishes.AsNoTracking().AsQueryable();
