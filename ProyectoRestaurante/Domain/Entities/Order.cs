@@ -19,11 +19,11 @@ namespace Domain.Entities
         // Relacion para OrderItem
         public ICollection<OrderItem> OrderItems { get; set; }
 
-        public int StatusId { get; set; } // FK property
-        public Status OverallStatus { get; set; }
+        public int OverallStatus { get; set; } // FK property
+        public Status OverallStatusEnt { get; set; }
 
-        public int DeliveryTypeId { get; set; }
-        public DeliveryType DeliveryType { get; set; }
+        public int DeliveryType { get; set; }
+        public DeliveryType DeliveryTypeEnt { get; set; }
 
 
     }

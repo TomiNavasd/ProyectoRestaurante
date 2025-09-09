@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250909211600_NuevaMigaraa")]
+    partial class NuevaMigaraa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,7 +148,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "Take away"
+                            Name = "Takeaway"
                         },
                         new
                         {
@@ -213,28 +216,28 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("DeliveryType")
+                    b.Property<int>("DeliveryTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OverallStatus")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("OrderId");
 
-                    b.HasIndex("DeliveryType");
+                    b.HasIndex("DeliveryTypeId");
 
-                    b.HasIndex("OverallStatus");
+                    b.HasIndex("StatusId");
 
                     b.ToTable("Order", (string)null);
                 });
@@ -257,22 +260,22 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("Order")
+                    b.Property<long>("OrderId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
+                    b.Property<int>("StatusId")
                         .HasColumnType("int");
 
                     b.HasKey("OrderItemId");
 
                     b.HasIndex("DishId");
 
-                    b.HasIndex("Order");
+                    b.HasIndex("OrderId");
 
-                    b.HasIndex("Status");
+                    b.HasIndex("StatusId");
 
                     b.ToTable("OrderItem", (string)null);
                 });
@@ -335,21 +338,21 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
                 {
-                    b.HasOne("Domain.Entities.DeliveryType", "DeliveryTypeEnt")
+                    b.HasOne("Domain.Entities.DeliveryType", "DeliveryType")
                         .WithMany("Orders")
-                        .HasForeignKey("DeliveryType")
+                        .HasForeignKey("DeliveryTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Status", "OverallStatusEnt")
+                    b.HasOne("Domain.Entities.Status", "OverallStatus")
                         .WithMany("Orders")
-                        .HasForeignKey("OverallStatus")
+                        .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("DeliveryTypeEnt");
+                    b.Navigation("DeliveryType");
 
-                    b.Navigation("OverallStatusEnt");
+                    b.Navigation("OverallStatus");
                 });
 
             modelBuilder.Entity("Domain.Entities.OrderItem", b =>
@@ -360,23 +363,23 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Order", "OrderEnt")
+                    b.HasOne("Domain.Entities.Order", "Order")
                         .WithMany("OrderItems")
-                        .HasForeignKey("Order")
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Status", "StatusEnti")
+                    b.HasOne("Domain.Entities.Status", "Status")
                         .WithMany("OrderItems")
-                        .HasForeignKey("Status")
+                        .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Dish");
 
-                    b.Navigation("OrderEnt");
+                    b.Navigation("Order");
 
-                    b.Navigation("StatusEnti");
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("Domain.Entities.Category", b =>

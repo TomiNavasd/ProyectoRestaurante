@@ -16,10 +16,10 @@ namespace Domain.Entities
         public Guid DishId { get; set; } // FK property
         public Dish Dish { get; set; }
 
-        public long OrderId { get; set; } // FK property
-        public Order Order { get; set; }
+        public long Order { get; set; } // FK property
+        public Order OrderEnt { get; set; }
 
-        public int StatusId { get; set; } // FK property
-        public Status Status { get; set; }
+        public int Status { get; set; } // FK property
+        public Status StatusEnti { get; set; }
     }
 }

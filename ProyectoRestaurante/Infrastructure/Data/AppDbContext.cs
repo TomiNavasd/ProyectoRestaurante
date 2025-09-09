@@ -74,14 +74,14 @@ namespace Infrastructure.Data
                 entity.Property(s => s.UpdateDate);
 
                 //Relation with DeliveryType
-                entity.HasOne(o => o.DeliveryType)
+                entity.HasOne(o => o.DeliveryTypeEnt)
                       .WithMany(dt => dt.Orders)
-                      .HasForeignKey(o => o.DeliveryTypeId)
+                      .HasForeignKey(o => o.DeliveryType)
                       .OnDelete(DeleteBehavior.Restrict);
                 //Relation with Status
-                entity.HasOne(o => o.OverallStatus)
+                entity.HasOne(o => o.OverallStatusEnt)
                       .WithMany(s => s.Orders)
-                      .HasForeignKey(o => o.StatusId)
+                      .HasForeignKey(o => o.OverallStatus)
                       .OnDelete(DeleteBehavior.Restrict);
     
             });
@@ -99,14 +99,14 @@ namespace Infrastructure.Data
                       .HasForeignKey(oi => oi.DishId)
                       .OnDelete(DeleteBehavior.Restrict);
                 //Relation with Order
-                entity.HasOne(oi => oi.Order)
+                entity.HasOne(oi => oi.OrderEnt)
                       .WithMany(o => o.OrderItems)
-                      .HasForeignKey(oi => oi.OrderId)
+                      .HasForeignKey(oi => oi.Order)
                       .OnDelete(DeleteBehavior.Restrict);
                 //Relation with Status
-                entity.HasOne(oi => oi.Status)
+                entity.HasOne(oi => oi.StatusEnti)
                       .WithMany(s => s.OrderItems)
-                      .HasForeignKey(oi => oi.StatusId)
+                      .HasForeignKey(oi => oi.Status)
                       .OnDelete(DeleteBehavior.Restrict);
             });
             //Status configuration
@@ -131,7 +131,7 @@ namespace Infrastructure.Data
                 entity.Property(s => s.Name).IsRequired().HasColumnType("nvarchar(25)");
                 entity.HasData(
                     new DeliveryType { Id = 1, Name = "Delivery" },
-                    new DeliveryType { Id = 2, Name = "Takeaway" },
+                    new DeliveryType { Id = 2, Name = "Take away" },
                     new DeliveryType { Id = 3, Name = "Dine in" }
                 );
             });
