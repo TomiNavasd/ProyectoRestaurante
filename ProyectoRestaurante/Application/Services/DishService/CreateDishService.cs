@@ -33,7 +33,7 @@ namespace Application.Services.DishService
             {
                 return null; // Devuelve null si ya existe.
             }
-            var category = await _categoryQuery.GetCategoryById(dishRequest.CategoryId);
+            var category = await _categoryQuery.GetCategoryById(dishRequest.Category);
 
             // Paso 2: Mapear el DTO a la entidad de dominio (Dish).
             var newDish = new Dish
@@ -42,9 +42,9 @@ namespace Application.Services.DishService
                 Name = dishRequest.Name,
                 Description = dishRequest.Description,
                 Price = dishRequest.Price,
-                CategoryId = dishRequest.CategoryId,
+                CategoryId = dishRequest.Category,
                 Available = true,
-                ImageUrl = dishRequest.ImageUrl,
+                ImageUrl = dishRequest.Image,
                 // Otras propiedades como CreateDate, UpdateDate, etc.
                 CreateDate = DateTime.UtcNow,
                 UpdateDate = DateTime.UtcNow

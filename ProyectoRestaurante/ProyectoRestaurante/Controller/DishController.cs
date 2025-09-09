@@ -3,14 +3,16 @@ using Application.Interfaces.IDish.IDishService;
 using Application.Models.Request;
 using Application.Models.Response;
 using Application.Models.Responses;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Numerics;
 
 namespace ProyectoRestaurante.Controller
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     public class DishController : ControllerBase
     {
         private readonly ICreateDishService _dishCreate;
@@ -60,7 +62,7 @@ namespace ProyectoRestaurante.Controller
             {
                 return BadRequest(new ApiError("No se ingreso nombre del plato"));
             }
-            if (dishRequest.CategoryId == 0 || dishRequest.CategoryId >= 11)
+            if (dishRequest.Category == 0 || dishRequest.Category >= 11)
             {
                 return BadRequest(new ApiError("No se ingreso una categoria valida"));
             }

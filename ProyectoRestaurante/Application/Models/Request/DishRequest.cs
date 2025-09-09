@@ -21,10 +21,10 @@ namespace Application.Models.Request
         [DefaultValue(0)]
         public decimal Price { get; set; }
 
-        public string ImageUrl { get; set; }
+        public string Image { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Se debe especificar una categoría válida.")]
         [DefaultValue(0)]
-        public int CategoryId { get; set; }
+        public int Category { get; set; }
     }
 }
