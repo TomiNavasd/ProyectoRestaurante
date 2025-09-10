@@ -20,11 +20,11 @@ namespace Application.Models.Request
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a cero.")]
         [DefaultValue(0)]
         public decimal Price { get; set; }
-
-        public string Image { get; set; }
-
+        
         [Range(1, int.MaxValue, ErrorMessage = "Se debe especificar una categoría válida.")]
         [DefaultValue(0)]
         public int Category { get; set; }
+
+        public string Image { get; set; }
     }
 }

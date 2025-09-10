@@ -114,16 +114,17 @@ namespace ProyectoRestaurante.Controller
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Search(
             [FromQuery] string? name,
-            [FromQuery] int? categoryId,
-            [FromQuery] bool? onlyActive,
-            [FromQuery] OrderPrice? orderPrice = OrderPrice.ASC)
+            [FromQuery] int? category,
+            [FromQuery] OrderPrice? sortByPrice = OrderPrice.ASC,
+            [FromQuery] bool? onlyActive = null)
+            
 
         {
-            if (categoryId == 0 || categoryId >= 11)
+            if (category == 0 || category >= 11)
             {
                 return BadRequest(new ApiError("No se ingreso una categoria valida"));
             }
-            var list = await _dishAsync.SearchAsync(name, categoryId, onlyActive, orderPrice);
+            var list = await _dishAsync.SearchAsync(name, category, onlyActive, sortByPrice);
             if (list == null || !list.Any())
             {
                 return BadRequest(new ApiError("No se encontraron platos que coincidan con los criterios."));
