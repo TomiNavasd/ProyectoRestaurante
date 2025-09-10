@@ -75,7 +75,7 @@ namespace ProyectoRestaurante.Controller
 
             if (createdDish == null)
             {
-                return BadRequest(new ApiError($"El plato {dishRequest.Name} ya existe"));
+                return Conflict(new ApiError($"El plato {dishRequest.Name} ya existe"));
             }
 
             return CreatedAtAction(nameof(Search), new { id = createdDish.id }, createdDish);
@@ -187,12 +187,12 @@ namespace ProyectoRestaurante.Controller
             var result = await _dishUpdate.UpdateDish(id, dishRequest);
             if (result.NotFound)
             {
-                return BadRequest(new ApiError($"El plato con la id {id} no fue encontrado."));
+                return NotFound(new ApiError($"El plato con la id {id} no fue encontrado."));
             }
 
             if (result.NameConflict)
             {
-                return BadRequest(new ApiError($"El plato {dishRequest.Name} ya existe"));
+                return Conflict(new ApiError($"El plato {dishRequest.Name} ya existe"));
             }
 
             return Ok(result.UpdatedDish);
