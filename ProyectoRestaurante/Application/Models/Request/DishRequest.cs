@@ -19,10 +19,12 @@ namespace Application.Models.Request
 
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a cero.")]
         [DefaultValue(0)]
+        [Required(ErrorMessage = "El nombre es obligatorio")]
         public decimal Price { get; set; }
         
         [Range(1, int.MaxValue, ErrorMessage = "Se debe especificar una categoría válida.")]
         [DefaultValue(0)]
+        [Required(ErrorMessage = "El nombre es obligatorio")]
         public int Category { get; set; }
 
         public string Image { get; set; }

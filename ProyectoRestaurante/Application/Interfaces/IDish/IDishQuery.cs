@@ -12,7 +12,7 @@ namespace Application.Interfaces.IDish
     {
         Task<List<Dish>> GetAllDishes();
         Task<Dish?> GetDishById(Guid id);
-        Task<IEnumerable<Dish>> GetAllAsync(string? name = null, int? categoryId = null, bool? onlyActive = true, OrderPrice? priceOrder = OrderPrice.ASC);
-        Task<bool> FoundDish(string name);
+        Task<IEnumerable<Dish>> GetAllAsync(string? name = null, int? categoryId = null, bool? onlyActive = true, OrderPrice? priceOrder = OrderPrice.asc);
+        Task<bool> FoundDish(string name, Guid? idToExclude = null);
     }
 }

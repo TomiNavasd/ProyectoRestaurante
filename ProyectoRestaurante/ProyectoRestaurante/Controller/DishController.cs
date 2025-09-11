@@ -115,7 +115,7 @@ namespace ProyectoRestaurante.Controller
         public async Task<IActionResult> Search(
             [FromQuery] string? name,
             [FromQuery] int? category,
-            [FromQuery] OrderPrice? sortByPrice = OrderPrice.ASC,
+            [FromQuery] OrderPrice? sortByPrice = OrderPrice.asc,
             [FromQuery] bool? onlyActive = null)
             
 

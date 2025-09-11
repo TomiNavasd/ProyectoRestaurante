@@ -17,7 +17,7 @@ namespace Application.Services.DishService
             _categoryQuery = categoryQuery;
         }
 
-        public async Task<IEnumerable<DishResponse?>> SearchAsync(string? name, int? categoryId,bool? onlyActive, OrderPrice? priceOrder = OrderPrice.ASC)
+        public async Task<IEnumerable<DishResponse?>> SearchAsync(string? name, int? categoryId,bool? onlyActive, OrderPrice? priceOrder = OrderPrice.asc)
         {
 
             var list = await _dishQuery.GetAllAsync(name, categoryId, onlyActive, priceOrder);

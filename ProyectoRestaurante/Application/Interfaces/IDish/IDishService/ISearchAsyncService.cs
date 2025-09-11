@@ -10,6 +10,6 @@ namespace Application.Interfaces.IDish.IDishService
 {
     public interface ISearchAsyncService
     {
-        Task<IEnumerable<DishResponse>> SearchAsync(string? name, int? categoryId, bool? onlyActive = true, OrderPrice? priceOrder = OrderPrice.ASC);
+        Task<IEnumerable<DishResponse>> SearchAsync(string? name, int? categoryId, bool? onlyActive = null, OrderPrice? priceOrder = OrderPrice.asc);
     }
 }

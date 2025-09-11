@@ -10,7 +10,7 @@ namespace Application.Enums
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum OrderPrice
     {
-        ASC,
-        DESC
+        asc,
+        desc
     }
 }

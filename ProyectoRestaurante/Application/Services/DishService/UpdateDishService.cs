@@ -32,7 +32,7 @@ namespace Application.Services.DishService
             {
                 return new UpdateDishResult { NotFound = true };
             }
-            var alreadyExist = await _dishQuery.FoundDish(DishUpdateRequest.Name);
+            var alreadyExist = await _dishQuery.FoundDish(DishUpdateRequest.Name,id);
             if (alreadyExist )
             {
                 return new UpdateDishResult { NameConflict = true };
