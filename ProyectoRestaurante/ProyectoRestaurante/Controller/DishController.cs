@@ -43,6 +43,8 @@ namespace ProyectoRestaurante.Controller
         /// * Agregar nuevos platos al menú
         /// * Platos estacionales o especiales del chef
         /// </remarks>
+        /// <param name="dishRequest">Datos del plato a crear.</param>
+        /// <returns>El plato recién creado.</returns>
         [HttpPost]
         [SwaggerOperation(
             Summary = "Crear nuevo plato",
@@ -104,6 +106,11 @@ namespace ProyectoRestaurante.Controller
         /// * Filtrar por categorías(entrantes, principales, postres)
         /// * Administración del menú(incluyendo platos inactivos)
         /// </remarks>
+        /// <param name="name">Buscar platos por nombre (búsqueda parcial).</param>
+        /// <param name="category">Filtrar por ID de categoría de plato.</param>
+        /// <param name="sortByPrice">Ordenar por precio. Valores permitidos: `asc`, `desc`.</param>
+        /// <param name="onlyActive">Filtrar por estado. `true` para solo disponibles, `false` para todos.</param>
+        /// <returns>Una lista de platos que coinciden con los criterios.</returns>
         [HttpGet]
         [SwaggerOperation(
         Summary = "Buscar platos",
@@ -157,6 +164,9 @@ namespace ProyectoRestaurante.Controller
         /// * Activar/desactivar platos del menú
         /// * Actualizar imágenes de platos
         /// </remarks>
+        /// <param name="id">ID único del plato a actualizar.</param>
+        /// <param name="dishRequest">Datos actualizados del plato.</param>
+        /// <returns>El plato actualizado.</returns>
         [HttpPut("{id}")]
         [SwaggerOperation(
         Summary = "Actualizar plato existente",
