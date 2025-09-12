@@ -27,6 +27,6 @@ namespace Application.Models.Request
         [Required(ErrorMessage = "El nombre es obligatorio")]
         public int Category { get; set; }
 
-        public string Image { get; set; }
+        public string? Image { get; set; }
     }
 }
