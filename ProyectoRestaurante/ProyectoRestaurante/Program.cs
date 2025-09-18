@@ -10,6 +10,18 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using Application.Interfaces.ICategory.ICategoryService;
+using Application.Services.CategoryService;
+using Application.Interfaces.IDeliveryType;
+using Application.Interfaces.IDeliveryType.IDeliveryTypeService;
+using Application.Services.DeliveryTypeService;
+using Application.Interfaces.IOrder;
+using Application.Interfaces.IOrder.IOrderService;
+using Application.Interfaces.IOrderItem;
+using Application.Interfaces.IStatus;
+using Application.Interfaces.IStatus.IStatusService;
+using Application.Services.StatusService;
+using Application.Services.OrderService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,9 +40,35 @@ builder.Services.AddScoped<IUpdateDishService, UpdateDishService>();
 builder.Services.AddScoped<ISearchAsyncService, SearchAsyncService>();
 builder.Services.AddScoped<IGetDishByIdService, GetDishByIdService>();
 
-//builder Query
+//builder Category
 builder.Services.AddScoped<ICategoryQuery, CategoryQuery>();
 builder.Services.AddScoped<ICategoryCommand, CategoryCommand>();
+builder.Services.AddScoped<IGetAllCategoriesService, GetAllCategoriesService>();
+builder.Services.AddScoped<IGetCategoryByIdService, GetCategoryByIdService>();
+
+
+//builder DeliveryType
+builder.Services.AddScoped<IDeliveryTypeCommand, DeliveryTypeCommand>();
+builder.Services.AddScoped<IDeliveryTypeQuery, DeliveryTypeQuery>();
+builder.Services.AddScoped<IGetAllDeliveryTypeService, GetAllDeliveryTypeService>();
+builder.Services.AddScoped<IGetDeliveryTypeByIdService, GetDeliveryTypeByIdService>();
+
+//builder Order
+builder.Services.AddScoped<IOrderCommand, OrderCommand>();
+builder.Services.AddScoped<IOrderQuery, OrderQuery>();
+builder.Services.AddScoped<ICreateOrderService, CreateOrderService>();
+builder.Services.AddScoped<IGetOrderFechaStatusService, GetOrderFechaStatusService>();
+
+//builder OrderItem
+builder.Services.AddScoped<IOrderItemCommand, OrderItemCommand>();
+builder.Services.AddScoped<IOrderItemQuery, OrderItemQuery>();
+
+//builder Status
+builder.Services.AddScoped<IStatusCommand, StatusCommand>();
+builder.Services.AddScoped<IStatusQuery, StatusQuery>();
+builder.Services.AddScoped<IGetAllStatusService, GetAllStatusService>();
+builder.Services.AddScoped<IGetStatusByIdService, GetStatusByIdService>();
+
 
 //
 builder.Services.AddControllers();

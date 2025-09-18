@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Application.Interfaces.IDish.IDishService
 {
-    public interface IUpdateDishService
+    public interface IDeleteDishService
     {
-        Task<UpdateDishResult> UpdateDish(Guid id, DishUpdateRequest DishUpdateRequest);
+        Task<DishResponse> DeleteDish(DishRequest dishRequest);
     }
 }

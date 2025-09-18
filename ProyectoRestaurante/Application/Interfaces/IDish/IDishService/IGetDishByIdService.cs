@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Models.Request;
-using Application.Models.Responses;
+using Application.Models.Responses.Dish;
 
 namespace Application.Interfaces.IDish.IDishService
 {

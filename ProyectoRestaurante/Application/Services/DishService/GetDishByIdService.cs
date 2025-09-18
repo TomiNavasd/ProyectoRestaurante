@@ -1,7 +1,7 @@
 ﻿using Application.Interfaces.IDish;
 using Application.Interfaces.IDish.IDishService;
 using Application.Models.Response;
-using Application.Models.Responses;
+using Application.Models.Responses.Dish;
 using System;
 using System.Collections.Generic;
 using System.Linq;

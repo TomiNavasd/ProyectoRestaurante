@@ -24,4 +24,9 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\IOrderItem\IOrderItemService\" />
+    <Folder Include="Services\OrderItemService\" />
+  </ItemGroup>
+
 </Project>

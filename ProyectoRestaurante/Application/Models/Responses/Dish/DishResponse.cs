@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Models.Responses
+namespace Application.Models.Responses.Dish
 {
     public class DishResponse
     {

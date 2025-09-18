@@ -40,6 +40,6 @@ namespace Infrastructure.Command
            _context.Update(dish);
            await _context.SaveChangesAsync();
            return dish;
-        }
+        }   
     }
 }

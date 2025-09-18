@@ -3,7 +3,7 @@ using Application.Interfaces.ICategory;
 using Application.Interfaces.IDish;
 using Application.Interfaces.IDish.IDishService;
 using Application.Models.Response;
-using Application.Models.Responses;
+using Application.Models.Responses.Dish;
 
 namespace Application.Services.DishService
 {
