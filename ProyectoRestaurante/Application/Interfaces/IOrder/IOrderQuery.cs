@@ -10,7 +10,7 @@ namespace Application.Interfaces.IOrder
     public interface IOrderQuery
     {
         Task<List<Order>> GetOrders();
-        Task<Order?> GetOrderById(int id);
+        Task<Order?> GetOrderById(long id);
         Task<IEnumerable<Order?>> GetOrderFechaStatus(DateTime? from, DateTime? to, int? statusid);
     }
 }

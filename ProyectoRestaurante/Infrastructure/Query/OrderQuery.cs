@@ -18,9 +18,11 @@ namespace Infrastructure.Query
             _context = context;
         }
 
-        public async Task<Order?> GetOrderById(int id)
+        public async Task<Order?> GetOrderById(long id)
         {
-            return await _context.Orders.FindAsync(id);
+            return await _context.Orders
+                         .Include(order => order.OrderItems) // <-- ¡ASEGÚRATE DE QUE ESTA LÍNEA EXISTA!
+                         .FirstOrDefaultAsync(order => order.OrderId == id);
         }
 
         public async Task<List<Order>> GetOrders()

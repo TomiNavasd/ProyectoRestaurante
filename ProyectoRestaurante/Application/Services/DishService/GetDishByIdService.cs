@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.IDish;
+﻿using Application.Interfaces.ICategory;
+using Application.Interfaces.IDish;
 using Application.Interfaces.IDish.IDishService;
 using Application.Models.Response;
 using Application.Models.Responses.Dish;
@@ -14,10 +15,12 @@ namespace Application.Services.DishService
     {
         private readonly IDishQuery _dishQuery;
         private readonly IDishCommand _dishCommand;
-        public GetDishByIdService(IDishQuery dishQuery, IDishCommand dishCommand)
+        private readonly ICategoryQuery _categoryQuery;
+        public GetDishByIdService(IDishQuery dishQuery, IDishCommand dishCommand, ICategoryQuery categoryQuery)
         {
             _dishQuery = dishQuery;
             _dishCommand = dishCommand;
+            _categoryQuery = categoryQuery;
         }
         public async Task<DishResponse?> GetDishById(Guid id)
         {
@@ -26,6 +29,7 @@ namespace Application.Services.DishService
             {
                 return null;
             }
+            var category = await _categoryQuery.GetCategoryById(dish.Category);
             return new DishResponse
             {
                 id = dish.DishId,
@@ -34,7 +38,7 @@ namespace Application.Services.DishService
                 price = dish.Price,
                 isActive = dish.Available,
                 image = dish.ImageUrl,
-                category = new GenericResponse { Id = dish.Category, Name = dish.CategoryEnt.Name },
+                category = new GenericResponse { Id = dish.Category, Name = category.Name },
                 createdAt = dish.CreateDate,
                 updatedAt = dish.UpdateDate
             };

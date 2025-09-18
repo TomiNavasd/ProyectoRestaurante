@@ -18,13 +18,15 @@ namespace ProyectoRestaurante.Controller
         private readonly ICreateDishService _dishCreate;
         private readonly IUpdateDishService _dishUpdate;
         private readonly ISearchAsyncService _dishAsync;
-         
+        private readonly IGetDishByIdService _getDishByIdService;
 
-        public DishController(ICreateDishService dishCreate, ISearchAsyncService dishAsync, IUpdateDishService dishUpdate)
+
+        public DishController(ICreateDishService dishCreate, ISearchAsyncService dishAsync, IUpdateDishService dishUpdate, IGetDishByIdService getDishByIdService)
         {
             _dishCreate = dishCreate;
             _dishAsync = dishAsync;
             _dishUpdate = dishUpdate;
+            _getDishByIdService = getDishByIdService;
         }
 
         // POST
@@ -124,7 +126,7 @@ namespace ProyectoRestaurante.Controller
             [FromQuery] int? category,
             [FromQuery] OrderPrice? sortByPrice = OrderPrice.asc,
             [FromQuery] bool? onlyActive = null)
-            
+
 
         {
             if (category == 0 || category >= 11)
@@ -136,11 +138,35 @@ namespace ProyectoRestaurante.Controller
             {
                 return BadRequest(new ApiError("No se encontraron platos que coincidan con los criterios."));
             }
-            
+
 
 
             return Ok(list);
 
+        }
+
+        //GET by id
+        /// <summary>
+        /// Obtiene un plato por su ID.
+        /// </summary>
+        /// <remarks>
+        /// Busca un plato específico en el menú usando su identificador único.
+        /// </remarks>
+        [HttpGet("{id}")]
+        [SwaggerOperation(
+        Summary = "Buscar platos por ID",
+        Description = "Buscar platos por ID."
+        )]
+        [ProducesResponseType(typeof(DishResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetDishById(Guid id)
+        {
+            var dish = await _getDishByIdService.GetDishById(id);
+            if (dish == null)
+            {
+                return NotFound(new ApiError($"El plato con la id {id} no fue encontrado."));
+            }
+            return Ok(dish);
         }
 
         //PUT

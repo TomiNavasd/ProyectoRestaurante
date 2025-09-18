@@ -10,6 +10,6 @@ namespace Application.Models.Responses.Order
     {
         public int orderNumber { get; set; }
         public double totalAmount { get; set; }
-        public DateTime createdAt { get; set; }
+        public DateTime updateAt { get; set; }
     }
 }

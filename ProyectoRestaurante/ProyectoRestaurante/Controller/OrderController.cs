@@ -2,6 +2,7 @@
 using Application.Models.Request;
 using Application.Models.Response;
 using Application.Models.Responses.Order;
+using Application.Services.OrderService;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,14 @@ namespace ProyectoRestaurante.Controller
     {
         private readonly ICreateOrderService _createOrderService;
         private readonly IGetOrderFechaStatusService _getOrderFechaStatusService;
-        public OrderController(ICreateOrderService createOrderService, IGetOrderFechaStatusService getOrderFechaStatusService)
+        private readonly IUpdateOrderService _updateOrderService;
+        private readonly IUpdateOrderItemStatusService _updateStatusService;
+        public OrderController(ICreateOrderService createOrderService, IGetOrderFechaStatusService getOrderFechaStatusService, IUpdateOrderService updateOrderService, IUpdateOrderItemStatusService updateStatusService)
         {
             _createOrderService = createOrderService;
             _getOrderFechaStatusService = getOrderFechaStatusService;
+            _updateOrderService = updateOrderService;
+            _updateStatusService = updateStatusService;
         }
 
         // POST
@@ -69,6 +74,47 @@ namespace ProyectoRestaurante.Controller
             {
                 Console.WriteLine(ex.Message);
                 return BadRequest(new ApiError("An error occurred while processing the request."));
+            }
+        }
+
+        // PUT: api/v1/order/1001
+        [HttpPut("{orderId}")]
+        public async Task<IActionResult> UpdateOrder(int orderId, [FromBody] OrderUpdateRequest request)
+        {
+            try
+            {
+                var response = await _updateOrderService.UpdateOrder(orderId, request);
+                return Ok(response); // Respuesta 200 OK
+            }
+            catch (Exception ex)
+            {
+                // Si la orden no está en estado "Pending", devolverá un 400
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
+        // PATCH: api/v1/order/1001/item/1
+        [HttpPatch("{orderId}/item/{itemId}")]
+        public async Task<IActionResult> UpdateOrderItemStatus(long orderId, int itemId, [FromBody] OrderItemUpdateRequest request)
+        {
+            try
+            {
+                var response = await _updateStatusService.UpdateStatus(orderId, itemId, request);
+                return Ok(response); // 200 OK
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message }); // 404 Not Found
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message }); // 400 Bad Request
+            }
+            catch (Exception ex)
+            {
+                // Otro error inesperado
+                return StatusCode(500, new { message = "Ocurrió un error inesperado." });
             }
         }
     }

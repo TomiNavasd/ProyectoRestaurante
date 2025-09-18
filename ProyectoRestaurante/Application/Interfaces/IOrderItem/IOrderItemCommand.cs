@@ -13,5 +13,6 @@ namespace Application.Interfaces.IOrderItem
         Task InsertOrderItems(List<OrderItem> orderItems);
         Task UpdateOrderItem(OrderItem orderItem);
         Task DeleteOrderItem(OrderItem orderItem);
+        Task DeleteOrderItems(IEnumerable<OrderItem> items);
     }
 }
