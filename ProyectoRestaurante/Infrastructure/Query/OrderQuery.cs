@@ -25,6 +25,18 @@ namespace Infrastructure.Query
                          .FirstOrDefaultAsync(order => order.OrderId == id);
         }
 
+        public async Task<Order?> GetFullOrderById(long orderId)
+        {
+            return await _context.Orders
+                .Include(o => o.OverallStatusEnt) // Carga el estado de la orden
+                .Include(o => o.DeliveryTypeEnt)  // Carga el tipo de entrega
+                .Include(o => o.OrderItems)    // Carga la lista de items...
+                    .ThenInclude(oi => oi.StatusEnti) // ...para cada item, carga su estado
+                .Include(o => o.OrderItems)    // Carga la lista de items de nuevo...
+                    .ThenInclude(oi => oi.Dish)   // ...para cada item, carga el plato asociado
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+        }
+
         public async Task<List<Order>> GetOrders()
         {
             return await _context.Orders.ToListAsync();

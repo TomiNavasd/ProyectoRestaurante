@@ -60,6 +60,7 @@ builder.Services.AddScoped<ICreateOrderService, CreateOrderService>();
 builder.Services.AddScoped<IGetOrderFechaStatusService, GetOrderFechaStatusService>();
 builder.Services.AddScoped<IUpdateOrderService, UpdateOrderService>();
 builder.Services.AddScoped<IUpdateOrderItemStatusService, UpdateOrderItemStatusService>();
+builder.Services.AddScoped<IGetOrderByIdService, GetOrderByIdService>();
 
 //builder OrderItem
 builder.Services.AddScoped<IOrderItemCommand, OrderItemCommand>();

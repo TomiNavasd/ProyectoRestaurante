@@ -12,5 +12,6 @@ namespace Application.Interfaces.IOrder
         Task<List<Order>> GetOrders();
         Task<Order?> GetOrderById(long id);
         Task<IEnumerable<Order?>> GetOrderFechaStatus(DateTime? from, DateTime? to, int? statusid);
+        Task<Order> GetFullOrderById(long orderId);
     }
 }

@@ -18,12 +18,14 @@ namespace ProyectoRestaurante.Controller
         private readonly IGetOrderFechaStatusService _getOrderFechaStatusService;
         private readonly IUpdateOrderService _updateOrderService;
         private readonly IUpdateOrderItemStatusService _updateStatusService;
-        public OrderController(ICreateOrderService createOrderService, IGetOrderFechaStatusService getOrderFechaStatusService, IUpdateOrderService updateOrderService, IUpdateOrderItemStatusService updateStatusService)
+        private readonly IGetOrderByIdService _getOrderByIdService;
+        public OrderController(ICreateOrderService createOrderService, IGetOrderFechaStatusService getOrderFechaStatusService, IUpdateOrderService updateOrderService, IUpdateOrderItemStatusService updateStatusService, IGetOrderByIdService getOrderByIdService)
         {
             _createOrderService = createOrderService;
             _getOrderFechaStatusService = getOrderFechaStatusService;
             _updateOrderService = updateOrderService;
             _updateStatusService = updateStatusService;
+            _getOrderByIdService = getOrderByIdService;
         }
 
         // POST
@@ -93,6 +95,20 @@ namespace ProyectoRestaurante.Controller
             }
         }
 
+        // GET: api/v1/order/1001
+        [HttpGet("{orderId}")]
+        public async Task<IActionResult> GetOrderById(long orderId)
+        {
+            var response = await _getOrderByIdService.GetOrderById(orderId);
+
+            if (response == null)
+            {
+                return NotFound(new { message = "Orden no encontrada" }); // 404 Not Found
+            }
+
+            return Ok(response); // 200 OK
+        }
+
 
         // PATCH: api/v1/order/1001/item/1
         [HttpPatch("{orderId}/item/{itemId}")]
@@ -117,5 +133,7 @@ namespace ProyectoRestaurante.Controller
                 return StatusCode(500, new { message = "Ocurrió un error inesperado." });
             }
         }
+
+
     }
 }
