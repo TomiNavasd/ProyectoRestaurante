@@ -1,4 +1,5 @@
 ﻿using Application.Enums;
+using Application.Exceptions;
 using Application.Interfaces.ICategory;
 using Application.Interfaces.IDish;
 using Application.Interfaces.IDish.IDishService;
@@ -19,6 +20,19 @@ namespace Application.Services.DishService
 
         public async Task<IEnumerable<DishResponse?>> SearchAsync(string? name, int? categoryId,bool? onlyActive, OrderPrice? priceOrder = OrderPrice.asc)
         {
+            //Validaciones
+            if (categoryId.HasValue) // Verificamos si se proveyó un ID de categoría
+            {
+                if (categoryId.Value == 0)
+                {
+                    throw new BadRequestException("El ID de categoría 0 no es un valor válido.");
+                }
+                var categoryExists = await _categoryQuery.GetCategoryById(categoryId.Value);
+                if (categoryExists == null)
+                {
+                    throw new BadRequestException($"La categoría con ID {categoryId.Value} no fue encontrada.");
+                }
+            }
 
             var list = await _dishQuery.GetAllAsync(name, categoryId, onlyActive, priceOrder);
             return list.Select(dishes => new DishResponse

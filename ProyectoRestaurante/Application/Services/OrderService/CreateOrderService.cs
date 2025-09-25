@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.IDeliveryType;
+﻿using Application.Exceptions;
+using Application.Interfaces.IDeliveryType;
 using Application.Interfaces.IDish;
 using Application.Interfaces.IOrder;
 using Application.Interfaces.IOrder.IOrderService;
@@ -37,7 +38,33 @@ namespace Application.Services.OrderService
         }
         public async Task<OrderCreateResponse?> CreateOrder(OrderRequest orderRequest)
         {
+            // Validaciones de datos básicos
+            if (orderRequest?.delivery == null)
+                throw new BadRequestException("Debe especificar los datos de entrega.");
+            if (orderRequest.items == null || !orderRequest.items.Any())
+                throw new BadRequestException("La orden debe contener al menos un ítem.");
+
+            // Validación de tipo de entrega
             var deliveryType = await _deliveryTypeQuery.GetDeliveryTypeById(orderRequest.delivery.id);
+            if (deliveryType == null)
+                throw new BadRequestException("Debe especificar un tipo de entrega válido.");
+
+            // Validación de ítems (platos y cantidades)
+            // Primero, validamos las cantidades
+            if (orderRequest.items.Any(item => item.quantity <= 0))
+                throw new BadRequestException("La cantidad de cada ítem debe ser mayor a 0.");
+
+            // Luego, validamos los platos en una sola consulta a la BD
+            var dishIds = orderRequest.items.Select(i => i.id).ToList();
+            var dishesFromDb = await _dishQuery.GetDishesByIds(dishIds);
+
+            if (dishesFromDb.Count != dishIds.Count)
+                throw new BadRequestException("Uno o más platos especificados no existen.");
+
+            if (dishesFromDb.Any(d => !d.Available))
+                throw new BadRequestException("Uno o más platos especificados no están disponibles.");
+
+
             var order = new Order
             {
                 DeliveryTo = orderRequest.delivery.to,

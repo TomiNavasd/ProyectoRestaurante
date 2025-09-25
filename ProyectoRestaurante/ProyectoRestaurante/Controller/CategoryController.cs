@@ -1,12 +1,14 @@
-﻿using Application.Services.CategoryService;
+﻿using Application.Interfaces.ICategory.ICategoryService;
+using Application.Services.CategoryService;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Application.Interfaces.ICategory.ICategoryService;
 
 namespace ProyectoRestaurante.Controller
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     public class CategoryController : ControllerBase
     {
         private readonly IGetAllCategoriesService _categoryGetAll;
@@ -16,7 +18,19 @@ namespace ProyectoRestaurante.Controller
             _categoryGetAll = service;
         }
 
-        // GET: api/v1/Category
+        // GET
+        /// <summary>
+        /// Obtener categorias de platos
+        /// </summary>
+        /// <remarks>
+        /// Obtiene todas las categorías disponibles para clasificar platos.
+        /// 
+        /// ## Casos de uso:
+        ///
+        /// * Mostrar categorías en formularios de creación/edición de platos
+        /// * Filtros de búsqueda en el menú
+        /// * Organización del menú por secciones
+        /// </remarks>
         [HttpGet]
         public async Task<IActionResult> GetAllCategories()
         {

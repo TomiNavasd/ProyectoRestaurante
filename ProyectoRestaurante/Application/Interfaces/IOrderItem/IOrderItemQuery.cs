@@ -11,5 +11,6 @@ namespace Application.Interfaces.IOrderItem
     {
         Task<List<OrderItem>> GetOrderItems();
         Task<OrderItem?> GetOrderItemById(int id);
+        Task<bool> IsDishInActiveOrder(Guid dishId);
     }
 }

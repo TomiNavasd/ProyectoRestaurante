@@ -10,6 +10,6 @@ namespace Application.Interfaces.IDish.IDishService
 {
     public interface IDeleteDishService
     {
-        Task<DishResponse> DeleteDish(DishRequest dishRequest);
+        Task<DishResponse> DeleteDish(Guid id);
     }
 }

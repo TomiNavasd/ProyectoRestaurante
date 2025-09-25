@@ -1,5 +1,7 @@
-﻿using Application.Interfaces.IOrder;
+﻿using Application.Exceptions;
+using Application.Interfaces.IOrder;
 using Application.Interfaces.IOrder.IOrderService;
+using Application.Interfaces.IStatus;
 using Application.Models.Response;
 using Application.Models.Responses.Dish;
 using Application.Models.Responses.Order;
@@ -16,13 +18,29 @@ namespace Application.Services.OrderService
     {
         private readonly IOrderQuery _orderQuery;
         private readonly IOrderCommand _orderCommand;
-        public GetOrderFechaStatusService(IOrderQuery orderQuery, IOrderCommand orderCommand)
+        private readonly IStatusQuery _statusQuery;
+        public GetOrderFechaStatusService(IOrderQuery orderQuery, IOrderCommand orderCommand,IStatusQuery statusQuery)
         {
             _orderQuery = orderQuery;
             _orderCommand = orderCommand;
+            _statusQuery = statusQuery;
         }
         public async Task<IEnumerable<OrderDetailsResponse?>> GetOrderFechaStatus(DateTime? from, DateTime? to, int? statusid)
         {
+            // Validación de Rango de Fechas
+            if (from.HasValue && to.HasValue && from.Value > to.Value)
+            {
+                throw new BadRequestException("Rango de fechas inválido: la fecha 'desde' no puede ser posterior a la fecha 'hasta'.");
+            }
+            // Validación de existencia del Status
+            if (statusid.HasValue)
+            {
+                var statusExists = await _statusQuery.StatusExists(statusid.Value);
+                if (!statusExists)
+                {
+                    throw new BadRequestException($"El estado con ID {statusid.Value} no es válido.");
+                }
+            }
             var orders = await _orderQuery.GetOrderFechaStatus(from, to, statusid);
             var orderResponses = orders.Select(o => new OrderDetailsResponse
             {

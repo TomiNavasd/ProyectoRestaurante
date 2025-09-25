@@ -22,7 +22,7 @@ namespace Infrastructure.Query
             return await _context.DeliveryTypes.FindAsync(id);
         }
 
-        public async Task<List<DeliveryType>> GetDeliveryTypes()
+        public async Task<List<DeliveryType>> GetAllDeliveryTypes()
         {
             return await _context.DeliveryTypes.ToListAsync();
         }

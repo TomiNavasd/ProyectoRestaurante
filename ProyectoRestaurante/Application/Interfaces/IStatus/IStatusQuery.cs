@@ -11,5 +11,6 @@ namespace Application.Interfaces.IStatus
     {
         Task<List<Status>> GetAllStatuses();
         Task<Status?> GetStatusById(int id);
+        Task<bool> StatusExists(int id);
     }
 }

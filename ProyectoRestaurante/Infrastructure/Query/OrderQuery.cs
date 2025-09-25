@@ -21,7 +21,7 @@ namespace Infrastructure.Query
         public async Task<Order?> GetOrderById(long id)
         {
             return await _context.Orders
-                         .Include(order => order.OrderItems) // <-- ¡ASEGÚRATE DE QUE ESTA LÍNEA EXISTA!
+                         .Include(order => order.OrderItems)
                          .FirstOrDefaultAsync(order => order.OrderId == id);
         }
 

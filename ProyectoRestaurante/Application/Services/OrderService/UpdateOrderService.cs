@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.IDish;
+﻿using Application.Exceptions;
+using Application.Interfaces.IDish;
 using Application.Interfaces.IOrder;
 using Application.Interfaces.IOrder.IOrderService;
 using Application.Interfaces.IOrderItem;
@@ -32,23 +33,36 @@ namespace Application.Services.OrderService
         }
         public async Task<OrderUpdateResponse> UpdateOrder(long orderId, OrderUpdateRequest ItemRequest)
         {
-            // 1. Buscar la orden existente con sus items
-            var order = await _orderQuery.GetOrderById(orderId);
+            // Validacion 1 Orden Encontrada y Modificable
+            var order = await _orderQuery.GetOrderById(orderId); // Asegúrate que este método usa .Include(o => o.OrderItems)
             if (order == null)
             {
-                throw new Exception("La orden no existe."); // O manejarlo como prefieras
+                throw new NotFoundException($"La orden con ID {orderId} no existe.");
             }
-
-            // 2. Validar regla de negocio: no se puede modificar si no está 'Pending'
             if (order.OverallStatus != 1) // Asumiendo que 1 = "Pending"
             {
-                throw new Exception("No se puede modificar una orden que ya está en preparación");
+                throw new BadRequestException("No se puede modificar una orden que ya está en preparación.");
             }
+            // VALIDACIÓN 2: Items Válidos
+            if (ItemRequest.Items == null || !ItemRequest.Items.Any())
+                throw new BadRequestException("La orden debe contener al menos un ítem.");
+            if (ItemRequest.Items.Any(item => item.quantity <= 0))
+                throw new BadRequestException("La cantidad de cada ítem debe ser mayor a 0.");
+            
+            // VALIDACIÓN 3: Platos Válidos (Existentes y Activos) - Optimizado
+            var dishIds = ItemRequest.Items.Select(i => i.id).ToList();
+            var dishesFromDb = await _dishQuery.GetDishesByIds(dishIds);
 
-            // 3. Borrar los items antiguos
+            if (dishesFromDb.Count != dishIds.Count)
+                throw new BadRequestException("Uno o más platos especificados no existen.");
+            if (dishesFromDb.Any(d => !d.Available))
+                throw new BadRequestException("Uno o más platos especificados no están disponibles.");
+
+
+            // Borrar los items antiguos
             await _orderItemCommand.DeleteOrderItems(order.OrderItems);
 
-            // 4. Crear la nueva lista de items
+            // crear la nueva lista de items
 
             var newOrderItems = ItemRequest.Items.Select(item => new OrderItem
             {

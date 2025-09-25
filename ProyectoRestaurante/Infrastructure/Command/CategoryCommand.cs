@@ -21,7 +21,6 @@ namespace Infrastructure.Command
             _context.Remove(category);
             await _context.SaveChangesAsync();
         }
-
         public async Task InsertCategory(Category category)
         {
             _context.Add(category);

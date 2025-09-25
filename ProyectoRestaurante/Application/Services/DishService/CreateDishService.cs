@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.ICategory;
+﻿using Application.Exceptions;
+using Application.Interfaces.ICategory;
 using Application.Interfaces.IDish;
 using Application.Interfaces.IDish.IDishService;
 using Application.Models.Request;
@@ -27,15 +28,26 @@ namespace Application.Services.DishService
 
         public async Task<DishResponse?> CreateDish(DishRequest dishRequest)
         {
-            // Paso 1: Verificar si el plato ya existe por su nombre.
+            //Validaciones
+            if (dishRequest == null)
+            { throw new BadRequestException("Los datos del plato son necesarios."); }
+
+            if (string.IsNullOrWhiteSpace(dishRequest.Name))
+            { throw new BadRequestException("El nombre del plato no puede estar vacío."); }
+
+            if (dishRequest.Price <= 0)
+            { throw new BadRequestException("El precio debe ser mayor a cero."); }
+
+            // Validación de existencia de la Categoría
+            var category = await _categoryQuery.GetCategoryById(dishRequest.Category);
+            if (category == null)
+            { throw new BadRequestException($"La categoría con ID {dishRequest.Category} no existe."); }
+            // Validación de conflicto por nombre duplicado
             var dishExists = await _dishQuery.FoundDish(dishRequest.Name);
             if (dishExists)
-            {
-                return null; // Devuelve null si ya existe.
-            }
-            var category = await _categoryQuery.GetCategoryById(dishRequest.Category);
+            { throw new ConflictException($"El plato con el nombre '{dishRequest.Name}' ya existe.");}
 
-            // Paso 2: Mapear el DTO a la entidad de dominio (Dish).
+
             var newDish = new Dish
             {
                 // Mapeo manual de las propiedades
@@ -50,11 +62,9 @@ namespace Application.Services.DishService
                 UpdateDate = DateTime.Now
             };
 
-            // Paso 3: Usar el comando para agregar el nuevo plato.
             var createdDish = await _dishCommand.CreateDish(newDish);
 
 
-            // Paso 4: Mapear la entidad de dominio de regreso al DTO de respuesta.
             var response = new DishResponse
             {
                 id = createdDish.DishId,

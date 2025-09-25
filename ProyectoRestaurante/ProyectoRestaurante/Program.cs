@@ -39,12 +39,14 @@ builder.Services.AddScoped<ICreateDishService, CreateDishService>();
 builder.Services.AddScoped<IUpdateDishService, UpdateDishService>();
 builder.Services.AddScoped<ISearchAsyncService, SearchAsyncService>();
 builder.Services.AddScoped<IGetDishByIdService, GetDishByIdService>();
+builder.Services.AddScoped<IDeleteDishService, DeleteDishService>();
 
 //builder Category
 builder.Services.AddScoped<ICategoryQuery, CategoryQuery>();
 builder.Services.AddScoped<ICategoryCommand, CategoryCommand>();
 builder.Services.AddScoped<IGetAllCategoriesService, GetAllCategoriesService>();
 builder.Services.AddScoped<IGetCategoryByIdService, GetCategoryByIdService>();
+builder.Services.AddScoped<ICategoryExistService, CategoryExistService>();
 
 
 //builder DeliveryType
@@ -81,9 +83,8 @@ builder.Services.AddApiVersioning(options =>
     options.DefaultApiVersion = new ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
-    options.ApiVersionReader = ApiVersionReader.Combine(
-        new UrlSegmentApiVersionReader(),
-        new HeaderApiVersionReader("x-api-version"));
+    
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
 }).AddApiExplorer(options =>
 {
     options.GroupNameFormat = "'v'VVV";

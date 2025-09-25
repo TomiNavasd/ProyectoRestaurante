@@ -12,9 +12,19 @@ namespace Application.Services.DeliveryTypeService
     public class GetAllDeliveryTypeService : IGetAllDeliveryTypeService
     {
         private readonly IDeliveryTypeQuery _deliveryTypeQuery;
-        public Task<List<DeliveryTypeResponse>> GetAllDeliveryType()
+        public GetAllDeliveryTypeService(IDeliveryTypeQuery deliveryTypeQuery)
         {
-            throw new NotImplementedException();
+            _deliveryTypeQuery = deliveryTypeQuery;
+        }
+        public async Task<List<DeliveryTypeResponse>> GetAllDeliveryType()
+        {
+            var deliveryTypes = await _deliveryTypeQuery.GetAllDeliveryTypes();
+            var deliveryTypeResponses = deliveryTypes.Select(d => new DeliveryTypeResponse
+            {
+                Id = d.Id,
+                Name = d.Name
+            }).ToList();
+            return deliveryTypeResponses;
         }
     }
 }

@@ -11,5 +11,6 @@ namespace Application.Interfaces.ICategory
     {
         Task<List<Category>> GetAllCategories();
         Task<Category?> GetCategoryById(int id);
+        Task<bool> CategoryExist(int? id);
     }
 }

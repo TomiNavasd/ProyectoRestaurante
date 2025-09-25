@@ -9,7 +9,7 @@ namespace Application.Interfaces.IDeliveryType
 {
     public interface IDeliveryTypeQuery
     {
-        Task<List<DeliveryType>> GetDeliveryTypes();
+        Task<List<DeliveryType>> GetAllDeliveryTypes();
         Task<DeliveryType?> GetDeliveryTypeById(int id);
     }
 }

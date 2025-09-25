@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.IOrder;
+﻿using Application.Exceptions;
+using Application.Interfaces.IOrder;
 using Application.Interfaces.IOrder.IOrderService;
 using Application.Models.Request;
 using Application.Models.Response;
@@ -26,8 +27,10 @@ namespace Application.Services.OrderService
             var order = await _orderQuery.GetFullOrderById(orderId);
             if (order == null)
             {
-                return null; // El controlador se encargará de devolver 404 Not Found
+                // En lugar de devolver null, lanzamos la excepción específica de "No Encontrado".
+                throw new NotFoundException($"La orden con número {orderId} no fue encontrada.");
             }
+
             return new OrderDetailsResponse
             {
                 orderNumber = (int)order.OrderId,

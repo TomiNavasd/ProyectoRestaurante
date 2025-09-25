@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.IStatus.IStatusService;
+﻿using Application.Interfaces.IStatus;
+using Application.Interfaces.IStatus.IStatusService;
 using Application.Models.Responses;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,18 @@ namespace Application.Services.StatusService
 {
     public class GetAllStatusService : IGetAllStatusService
     {
-        public Task<List<StatusResponse>> GetAllStatus()
+        private readonly IStatusQuery _statusQuery;
+        public GetAllStatusService(IStatusQuery statusQuery)
         {
-            throw new NotImplementedException();
+            _statusQuery = statusQuery;
+        }
+        public async Task<List<StatusResponse>> GetAllStatus()
+        {
+            return (await _statusQuery.GetAllStatuses()).Select(s => new StatusResponse
+            {
+                Id = s.Id,
+                Name = s.Name,
+            }).ToList();
         }
     }
 }

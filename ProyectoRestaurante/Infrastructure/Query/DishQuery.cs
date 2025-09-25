@@ -23,7 +23,7 @@ namespace Infrastructure.Query
                 query = query.Where(d => d.Name.Contains(name));
             }
 
-            if (categoryId>=1 && categoryId <= 10)
+            if (categoryId.HasValue)
             {
                 query = query.Where(d => d.Category == categoryId.Value);
             }
@@ -55,6 +55,10 @@ namespace Infrastructure.Query
             }
             return await query.Include(d => d.CategoryEnt).ToListAsync();
 
+        }
+        public async Task<List<Dish>> GetDishesByIds(List<Guid> ids)
+        {
+            return await _context.Dishes.Where(d => ids.Contains(d.DishId)).ToListAsync();
         }
         public async Task<bool> FoundDish(string name, Guid? idToExclude = null)
         {

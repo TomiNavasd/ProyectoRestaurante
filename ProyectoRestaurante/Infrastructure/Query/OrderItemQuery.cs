@@ -27,5 +27,17 @@ namespace Infrastructure.Query
         {
             return await _context.OrderItems.ToListAsync();
         }
+        public async Task<bool> IsDishInActiveOrder(Guid dishId)
+        {
+            //por si ya estan inactivos
+            var inactiveStatuses = new[] { 4, 5 }; // por ejemplo 4=Delivered, 5=Cancelled
+
+            return await _context.OrderItems
+                .AnyAsync(item =>
+                    item.DishId == dishId && 
+                    !inactiveStatuses.Contains(item.OrderEnt.OverallStatus)
+                );
+        }
+
     }
 }

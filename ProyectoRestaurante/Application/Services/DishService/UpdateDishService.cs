@@ -1,10 +1,12 @@
-﻿using Application.Interfaces.ICategory;
+﻿using Application.Exceptions;
+using Application.Interfaces.ICategory;
 using Application.Interfaces.IDish;
 using Application.Interfaces.IDish.IDishService;
 using Application.Models.Request;
 using Application.Models.Response;
 using Application.Models.Responses;
 using Application.Models.Responses.Dish;
+using Azure.Core;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -26,20 +28,27 @@ namespace Application.Services.DishService
             _categoryQuery = categoryQuery;
         }
 
-        public async Task<UpdateDishResult> UpdateDish(Guid id, DishUpdateRequest DishUpdateRequest)
+        public async Task<DishResponse?> UpdateDish(Guid id, DishUpdateRequest DishUpdateRequest)
         {
+            if (DishUpdateRequest == null)
+                throw new BadRequestException("Los datos del plato son necesarios.");
+            if (string.IsNullOrWhiteSpace(DishUpdateRequest.Name))
+                throw new BadRequestException("No se ingresó el nombre del plato.");
+            if (DishUpdateRequest.Category == 0)
+                throw new BadRequestException("No se ingresó una categoría válida.");
+            if (DishUpdateRequest.Price <= 0)
+                throw new BadRequestException("El precio debe ser mayor a cero.");
+
             var existDish = await _dishQuery.GetDishById(id);
             if (existDish == null)
             {
-                return new UpdateDishResult { NotFound = true };
+                throw new NotFoundException($"El plato con la id {id} no fue encontrado.");
             }
             var alreadyExist = await _dishQuery.FoundDish(DishUpdateRequest.Name,id);
             if (alreadyExist )
             {
-                return new UpdateDishResult { NameConflict = true };
+                throw new ConflictException($"El plato con el nombre '{DishUpdateRequest.Name}' ya existe.");
             }
-
-            
 
             existDish.Name = DishUpdateRequest.Name;
             existDish.Description = DishUpdateRequest.Description;
@@ -49,26 +58,30 @@ namespace Application.Services.DishService
             existDish.ImageUrl = DishUpdateRequest.Image;
             existDish.UpdateDate = DateTime.Now;
 
-            await _dishCommand.UpdateDish(existDish);
             var category = await _categoryQuery.GetCategoryById(existDish.Category);
-
-            return new UpdateDishResult
+            if (category == null)
             {
-                Success = true,
-                UpdatedDish = new DishResponse {
-                    
-                    id = existDish.DishId,
-                    name = existDish.Name,
-                    description = existDish.Description,
-                    price = existDish.Price,
-                    isActive = existDish.Available,
-                    image = existDish.ImageUrl,
-                    category = new GenericResponse { Id = existDish.Category, Name = category.Name },
-                    createdAt = existDish.CreateDate,
-                    updatedAt = existDish.UpdateDate
+                throw new BadRequestException($"La categoría con ID {DishUpdateRequest.Category} no existe.");
+            }
 
-                }
+            await _dishCommand.UpdateDish(existDish);
+
+            var UpdatedDish = new DishResponse
+            {
+
+                id = existDish.DishId,
+                name = existDish.Name,
+                description = existDish.Description,
+                price = existDish.Price,
+                isActive = existDish.Available,
+                image = existDish.ImageUrl,
+                category = new GenericResponse { Id = existDish.Category, Name = category.Name },
+                createdAt = existDish.CreateDate,
+                updatedAt = existDish.UpdateDate
+
             };
+
+            return UpdatedDish;
         }
 
     }

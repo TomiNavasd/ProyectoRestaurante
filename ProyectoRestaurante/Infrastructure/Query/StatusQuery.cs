@@ -21,12 +21,18 @@ namespace Infrastructure.Query
 
         public async Task<List<Status>> GetAllStatuses()
         {
-            return await _context.Statuses.ToListAsync();
+           var statuses = await _context.Statuses.ToListAsync();
+            return statuses;
+
         }
 
         public async Task<Status?> GetStatusById(int id)
         {
             return await _context.Statuses.FindAsync(id);
+        }
+        public async Task<bool> StatusExists(int id)
+        {
+            return await _context.Statuses.AnyAsync(s => s.Id == id);
         }
     }
 }
