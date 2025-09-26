@@ -30,7 +30,7 @@ namespace Infrastructure.Query
         public async Task<bool> IsDishInActiveOrder(Guid dishId)
         {
             //por si ya estan inactivos
-            var inactiveStatuses = new[] { 4, 5 }; // por ejemplo 4=Delivered, 5=Cancelled
+            var inactiveStatuses = new[] { 4, 5 }; // por ejemplo 4=Delivered, 5=Closed
 
             return await _context.OrderItems
                 .AnyAsync(item =>

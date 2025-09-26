@@ -5,6 +5,7 @@ using Application.Interfaces.IOrder.IOrderService;
 using Application.Interfaces.IOrderItem;
 using Application.Models.Request;
 using Application.Models.Responses.Order;
+using Application.Enums;
 using Azure.Core;
 using Domain.Entities;
 using System;
@@ -39,17 +40,17 @@ namespace Application.Services.OrderService
             {
                 throw new NotFoundException($"La orden con ID {orderId} no existe.");
             }
-            if (order.OverallStatus != 1) // Asumiendo que 1 = "Pending"
+            if (order.OverallStatus >= (int)StatusOrderEnum.Pending) 
             {
                 throw new BadRequestException("No se puede modificar una orden que ya está en preparación.");
             }
-            // VALIDACIÓN 2: Items Válidos
+            // Items Válidos
             if (ItemRequest.Items == null || !ItemRequest.Items.Any())
                 throw new BadRequestException("La orden debe contener al menos un ítem.");
             if (ItemRequest.Items.Any(item => item.quantity <= 0))
                 throw new BadRequestException("La cantidad de cada ítem debe ser mayor a 0.");
             
-            // VALIDACIÓN 3: Platos Válidos (Existentes y Activos) - Optimizado
+            // Platos Válidos Optimizado
             var dishIds = ItemRequest.Items.Select(i => i.id).ToList();
             var dishesFromDb = await _dishQuery.GetDishesByIds(dishIds);
 
@@ -73,10 +74,9 @@ namespace Application.Services.OrderService
                 Status = 1
             }).ToList();
 
-            // 5. Insertar los nuevos items
             await _orderItemCommand.InsertOrderItems(newOrderItems);
 
-            // 6. Recalcular el precio total de la orden
+            // Recalcular el precio total de la orden
             decimal newTotalPrice = 0;
             foreach (var item in newOrderItems)
             {
@@ -84,12 +84,11 @@ namespace Application.Services.OrderService
                 newTotalPrice += dish.Price * item.Quantity;
             }
 
-            // 7. Actualizar la orden principal
+            // actualizar la orden principal
             order.Price = newTotalPrice;
             order.UpdateDate = DateTime.Now;
             await _orderCommand.UpdateOrder(order);
 
-            // 8. Devolver la respuesta formateada
             return new OrderUpdateResponse
             {
                 orderNumber = (int) order.OrderId,

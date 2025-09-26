@@ -37,12 +37,10 @@ namespace ProyectoRestaurante.Controller
             try
             {
                 var categories = await _categoryGetAll.GetAllCategories();
-                // Devolvemos un código 200 OK con la lista de categorías.
                 return Ok(categories);
             }
             catch (Exception ex)
             {
-                // En caso de un error inesperado, devolvemos un 500.
                 return StatusCode(500, "Ocurrió un error interno en el servidor.");
             }
         }

@@ -28,16 +28,7 @@ namespace Application.Services.DishService
 
         public async Task<DishResponse?> CreateDish(DishRequest dishRequest)
         {
-            //Validaciones
-            if (dishRequest == null)
-            { throw new BadRequestException("Los datos del plato son necesarios."); }
-
-            if (string.IsNullOrWhiteSpace(dishRequest.Name))
-            { throw new BadRequestException("El nombre del plato no puede estar vacío."); }
-
-            if (dishRequest.Price <= 0)
-            { throw new BadRequestException("El precio debe ser mayor a cero."); }
-
+            // Dejo solo las validaciones de negocio
             // Validación de existencia de la Categoría
             var category = await _categoryQuery.GetCategoryById(dishRequest.Category);
             if (category == null)
@@ -76,7 +67,6 @@ namespace Application.Services.DishService
                 category = new GenericResponse { Id= createdDish.Category, Name = category.Name },
                 createdAt = createdDish.CreateDate,
                 updatedAt = createdDish.UpdateDate
-                // Mapear la categoría
             };
 
             return response;

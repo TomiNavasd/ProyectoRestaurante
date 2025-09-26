@@ -44,17 +44,17 @@ namespace Application.Services.OrderService
             if (orderRequest.items == null || !orderRequest.items.Any())
                 throw new BadRequestException("La orden debe contener al menos un ítem.");
 
-            // Validación de tipo de entrega
+            // validación de tipo de entrega
             var deliveryType = await _deliveryTypeQuery.GetDeliveryTypeById(orderRequest.delivery.id);
             if (deliveryType == null)
                 throw new BadRequestException("Debe especificar un tipo de entrega válido.");
 
             // Validación de ítems (platos y cantidades)
-            // Primero, validamos las cantidades
+            // validamos las cantidades
             if (orderRequest.items.Any(item => item.quantity <= 0))
                 throw new BadRequestException("La cantidad de cada ítem debe ser mayor a 0.");
 
-            // Luego, validamos los platos en una sola consulta a la BD
+            // validamos los platos en una sola consulta a la BD
             var dishIds = orderRequest.items.Select(i => i.id).ToList();
             var dishesFromDb = await _dishQuery.GetDishesByIds(dishIds);
 

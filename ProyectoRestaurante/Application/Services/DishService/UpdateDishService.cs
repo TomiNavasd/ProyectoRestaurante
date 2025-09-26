@@ -2,6 +2,7 @@
 using Application.Interfaces.ICategory;
 using Application.Interfaces.IDish;
 using Application.Interfaces.IDish.IDishService;
+using Application.Interfaces.IOrderItem;
 using Application.Models.Request;
 using Application.Models.Response;
 using Application.Models.Responses;
@@ -21,24 +22,25 @@ namespace Application.Services.DishService
         private readonly IDishQuery _dishQuery;
         private readonly IDishCommand _dishCommand;
         private readonly ICategoryQuery _categoryQuery;
-        public UpdateDishService(IDishQuery dishQuery, IDishCommand dishCommand, ICategoryQuery categoryQuery)
+        private readonly IOrderItemQuery _orderItemQuery;
+        public UpdateDishService(IDishQuery dishQuery, IDishCommand dishCommand, ICategoryQuery categoryQuery, IOrderItemQuery orderItemQuery)
         {
             _dishQuery = dishQuery;
             _dishCommand = dishCommand;
             _categoryQuery = categoryQuery;
+            _orderItemQuery = orderItemQuery;
         }
 
         public async Task<DishResponse?> UpdateDish(Guid id, DishUpdateRequest DishUpdateRequest)
         {
-            if (DishUpdateRequest == null)
-                throw new BadRequestException("Los datos del plato son necesarios.");
-            if (string.IsNullOrWhiteSpace(DishUpdateRequest.Name))
-                throw new BadRequestException("No se ingresó el nombre del plato.");
-            if (DishUpdateRequest.Category == 0)
-                throw new BadRequestException("No se ingresó una categoría válida.");
-            if (DishUpdateRequest.Price <= 0)
-                throw new BadRequestException("El precio debe ser mayor a cero.");
 
+            // Validaciones de logica de negocio se quedan
+            // Validacion de negocio (PLATO EN USO) (lanza 409)
+            var isDishInUse = await _orderItemQuery.IsDishInActiveOrder(id);
+            if (isDishInUse)
+            {
+                throw new ConflictException("No se puede eliminar el plato porque está incluido en órdenes activas.");
+            }
             var existDish = await _dishQuery.GetDishById(id);
             if (existDish == null)
             {

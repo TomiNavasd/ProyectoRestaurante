@@ -37,8 +37,7 @@ namespace Application.Services.DishService
                 // lanzamos la excepción. 404
                 throw new NotFoundException($"El plato con la id {id} no fue encontrado.");
             }
-            // 2. VALIDACIÓN DE NEGOCIO - PLATO EN USO (lanza 409)
-            // (Necesitarás un método en tu IOrderQuery que haga esta comprobación)
+            // Validacion de negocio (PLATO EN USO) (lanza 409)
             var isDishInUse = await _orderItemQuery.IsDishInActiveOrder(id);
             if (isDishInUse)
             {

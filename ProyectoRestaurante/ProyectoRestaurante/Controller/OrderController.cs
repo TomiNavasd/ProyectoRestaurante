@@ -54,7 +54,6 @@ namespace ProyectoRestaurante.Controller
         Description = "Crea una nueva orden con los platos solicitados por el cliente."
         )]
         [ProducesResponseType(typeof(OrderCreateResponse), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateOrder([FromBody] OrderRequest orderRequest)
         {
@@ -65,7 +64,7 @@ namespace ProyectoRestaurante.Controller
                 return CreatedAtAction(nameof(CreateOrder), new { id = result.orderNumber }, result);
 
             }
-            catch (Exception ex)
+            catch (BadRequestException ex)
             {
                 return BadRequest(new ApiError(ex.Message));
             }
@@ -134,12 +133,10 @@ namespace ProyectoRestaurante.Controller
             }
             catch (NotFoundException ex)
             {
-                // Si el servicio lanza que la orden no existe...
                 return NotFound(new ApiError(ex.Message));
             }
             catch (BadRequestException ex)
             {
-                // Si el servicio lanza cualquier error de validación (orden en preparación, plato inactivo, etc.)...
                 return BadRequest(new ApiError(ex.Message));
             }
         }
