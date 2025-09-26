@@ -90,11 +90,11 @@ namespace ProyectoRestaurante.Controller
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<OrderDetailsResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetOrders([FromQuery] int? statusId, [FromQuery] DateTime? from, [FromQuery] DateTime? to)
+        public async Task<IActionResult> GetOrders([FromQuery] DateTime? from, [FromQuery] DateTime? to, [FromQuery] int? status)
         {
             try
             {
-                var result = await _getOrderFechaStatusService.GetOrderFechaStatus(from, to, statusId);
+                var result = await _getOrderFechaStatusService.GetOrderFechaStatus(from, to, status);
                 return Ok(result);
             }
             catch (BadRequestException ex)
