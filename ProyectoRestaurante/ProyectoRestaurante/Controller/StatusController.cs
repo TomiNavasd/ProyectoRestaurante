@@ -28,7 +28,7 @@ namespace ProyectoRestaurante.Controller
         /// * En preparación: cocina comenzó a preparar
         /// * Listo: orden lista para entregar
         /// * Entregado: orden completada
-        /// * Cancelado: orden cancelada
+        /// * Cerrado: orden cerrada
         /// </remarks>
         [HttpGet]
         public async Task<IActionResult> GetAllStatus()

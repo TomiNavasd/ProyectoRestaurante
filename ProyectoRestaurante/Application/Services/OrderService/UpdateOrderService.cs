@@ -40,7 +40,7 @@ namespace Application.Services.OrderService
             {
                 throw new NotFoundException($"La orden con ID {orderId} no existe.");
             }
-            if (order.OverallStatus >= (int)StatusOrderEnum.Pending) 
+            if (order.OverallStatus >= (int)StatusOrderEnum.InProgress) 
             {
                 throw new BadRequestException("No se puede modificar una orden que ya está en preparación.");
             }
@@ -58,10 +58,6 @@ namespace Application.Services.OrderService
                 throw new BadRequestException("Uno o más platos especificados no existen.");
             if (dishesFromDb.Any(d => !d.Available))
                 throw new BadRequestException("Uno o más platos especificados no están disponibles.");
-
-
-            // Borrar los items antiguos
-            await _orderItemCommand.DeleteOrderItems(order.OrderItems);
 
             // crear la nueva lista de items
 
@@ -85,7 +81,7 @@ namespace Application.Services.OrderService
             }
 
             // actualizar la orden principal
-            order.Price = newTotalPrice;
+            order.Price += await Calculate(newOrderItems, dishesFromDb);
             order.UpdateDate = DateTime.Now;
             await _orderCommand.UpdateOrder(order);
 
@@ -95,6 +91,20 @@ namespace Application.Services.OrderService
                 totalAmount = (double)order.Price,
                 updateAt = order.UpdateDate //modificar
             };
+        }
+        private async Task<decimal> Calculate(List<OrderItem> newOrderItems, List<Dish> dishes)
+        {
+            decimal total = 0;
+            var dishObt = dishes.ToDictionary(d => d.DishId);
+
+            foreach (var item in newOrderItems)
+            {
+                if (dishObt.TryGetValue(item.DishId, out var dish))
+                {
+                    total += dish.Price * item.Quantity;
+                }
+            }
+            return total;
         }
     }
 }

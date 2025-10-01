@@ -103,7 +103,7 @@ namespace ProyectoRestaurante.Controller
             }
         }
 
-        // PUT: api/v1/order/1001
+        // PATCH: api/v1/order/1001
         /// <summary>
         /// Actualizar una orden existente
         /// </summary>
@@ -120,7 +120,7 @@ namespace ProyectoRestaurante.Controller
         /// - Modificar cantidades antes de que comience la preparación
         /// - Cambiar notas especiales de los platos
         /// </remarks>
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         [ProducesResponseType(typeof(OrderUpdateResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
