@@ -74,7 +74,15 @@ builder.Services.AddScoped<IStatusQuery, StatusQuery>();
 builder.Services.AddScoped<IGetAllStatusService, GetAllStatusService>();
 builder.Services.AddScoped<IGetStatusByIdService, GetStatusByIdService>();
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowWebApp", policy =>
+    {
+        policy.AllowAnyOrigin()   // Para desarrollo, permite cualquier origen
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 //
 builder.Services.AddControllers();
 
@@ -127,6 +135,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowWebApp");
 
 app.UseAuthorization();
 
