@@ -20,10 +20,12 @@ export function renderOrderModal(order) {
         <h6>Ítems en la Orden</h6>
         <ul id="modal-item-list" class="list-group">
             ${order.items.map(item => `
-                <li class="list-group-item d-flex justify-content-between align-items-center" data-item-id="${item.dish.id}" data-quantity="${item.quantity}">
+                <li class="list-group-item d-flex justify-content-between align-items-center" 
+                    data-item-id="${item.dish.id}"  // <-- ¡ESTA ES LA CORRECCIÓN CLAVE!
+                    data-quantity="${item.quantity}">
                     <span>${item.dish.name}</span>
                     <div class="d-flex align-items-center">
-                        ${order.status.id === 1 ? // Solo mostramos controles si la orden está pendiente
+                        ${order.status.id === 1 ?
                             `<button class="btn btn-sm btn-outline-secondary modal-quantity-btn" data-action="decrease">-</button>
                              <span class="mx-2 item-quantity">${item.quantity}</span>
                              <button class="btn btn-sm btn-outline-secondary modal-quantity-btn" data-action="increase">+</button>`

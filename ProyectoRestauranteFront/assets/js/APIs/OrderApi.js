@@ -88,11 +88,24 @@ export async function updateOrder(orderId, updateRequest) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updateRequest),
         });
+
+        // Si la respuesta NO es exitosa (ej: 400, 404, 500)
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Error al actualizar la orden.');
+            // Leemos la respuesta como TEXTO, que nunca falla.
+            const errorText = await response.text();
+            // Usamos el texto del error si existe, o el mensaje de estado por defecto.
+            throw new Error(errorText || response.statusText);
         }
+
+        // Si la respuesta es exitosa pero no tiene contenido (ej: 204 No Content)
+        const contentLength = response.headers.get('content-length');
+        if (!contentLength || contentLength === '0') {
+            return { success: true }; // Devolvemos un objeto de éxito simple.
+        }
+        
+        // Solo si hay contenido, lo parseamos como JSON.
         return await response.json();
+
     } catch (error) {
         console.error("Error en updateOrder:", error);
         return { error: error.message };

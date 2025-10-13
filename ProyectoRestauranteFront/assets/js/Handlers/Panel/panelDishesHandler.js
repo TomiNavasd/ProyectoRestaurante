@@ -1,0 +1,112 @@
+import { state } from '../../state.js';
+import { createDish, getDishes, updateDish } from '../../APIs/DishApi.js';
+import { getCategories } from '../../APIs/CategoryApi.js';
+import { renderCategoryOptions } from '../../Components/renderCategories.js';
+import { renderAdminDishes } from '../../Components/renderAdminDishes.js';
+
+async function refreshDishesPanel() {
+    const dishes = await getDishes(null, null, false); 
+    state.dishes = dishes;
+    renderAdminDishes(state.dishes);
+}
+
+function populateEditForm(dish) {
+    document.getElementById('edit-dish-id').value = dish.id;
+    document.getElementById('edit-dish-name').value = dish.name;
+    document.getElementById('edit-dish-description').value = dish.description;
+    document.getElementById('edit-dish-price').value = dish.price;
+    document.getElementById('edit-dish-category').value = dish.category.id;
+    document.getElementById('edit-dish-image').value = dish.image;
+    document.getElementById('edit-dish-active').checked = dish.isActive;
+}
+
+function initCreateDishForm() {
+    // ... (Tu código para crear plato se mantiene exactamente igual) ...
+    const form = document.getElementById('create-dish-form');
+    if (!form) return;
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const dishRequest = {
+            name: document.getElementById('dish-name').value,
+            description: document.getElementById('dish-description').value,
+            price: parseFloat(document.getElementById('dish-price').value),
+            category: parseInt(document.getElementById('dish-category').value),
+            image: document.getElementById('dish-image').value
+        };
+        const result = await createDish(dishRequest);
+        if (result.error) {
+            alert(`Error al crear el plato: ${result.error}`);
+        } else {
+            alert(`¡Plato "${result.name}" creado con éxito!`);
+            form.reset();
+            const modalElement = document.getElementById('create-dish-modal');
+            const bootstrapModal = bootstrap.Modal.getInstance(modalElement);
+            bootstrapModal.hide();
+            await refreshDishesPanel(); // Refrescamos la lista para ver el nuevo plato
+        }
+    });
+}
+
+// --- NUEVA FUNCIÓN PARA MANEJAR EL GUARDADO DE LA EDICIÓN ---
+function initEditDishForm() {
+    const form = document.getElementById('edit-dish-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const dishId = document.getElementById('edit-dish-id').value;
+
+        // Recolectamos los datos actualizados del formulario de edición
+        const dishUpdateRequest = {
+            name: document.getElementById('edit-dish-name').value,
+            description: document.getElementById('edit-dish-description').value,
+            price: parseFloat(document.getElementById('edit-dish-price').value),
+            category: parseInt(document.getElementById('edit-dish-category').value),
+            image: document.getElementById('edit-dish-image').value,
+            isActive: document.getElementById('edit-dish-active').checked
+        };
+
+        const result = await updateDish(dishId, dishUpdateRequest);
+
+        if (result.error) {
+            alert(`Error al actualizar el plato: ${result.error}`);
+        } else {
+            alert(`Plato "${result.name}" actualizado con éxito.`);
+            const modalElement = document.getElementById('edit-dish-modal');
+            const bootstrapModal = bootstrap.Modal.getInstance(modalElement);
+            bootstrapModal.hide();
+            await refreshDishesPanel(); // Refrescamos la lista de platos para ver los cambios
+        }
+    });
+}
+
+function initMenuManagement() {
+    const dishListContainer = document.getElementById('panel-dish-list');
+    if (!dishListContainer) return;
+
+    dishListContainer.addEventListener('click', (event) => {
+        const editButton = event.target.closest('.edit-dish-btn');
+        if (editButton) {
+            const dishId = editButton.dataset.dishId;
+            const dishToEdit = state.dishes.find(d => d.id === dishId);
+            if (dishToEdit) {
+                populateEditForm(dishToEdit);
+            }
+        }
+        // ... (lógica del botón desactivar) ...
+    });
+}
+
+// --- FUNCIÓN PRINCIPAL DE INICIALIZACIÓN (ACTUALIZADA) ---
+export async function initDishAdminHandlers() {
+    await refreshDishesPanel();
+
+    const categories = await getCategories();
+    renderCategoryOptions(categories);
+    document.getElementById('edit-dish-category').innerHTML = document.getElementById('dish-category').innerHTML;
+
+    initCreateDishForm();
+    initEditDishForm(); // <-- AÑADIMOS LA LLAMADA AL NUEVO INICIALIZADOR
+    initMenuManagement();
+}
