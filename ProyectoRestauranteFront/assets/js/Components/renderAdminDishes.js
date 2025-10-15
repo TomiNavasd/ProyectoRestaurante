@@ -16,7 +16,11 @@ export function renderAdminDishes(dishes) {
                 </div>
                 <div class="card-footer d-flex justify-content-end gap-2">
                     <button class="btn btn-sm btn-secondary edit-dish-btn" data-dish-id="${dish.id}" data-bs-toggle="modal" data-bs-target="#edit-dish-modal">Editar</button>
-                    <button class="btn btn-sm btn-danger deactivate-dish-btn" data-dish-id="${dish.id}">Desactivar</button>
+                    
+                    ${dish.isActive
+                        ? `<button class="btn btn-sm btn-danger status-toggle-btn" data-dish-id="${dish.id}" data-action="deactivate">Desactivar</button>`
+                        : `<button class="btn btn-sm btn-success status-toggle-btn" data-dish-id="${dish.id}" data-action="activate">Activar</button>`
+                    }
                 </div>
             </div>
         </div>

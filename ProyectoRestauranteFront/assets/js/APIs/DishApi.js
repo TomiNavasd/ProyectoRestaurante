@@ -73,3 +73,32 @@ export async function updateDish(dishId, dishUpdateRequest) {
         return { error: error.message };
     }
 }
+
+/**
+ * Envía una petición para desactivar (soft delete) un plato.
+ * @param {string} dishId - El ID del plato a desactivar.
+ * @returns {Promise<object>}
+ */
+export async function deleteDish(dishId) {
+    try {
+        // Recordá que tu backend usa DELETE para la desactivación
+        const response = await fetch(`${API_BASE_URL}/Dish/${dishId}`, {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al desactivar el plato.');
+        }
+        
+        // Si la respuesta es exitosa pero no tiene contenido (lo más común en un DELETE)
+        if (response.status === 204) {
+            return { success: true };
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error("Error en deleteDish:", error);
+        return { error: error.message };
+    }
+}

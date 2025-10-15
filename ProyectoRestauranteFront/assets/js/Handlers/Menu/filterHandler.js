@@ -17,8 +17,8 @@ export function initFilters() {
         if (currentActive) currentActive.classList.remove('active');
         event.target.classList.add('active');
         
-        const dishes = await getDishes(state.currentFilter.name, state.currentFilter.category);
-        renderDishes(dishes);
+        const activeDishes = await getDishes(state.currentFilter.name, state.currentFilter.category);
+        renderDishes(activeDishes);
     });
 
     searchInput.addEventListener('input', (event) => {
@@ -26,8 +26,8 @@ export function initFilters() {
         debounceTimeout = setTimeout(async () => {
             const searchText = event.target.value;
             state.currentFilter.name = searchText;
-            const dishes = await getDishes(state.currentFilter.name, state.currentFilter.category);
-            renderDishes(dishes);
+            const activeDishes = await getDishes(state.currentFilter.name, state.currentFilter.category);
+            renderDishes(activeDishes);
         }, 300);
     });
 }

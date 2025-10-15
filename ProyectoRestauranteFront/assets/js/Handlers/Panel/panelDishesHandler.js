@@ -1,5 +1,5 @@
 import { state } from '../../state.js';
-import { createDish, getDishes, updateDish } from '../../APIs/DishApi.js';
+import { createDish, getDishes, updateDish, deleteDish } from '../../APIs/DishApi.js';
 import { getCategories } from '../../APIs/CategoryApi.js';
 import { renderCategoryOptions } from '../../Components/renderCategories.js';
 import { renderAdminDishes } from '../../Components/renderAdminDishes.js';
@@ -85,8 +85,12 @@ function initMenuManagement() {
     const dishListContainer = document.getElementById('panel-dish-list');
     if (!dishListContainer) return;
 
-    dishListContainer.addEventListener('click', (event) => {
+    dishListContainer.addEventListener('click', async (event) => {
+        // Buscamos si el clic fue en un botón de editar o en uno de estado
         const editButton = event.target.closest('.edit-dish-btn');
+        const statusButton = event.target.closest('.status-toggle-btn'); // <-- ESTA LÍNEA ES LA CLAVE
+
+        // Lógica para el botón EDITAR
         if (editButton) {
             const dishId = editButton.dataset.dishId;
             const dishToEdit = state.dishes.find(d => d.id === dishId);
@@ -94,7 +98,44 @@ function initMenuManagement() {
                 populateEditForm(dishToEdit);
             }
         }
-        // ... (lógica del botón desactivar) ...
+
+        // Lógica para el botón ACTIVAR/DESACTIVAR
+        if (statusButton) { // <-- Ahora 'statusButton' sí está definido
+            const dishId = statusButton.dataset.dishId;
+            const action = statusButton.dataset.action;
+            const dish = state.dishes.find(d => d.id === dishId);
+            if (!dish) return;
+
+            if (action === 'deactivate') {
+                const confirmation = confirm(`¿Estás seguro de que quieres DESACTIVAR "${dish.name}"?`);
+                if (confirmation) {
+                    const result = await deleteDish(dishId);
+                    if (result.error) {
+                        alert(`Error: ${result.error}`);
+                    } else {
+                        await refreshDishesPanel();
+                    }
+                }
+            } else if (action === 'activate') {
+                const confirmation = confirm(`¿Estás seguro de que quieres ACTIVAR "${dish.name}"?`);
+                if (confirmation) {
+                    const updateRequest = {
+                        name: dish.name,
+                        description: dish.description,
+                        price: dish.price,
+                        category: dish.category.id,
+                        image: dish.image,
+                        isActive: true
+                    };
+                    const result = await updateDish(dishId, updateRequest);
+                    if (result.error) {
+                        alert(`Error: ${result.error}`);
+                    } else {
+                        await refreshDishesPanel();
+                    }
+                }
+            }
+        }
     });
 }
 
@@ -107,6 +148,6 @@ export async function initDishAdminHandlers() {
     document.getElementById('edit-dish-category').innerHTML = document.getElementById('dish-category').innerHTML;
 
     initCreateDishForm();
-    initEditDishForm(); // <-- AÑADIMOS LA LLAMADA AL NUEVO INICIALIZADOR
+    initEditDishForm();
     initMenuManagement();
 }

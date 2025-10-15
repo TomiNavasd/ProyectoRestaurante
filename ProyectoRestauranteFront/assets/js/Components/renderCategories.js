@@ -13,7 +13,6 @@ export function renderCategories(categories) {
 
     container.innerHTML = `<button class="btn btn-secondary me-2 active" data-category-id="">Todos</button>` + buttonsHtml;
 }
-
 /**
  * Rellena el selector de categorías en el formulario de creación de platos.
  * @param {Array} categories - El array de categorías.

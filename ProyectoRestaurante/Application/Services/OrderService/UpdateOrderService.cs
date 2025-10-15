@@ -59,6 +59,8 @@ namespace Application.Services.OrderService
             if (dishesFromDb.Any(d => !d.Available))
                 throw new BadRequestException("Uno o más platos especificados no están disponibles.");
 
+            await _orderItemCommand.DeleteOrderItems(order.OrderItems);
+
             // crear la nueva lista de items
 
             var newOrderItems = ItemRequest.Items.Select(item => new OrderItem
@@ -81,7 +83,7 @@ namespace Application.Services.OrderService
             }
 
             // actualizar la orden principal
-            order.Price += await Calculate(newOrderItems, dishesFromDb);
+            order.Price = await Calculate(newOrderItems, dishesFromDb);
             order.UpdateDate = DateTime.Now;
             await _orderCommand.UpdateOrder(order);
 

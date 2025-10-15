@@ -25,17 +25,28 @@ export async function createOrder(orderRequest) {
 }
 
 /**
- * Obtiene todas las órdenes desde la API.
+ * Obtiene las órdenes desde la API, con filtros opcionales.
+ * @param {object} [filters={}] - Objeto con filtros (ej: { from: '2025-10-01', to: '2025-10-15' }).
  * @returns {Promise<Array>}
  */
-export async function getOrders() {
+export async function getOrders(filters = {}) {
     try {
-        const response = await fetch(`${API_BASE_URL}/Order`);
+        const url = new URL(`${API_BASE_URL}/Order`);
+
+        // Añade los filtros como parámetros de búsqueda si existen
+        if (filters.from) {
+            url.searchParams.append('from', filters.from);
+        }
+        if (filters.to) {
+            url.searchParams.append('to', filters.to);
+        }
+        
+        const response = await fetch(url);
         if (!response.ok) throw new Error('Error al obtener las órdenes');
         return await response.json();
     } catch (error) {
         console.error("Error en getOrders:", error);
-        return [];
+        return { error: error.message };
     }
 }
 
@@ -77,14 +88,14 @@ export async function getOrderById(orderId) {
 
 /**
  * Actualiza los items de una orden existente.
- * @param {number} orderId - El ID de la orden a actualizar.
+ * @param {Int32Array} orderId - El ID de la orden a actualizar.
  * @param {object} updateRequest - El cuerpo de la petición con la nueva lista de items.
  * @returns {Promise<object>}
  */
 export async function updateOrder(orderId, updateRequest) {
     try {
         const response = await fetch(`${API_BASE_URL}/Order/${orderId}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updateRequest),
         });
@@ -108,6 +119,33 @@ export async function updateOrder(orderId, updateRequest) {
 
     } catch (error) {
         console.error("Error en updateOrder:", error);
+        return { error: error.message };
+    }
+}
+
+/**
+ * Actualiza el estado general de una orden.
+ * @param {number} orderId - El ID de la orden.
+ * @param {number} newStatusId - El ID del nuevo estado.
+ * @returns {Promise<object>}
+ */
+export async function updateOrderStatus(orderId, newStatusId) {
+    // NOTA: Asumimos que tu backend tiene un endpoint PATCH o PUT
+    // para cambiar solo el estado. Si no, necesitaríamos enviar el objeto completo.
+    // Esta es una implementación común con PATCH.
+    try {
+        const response = await fetch(`${API_BASE_URL}/Order/${orderId}/status`, { // Asumiendo un endpoint específico, ajústalo si es necesario
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatusId }),
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al actualizar el estado de la orden.');
+        }
+        return { success: true };
+    } catch (error) {
+        console.error("Error en updateOrderStatus:", error);
         return { error: error.message };
     }
 }
