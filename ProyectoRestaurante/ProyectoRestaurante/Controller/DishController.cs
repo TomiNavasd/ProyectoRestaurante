@@ -233,7 +233,7 @@ namespace ProyectoRestaurante.Controller
         /// * El plato tiene dependencias que impiden su eliminación
         /// </remarks>
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(DishResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiError), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> DeleteDish(Guid id)
@@ -241,7 +241,7 @@ namespace ProyectoRestaurante.Controller
             try
             {
                 var result = await _deletedishService.DeleteDish(id);
-                return Ok(result);
+                return NoContent();
             }
             catch (NotFoundException ex)
             {

@@ -17,20 +17,30 @@
                 <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#cart-offcanvas">
                     <i class="bi bi-cart"></i> Comanda <span id="cart-counter" class="badge bg-danger">0</span>
                 </button>
+
+                <a href="panel.html" class="btn btn-outline-warning me-2">Ir al Panel</a>
+
             </div>
         </div>
     </nav>
 
     <main class="container mt-4">
         <h1 class="mb-4">Nuestro Menú</h1>
-        <div class="row mb-4">
-            <div id="filters-container" class="col-md-8 mb-2"></div>
-            <div class="col-md-4">
-                <div class="input-group">
-                    <input type="text" id="search-input" class="form-control" placeholder="Buscar plato...">
-                </div>
+        
+        <div class="row mb-4 align-items-center">
+            <div id="filters-container" class="col-md-6 mb-2"></div>
+            
+            <div class="col-md-6 d-flex gap-2">
+                <input type="text" id="search-input" class="form-control" placeholder="Buscar plato...">
+                
+                <select id="sort-by-price" class="form-select" style="width: 200px;">
+                    <option value="">Ordenar por...</option>
+                    <option value="asc">Menor precio</option>
+                    <option value="desc">Mayor precio</option>
+                </select>
             </div>
         </div>
+
         <div id="dish-list-container" class="row row-cols-1 row-cols-md-3 g-4"></div>
     </main>
 

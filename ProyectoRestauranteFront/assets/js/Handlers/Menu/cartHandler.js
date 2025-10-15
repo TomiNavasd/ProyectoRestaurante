@@ -2,13 +2,11 @@ import { state } from '../../state.js';
 import { createOrder } from '../../APIs/OrderApi.js';
 import { renderCart } from '../../Components/renderCart.js';
 
-// --- CORREGIDO ---
 function addToCart(dish) {
     const existingItem = state.cart.find(item => item.id === dish.id);
     if (existingItem) {
         existingItem.quantity++;
     } else {
-        // Se añade la propiedad 'notes' desde el principio para evitar que sea 'undefined'
         state.cart.push({ id: dish.id, name: dish.name, price: dish.price, quantity: 1, notes: '' });
     }
     renderCart(state.cart);
@@ -69,23 +67,46 @@ function initCartEvents() {
     });
 }
 
+// --- FUNCIÓN DE VALIDACIÓN ACTUALIZADA ---
 function validateOrderForm() {
     const deliverySelect = document.getElementById('delivery-type');
-    const addressInput = document.getElementById('delivery-address');
-    addressInput.classList.remove('is-invalid');
+    const deliveryDetailInput = document.getElementById('delivery-address');
+    const deliveryTypeId = deliverySelect.value;
+    const detailValue = deliveryDetailInput.value.trim();
 
-    const isDelivery = deliverySelect.value === '1';
-    const isAddressEmpty = addressInput.value.trim() === '';
+    deliveryDetailInput.classList.remove('is-invalid');
 
-    if (isDelivery && isAddressEmpty) {
-        alert('Por favor, ingresa una dirección para el delivery.');
-        addressInput.classList.add('is-invalid');
-        return false;
+    let errorMessage = '';
+
+    // Aplicamos la regla de validación según el tipo de entrega
+    switch (deliveryTypeId) {
+        case '1': // Delivery
+            if (detailValue === '') {
+                errorMessage = 'Por favor, ingresa una dirección para el delivery.';
+            }
+            break;
+        case '2': // Take away
+            if (detailValue === '') {
+                errorMessage = 'Por favor, ingresa un nombre para el retiro.';
+            }
+            break;
+        case '3': // Dine in
+            if (detailValue === '') {
+                errorMessage = 'Por favor, ingresa el número de mesa.';
+            }
+            break;
     }
-    return true;
+
+    if (errorMessage) {
+        alert(errorMessage);
+        deliveryDetailInput.classList.add('is-invalid');
+        return false; // La validación falla
+    }
+
+    return true; // La validación es exitosa
 }
 
-// --- FUNCIÓN CORREGIDA Y DEFINITIVA ---
+// --- FUNCIÓN DE SUBMISIÓN (SIN CAMBIOS EN LA LÓGICA DE ENVÍO) ---
 function initOrderSubmission() {
     const placeOrderBtn = document.getElementById('place-order-btn');
     if (!placeOrderBtn) return;
@@ -96,10 +117,10 @@ function initOrderSubmission() {
             return;
         }
 
-        if (!validateOrderForm()) {
+        if (!validateOrderForm()) { // Ahora usa la nueva lógica de validación
             return;
         }
-
+        
         placeOrderBtn.disabled = true;
         placeOrderBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Creando...`;
 
@@ -107,19 +128,13 @@ function initOrderSubmission() {
         const deliveryAddress = document.getElementById('delivery-address').value;
         const orderNotes = document.getElementById('order-notes').value;
 
-        // --- LA SOLUCIÓN DEFINITIVA ESTÁ AQUÍ ---
+        // La lógica de envío es correcta
         const deliveryPayload = {
             id: deliveryTypeId,
-            // Si es delivery, usa la dirección; si no, envía un STRING VACÍO.
-            to: deliveryTypeId === 1 ? deliveryAddress : "" 
+            to: deliveryTypeId === 1 ? deliveryAddress : (deliveryAddress || "") 
         };
-
         const orderRequest = {
-            items: state.cart.map(item => ({
-                id: item.id,
-                quantity: item.quantity,
-                notes: item.notes || ''
-            })),
+            items: state.cart.map(item => ({ id: item.id, quantity: item.quantity, notes: item.notes || '' })),
             delivery: deliveryPayload,
             notes: orderNotes
         };
@@ -146,35 +161,45 @@ function initOrderSubmission() {
     });
 }
 
+// --- FUNCIÓN DE UI ACTUALIZADA ---
 function initDeliveryTypeHandler() {
     const deliverySelect = document.getElementById('delivery-type');
-    const addressContainer = document.getElementById('address-input-container'); 
-    const addressInput = document.getElementById('delivery-address');
+    const detailContainer = document.getElementById('address-input-container'); 
+    const detailLabel = detailContainer.querySelector('label');
+    const detailInput = document.getElementById('delivery-address');
 
-    if (!deliverySelect || !addressContainer) {
-        console.warn('Elementos del formulario de entrega no encontrados.');
-        return;
-    }
+    if (!deliverySelect || !detailContainer || !detailLabel || !detailInput) return;
 
-    const toggleAddressVisibility = () => {
-        const isDeliverySelected = deliverySelect.value === '1';
-        if (isDeliverySelected) {
-            addressContainer.classList.remove('d-none');
-        } else {
-            addressContainer.classList.add('d-none');
-            addressInput.value = ''; 
-            addressInput.classList.remove('is-invalid');
+    const updateDeliveryUI = () => {
+        const selectedId = deliverySelect.value;
+        
+        // El campo de detalle es visible para todos los tipos de entrega
+        detailContainer.classList.remove('d-none');
+        detailInput.value = '';
+        detailInput.classList.remove('is-invalid');
+
+        // Cambiamos el texto del label y el placeholder según la selección
+        switch (selectedId) {
+            case '1': // Delivery
+                detailLabel.textContent = 'Dirección';
+                detailInput.placeholder = 'Ingresa la dirección de entrega';
+                break;
+            case '2': // Take away
+                detailLabel.textContent = 'Nombre';
+                detailInput.placeholder = 'Ingresa el nombre para el retiro';
+                break;
+            case '3': // Dine in
+                detailLabel.textContent = 'N° de Mesa';
+                detailInput.placeholder = 'Ingresa el número de mesa';
+                break;
+            default:
+                // Si no hay selección, ocultamos el campo
+                detailContainer.classList.add('d-none');
         }
     };
 
-    deliverySelect.addEventListener('change', toggleAddressVisibility);
-    toggleAddressVisibility();
-
-    addressInput.addEventListener('input', () => {
-        if (addressInput.value.trim() !== '') {
-            addressInput.classList.remove('is-invalid');
-        }
-    });
+    deliverySelect.addEventListener('change', updateDeliveryUI);
+    updateDeliveryUI(); // Llamada inicial para establecer el estado correcto
 }
 
 export function initCartHandlers() {

@@ -6,23 +6,16 @@ using Application.Models.Response;
 using Application.Models.Responses.Dish;
 using Application.Models.Responses.Order;
 using Application.Models.Responses.OrderItem;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.OrderService
 {
     public class GetOrderFechaStatusService : IGetOrderFechaStatusService
     {
         private readonly IOrderQuery _orderQuery;
-        private readonly IOrderCommand _orderCommand;
         private readonly IStatusQuery _statusQuery;
-        public GetOrderFechaStatusService(IOrderQuery orderQuery, IOrderCommand orderCommand,IStatusQuery statusQuery)
+        public GetOrderFechaStatusService(IOrderQuery orderQuery, IStatusQuery statusQuery)
         {
             _orderQuery = orderQuery;
-            _orderCommand = orderCommand;
             _statusQuery = statusQuery;
         }
         public async Task<IEnumerable<OrderDetailsResponse?>> GetOrderFechaStatus(DateTime? from, DateTime? to, int? statusid)

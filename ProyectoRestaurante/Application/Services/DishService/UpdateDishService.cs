@@ -5,15 +5,7 @@ using Application.Interfaces.IDish.IDishService;
 using Application.Interfaces.IOrderItem;
 using Application.Models.Request;
 using Application.Models.Response;
-using Application.Models.Responses;
 using Application.Models.Responses.Dish;
-using Azure.Core;
-using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.DishService
 { 
@@ -58,7 +50,7 @@ namespace Application.Services.DishService
             existDish.Available = DishUpdateRequest.IsActive;
             existDish.Category = DishUpdateRequest.Category;
             existDish.ImageUrl = DishUpdateRequest.Image;
-            existDish.UpdateDate = DateTime.Now;
+            existDish.UpdateDate = DateTime.UtcNow;
 
             var category = await _categoryQuery.GetCategoryById(existDish.Category);
             if (category == null)

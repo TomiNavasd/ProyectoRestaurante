@@ -6,11 +6,6 @@ using Application.Models.Request;
 using Application.Models.Response;
 using Application.Models.Responses.Dish;
 using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.DishService
 {
@@ -49,8 +44,8 @@ namespace Application.Services.DishService
                 Available = true,
                 ImageUrl = dishRequest.Image,
                 // Otras propiedades como CreateDate, UpdateDate, etc.
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow
             };
 
             var createdDish = await _dishCommand.CreateDish(newDish);

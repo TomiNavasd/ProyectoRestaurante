@@ -1,3 +1,5 @@
+// /assets/js/Handlers/Panel/panelOrdersHandler.js
+
 import { getOrders, updateOrderItemStatus, getOrderById, updateOrder } from '../../APIs/OrderApi.js';
 import { getDishes } from '../../APIs/DishApi.js';
 import { renderOrderPanel } from '../../Components/renderOrderPanel.js';
@@ -9,7 +11,6 @@ async function refreshPanel() {
     renderOrderPanel(orders);
 }
 
-// --- FUNCIÓN COMPLETA Y DEFINITIVA ---
 function initOrderActions() {
     const mainContainer = document.querySelector('main');
     const orderDetailsModalElement = document.getElementById('order-details-modal');
@@ -21,15 +22,14 @@ function initOrderActions() {
     const bootstrapAddDishesModal = new bootstrap.Modal(addDishesModalElement);
     let currentOrderForEditing = null;
 
-    // Listener para todas las acciones del panel
     mainContainer.addEventListener('click', async (event) => {
         const button = event.target.closest('.view-details-btn, .status-action-btn, .order-action-btn');
         if (!button) return;
 
-        // Lógica para "Ver Detalle"
         if (button.classList.contains('view-details-btn')) {
             const orderId = button.dataset.orderId;
             const orderDetails = await getOrderById(orderId);
+
             if (orderDetails) {
                 currentOrderForEditing = JSON.parse(JSON.stringify(orderDetails));
                 renderOrderModal(orderDetails);
@@ -39,7 +39,6 @@ function initOrderActions() {
             }
         }
 
-        // --- LÓGICA RESTAURADA PARA "PREPARAR" Y "TERMINAR" ---
         if (button.classList.contains('status-action-btn')) {
             button.disabled = true;
             button.textContent = '...';
@@ -51,17 +50,13 @@ function initOrderActions() {
             await refreshPanel();
         }
 
-        // --- LÓGICA RESTAURADA PARA "ENTREGAR" ---
         if (button.classList.contains('order-action-btn')) {
             button.disabled = true;
             button.textContent = '...';
             const orderId = button.dataset.orderId;
             const newStatusId = button.dataset.newStatusId;
-
             const orderCard = button.closest('.card');
             const itemElements = orderCard.querySelectorAll('.list-group-item');
-            
-            // Bucle secuencial para evitar errores de concurrencia
             for (const itemEl of itemElements) {
                 const itemId = itemEl.dataset.itemId;
                 if (itemId) {
@@ -73,7 +68,6 @@ function initOrderActions() {
         }
     });
 
-    // --- El resto del código para manejar los modales anidados no cambia ---
     addDishesModalElement.addEventListener('show.bs.modal', async () => {
         const currentItemIds = new Set(currentOrderForEditing.items.map(item => item.dish.id));
         const allDishes = await getDishes();
@@ -103,30 +97,47 @@ function initOrderActions() {
         bootstrapOrderModal.show();
     });
     
+    // --- LÓGICA COMPLETA Y RESTAURADA ---
     orderDetailsModalElement.addEventListener('click', async (event) => {
         const target = event.target;
+
         if (target.matches('[data-bs-target="#add-dishes-modal"]')) {
             bootstrapOrderModal.hide();
         }
+
+        // Lógica restaurada para botones +/-
         if (target.classList.contains('modal-quantity-btn')) {
             const listItem = target.closest('li');
             const dishId = listItem.dataset.itemId;
             const itemInState = currentOrderForEditing.items.find(item => item.dish.id === dishId);
             if (!itemInState) return;
-            if (target.dataset.action === 'increase') {
+
+            const action = target.dataset.action;
+            if (action === 'increase') {
                 itemInState.quantity++;
-            } else if (target.dataset.action === 'decrease' && itemInState.quantity > 0) {
+            } else if (action === 'decrease' && itemInState.quantity > 0) {
                 itemInState.quantity--;
             }
-            listItem.dataset.quantity = itemInState.quantity;
-            listItem.querySelector('.item-quantity').textContent = itemInState.quantity;
+
+            if (itemInState.quantity === 0) {
+                currentOrderForEditing.items = currentOrderForEditing.items.filter(item => item.dish.id !== dishId);
+                listItem.remove();
+            } else {
+                listItem.dataset.quantity = itemInState.quantity;
+                listItem.querySelector('.item-quantity').textContent = itemInState.quantity;
+            }
         }
+        
+        // Lógica restaurada para "Guardar Cambios"
         if (target.id === 'save-changes-btn') {
             const orderId = target.dataset.orderId;
-            const itemsToUpdate = currentOrderForEditing.items
-                .filter(item => item.quantity > 0)
-                .map(item => ({ id: item.dish.id, quantity: item.quantity, notes: item.notes || '' }));
-            await updateOrder(orderId, { items: itemsToUpdate });
+            const updateRequest = {
+                items: currentOrderForEditing.items
+                    .filter(item => item.quantity > 0)
+                    .map(item => ({ id: item.dish.id, quantity: item.quantity, notes: item.notes || '' }))
+            };
+
+            await updateOrder(orderId, updateRequest);
             bootstrapOrderModal.hide();
             await refreshPanel();
         }

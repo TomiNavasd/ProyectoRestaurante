@@ -6,13 +6,8 @@ using Application.Interfaces.IOrderItem;
 using Application.Models.Request;
 using Application.Models.Responses.Order;
 using Application.Enums;
-using Azure.Core;
 using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Application.Services.OrderService
 {
@@ -20,15 +15,13 @@ namespace Application.Services.OrderService
     {
         private readonly IOrderQuery _orderQuery;
         private readonly IOrderCommand _orderCommand;
-        private readonly IOrderItemQuery _orderItemQuery;
         private readonly IOrderItemCommand _orderItemCommand;
         private readonly IDishQuery _dishQuery;
 
-        public UpdateOrderService(IOrderQuery orderQuery, IOrderCommand orderCommand, IOrderItemQuery orderItemQuery, IOrderItemCommand orderItemCommand, IDishQuery dishQuery)
+        public UpdateOrderService(IOrderQuery orderQuery, IOrderCommand orderCommand, IOrderItemCommand orderItemCommand, IDishQuery dishQuery)
         {
             _orderQuery = orderQuery;
             _orderCommand = orderCommand;
-            _orderItemQuery = orderItemQuery;
             _orderItemCommand = orderItemCommand;
             _dishQuery = dishQuery;
         }
@@ -84,7 +77,7 @@ namespace Application.Services.OrderService
 
             // actualizar la orden principal
             order.Price = await Calculate(newOrderItems, dishesFromDb);
-            order.UpdateDate = DateTime.Now;
+            order.UpdateDate = DateTime.UtcNow;
             await _orderCommand.UpdateOrder(order);
 
             return new OrderUpdateResponse

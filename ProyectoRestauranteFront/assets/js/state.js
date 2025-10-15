@@ -4,6 +4,7 @@ export const state = {
     cart: [],
     currentFilter: {
         category: null,
-        name: ''
+        name: '',
+        sortByPrice: null
     }
 };

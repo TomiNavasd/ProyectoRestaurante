@@ -1,17 +1,10 @@
 ﻿using Application.Exceptions;
 using Application.Interfaces.IOrder;
 using Application.Interfaces.IOrder.IOrderService;
-using Application.Models.Request;
 using Application.Models.Response;
 using Application.Models.Responses.Dish;
 using Application.Models.Responses.Order;
 using Application.Models.Responses.OrderItem;
-using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.OrderService
 {

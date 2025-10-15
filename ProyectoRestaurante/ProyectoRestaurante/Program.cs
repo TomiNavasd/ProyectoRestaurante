@@ -45,7 +45,6 @@ builder.Services.AddScoped<IDeleteDishService, DeleteDishService>();
 builder.Services.AddScoped<ICategoryQuery, CategoryQuery>();
 builder.Services.AddScoped<ICategoryCommand, CategoryCommand>();
 builder.Services.AddScoped<IGetAllCategoriesService, GetAllCategoriesService>();
-builder.Services.AddScoped<IGetCategoryByIdService, GetCategoryByIdService>();
 builder.Services.AddScoped<ICategoryExistService, CategoryExistService>();
 
 
@@ -53,7 +52,6 @@ builder.Services.AddScoped<ICategoryExistService, CategoryExistService>();
 builder.Services.AddScoped<IDeliveryTypeCommand, DeliveryTypeCommand>();
 builder.Services.AddScoped<IDeliveryTypeQuery, DeliveryTypeQuery>();
 builder.Services.AddScoped<IGetAllDeliveryTypeService, GetAllDeliveryTypeService>();
-builder.Services.AddScoped<IGetDeliveryTypeByIdService, GetDeliveryTypeByIdService>();
 
 //builder Order
 builder.Services.AddScoped<IOrderCommand, OrderCommand>();
@@ -72,7 +70,6 @@ builder.Services.AddScoped<IOrderItemQuery, OrderItemQuery>();
 builder.Services.AddScoped<IStatusCommand, StatusCommand>();
 builder.Services.AddScoped<IStatusQuery, StatusQuery>();
 builder.Services.AddScoped<IGetAllStatusService, GetAllStatusService>();
-builder.Services.AddScoped<IGetStatusByIdService, GetStatusByIdService>();
 
 builder.Services.AddCors(options =>
 {

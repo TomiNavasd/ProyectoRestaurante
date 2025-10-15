@@ -2,17 +2,9 @@
 using Application.Interfaces.ICategory;
 using Application.Interfaces.IDish;
 using Application.Interfaces.IDish.IDishService;
-using Application.Interfaces.IOrder;
 using Application.Interfaces.IOrderItem;
-using Application.Models.Request;
 using Application.Models.Response;
-using Application.Models.Responses;
 using Application.Models.Responses.Dish;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.DishService
 {

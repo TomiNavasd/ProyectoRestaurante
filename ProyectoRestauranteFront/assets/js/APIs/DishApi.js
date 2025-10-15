@@ -2,15 +2,19 @@ const API_BASE_URL = 'https://localhost:7280/api/v1'; // Ajusta tu puerto
 
 /**
  * Obtiene los platos desde la API, con filtros opcionales.
- * @param {string|null} name - El texto para buscar por nombre.
- * @param {number|null} categoryId - El ID de la categoría para filtrar.
+ * @param {object} [filters={}] - Objeto con filtros (name, category, sortByPrice).
  * @returns {Promise<Array>}
  */
-export async function getDishes(name = null, categoryId = null) {
+export async function getDishes(filters = {}) {
     try {
         const url = new URL(`${API_BASE_URL}/Dish`);
-        if (name) url.searchParams.append('name', name);
-        if (categoryId) url.searchParams.append('category', categoryId);
+        
+        // Añade cada filtro al URL si existe en el objeto
+        Object.keys(filters).forEach(key => {
+            if (filters[key]) {
+                url.searchParams.append(key, filters[key]);
+            }
+        });
         
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error al obtener los platos.');

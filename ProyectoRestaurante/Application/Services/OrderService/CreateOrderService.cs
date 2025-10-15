@@ -7,40 +7,55 @@ using Application.Interfaces.IOrderItem;
 using Application.Models.Request;
 using Application.Models.Responses.Order;
 using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Application.Services.OrderService
 {
     
     public class CreateOrderService : ICreateOrderService
     {
-        private readonly IOrderQuery _orderQuery;
         private readonly IOrderCommand _orderCommand;
         private readonly IDeliveryTypeQuery _deliveryTypeQuery;
-        private readonly IDishCommand _dishCommand;
         private readonly IDishQuery _dishQuery;
         private readonly IOrderItemCommand _orderItemCommand;
-        private readonly IOrderItemQuery _orderItemQuery;
 
-        public CreateOrderService(IOrderQuery orderQuery, IOrderCommand orderCommand, IDeliveryTypeQuery deliveryTypeQuery, IDishCommand dishCommand, IDishQuery dishQuery, IOrderItemQuery orderItemQuery, IOrderItemCommand orderItemCommand)
+        public CreateOrderService(IOrderCommand orderCommand, IDeliveryTypeQuery deliveryTypeQuery, IDishQuery dishQuery, IOrderItemCommand orderItemCommand)
         {
-            _orderQuery = orderQuery;
             _orderCommand = orderCommand;
             _deliveryTypeQuery = deliveryTypeQuery;
-            _dishCommand = dishCommand;
             _dishQuery = dishQuery;
-            _orderItemQuery = orderItemQuery;
             _orderItemCommand = orderItemCommand;
         }
         public async Task<OrderCreateResponse?> CreateOrder(OrderRequest orderRequest)
         {
-            // Validaciones de datos básicos
-            if (orderRequest?.delivery == null)
-                throw new BadRequestException("Debe especificar los datos de entrega.");
+            var delivery = orderRequest.delivery;
+            if (delivery == null)
+            {
+                throw new BadRequestException("Debe especificar un tipo de entrega válido.");
+            }
+
+            switch (delivery.id)
+            {
+                case 1: // Delivery
+                    if (string.IsNullOrWhiteSpace(delivery.to))
+                    {
+                        throw new BadRequestException("Para el tipo 'Delivery', se requiere una dirección de destino.");
+                    }
+                    break;
+                case 2: // Take Away (Retiro en local)
+                    if (string.IsNullOrWhiteSpace(delivery.to))
+                    {
+                        throw new BadRequestException("Para el tipo 'Take Away', se requiere el nombre del cliente.");
+                    }
+                    break;
+                case 3: // Dine In (Comer en el local)
+                    if (string.IsNullOrWhiteSpace(delivery.to))
+                    {
+                        throw new BadRequestException("Para el tipo 'Dine In', se requiere un número de mesa válido.");
+                    }
+                    break;
+            }
+
             if (orderRequest.items == null || !orderRequest.items.Any())
                 throw new BadRequestException("La orden debe contener al menos un ítem.");
 
@@ -72,8 +87,8 @@ namespace Application.Services.OrderService
                 Price = 0,
                 OverallStatus = 1, // Pending
                 Notes = orderRequest.notes,
-                UpdateDate = DateTime.Now,
-                CreateDate = DateTime.Now
+                UpdateDate = DateTime.UtcNow,
+                CreateDate = DateTime.UtcNow
             };
             await _orderCommand.InsertOrder(order);
             var listadeItems = orderRequest.items;
@@ -94,7 +109,7 @@ namespace Application.Services.OrderService
             {
                 orderNumber = (int) order.OrderId,
                 totalAmount = (double)order.Price,
-                createdAt = DateTime.Now
+                createdAt = DateTime.UtcNow
             };
 
         }

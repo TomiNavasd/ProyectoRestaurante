@@ -4,11 +4,6 @@ using Application.Models.Request;
 using Application.Models.Responses.Order;
 using Application.Exceptions;
 using Application.Interfaces.IStatus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.OrderService
 {
@@ -67,7 +62,7 @@ namespace Application.Services.OrderService
 
             // Actualizar el estado del item y la fecha de la orden
             itemToUpdate.Status = newStatus;
-            order.UpdateDate = DateTime.Now;
+            order.UpdateDate = DateTime.UtcNow;
 
             // VERIFICAR SI TODOS LOS ITEMS AHORA TIENEN EL MISMO ESTADO
             var firstItemStatus = order.OrderItems.First().Status;

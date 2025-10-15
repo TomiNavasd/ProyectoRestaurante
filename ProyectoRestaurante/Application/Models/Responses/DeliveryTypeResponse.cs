@@ -9,6 +9,7 @@ namespace Application.Models.Responses
     public class DeliveryTypeResponse
     {
         public int Id { get; set; }
+
         public string Name { get; set; }
     }
 }

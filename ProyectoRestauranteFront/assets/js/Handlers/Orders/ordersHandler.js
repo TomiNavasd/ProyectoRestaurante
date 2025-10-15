@@ -1,3 +1,4 @@
+// /assets/js/Handlers/Orders/ordersHandler.js
 
 import { getDishes } from '../../APIs/DishApi.js';
 import { getOrderById, updateOrder } from '../../APIs/OrderApi.js';
@@ -32,7 +33,6 @@ function initOrderDetails() {
 
     const bootstrapOrderModal = new bootstrap.Modal(orderDetailsModalElement);
     const bootstrapAddDishesModal = new bootstrap.Modal(addDishesModalElement);
-
     let currentOrderForEditing = null;
 
     mainContainer.addEventListener('click', async (event) => {
@@ -41,6 +41,7 @@ function initOrderDetails() {
         
         const orderId = targetButton.dataset.orderId;
         const orderDetails = await getOrderById(orderId);
+
         if (!orderDetails) {
             alert("No se pudieron cargar los detalles de la orden.");
             return;
@@ -64,15 +65,11 @@ function initOrderDetails() {
             if (existingItem) {
                 existingItem.quantity++;
             } else {
-                currentOrderForEditing.items.push({
-                    dish: { id: dishId, name: dishName },
-                    quantity: 1, notes: ''
-                });
+                currentOrderForEditing.items.push({ dish: { id: dishId, name: dishName }, quantity: 1, notes: '' });
             }
             addButton.disabled = true;
             addButton.textContent = 'Agregado';
         }
-
         if (event.target.id === 'confirm-dishes-btn') {
             bootstrapAddDishesModal.hide();
         }
@@ -83,39 +80,52 @@ function initOrderDetails() {
         bootstrapOrderModal.show();
     });
     
-    // Controla todos los clics DENTRO del modal "Detalles de la Orden"
+    // --- LÓGICA COMPLETA Y RESTAURADA ---
     orderDetailsModalElement.addEventListener('click', async (event) => {
-        if (event.target.matches('[data-bs-target="#add-dishes-modal"]')) {
+        const target = event.target;
+
+        if (target.matches('[data-bs-target="#add-dishes-modal"]')) {
             bootstrapOrderModal.hide();
         }
 
-        if (event.target.classList.contains('modal-quantity-btn')) {
-            const listItem = event.target.closest('li');
+        // Lógica restaurada para botones +/-
+        if (target.classList.contains('modal-quantity-btn')) {
+            const listItem = target.closest('li');
             const dishId = listItem.dataset.itemId;
             const itemInState = currentOrderForEditing.items.find(item => item.dish.id === dishId);
             if (!itemInState) return;
 
-            const action = event.target.dataset.action;
+            const action = target.dataset.action;
             if (action === 'increase') {
                 itemInState.quantity++;
             } else if (action === 'decrease' && itemInState.quantity > 0) {
                 itemInState.quantity--;
             }
             
-            listItem.dataset.quantity = itemInState.quantity;
-            listItem.querySelector('.item-quantity').textContent = itemInState.quantity;
+            // Si la cantidad llega a cero, podrías optar por eliminar el item
+            if (itemInState.quantity === 0) {
+                currentOrderForEditing.items = currentOrderForEditing.items.filter(item => item.dish.id !== dishId);
+                listItem.remove(); // Eliminamos el elemento del DOM
+            } else {
+                listItem.dataset.quantity = itemInState.quantity;
+                listItem.querySelector('.item-quantity').textContent = itemInState.quantity;
+            }
         }
         
-        if (event.target.id === 'save-changes-btn') {
-            const button = event.target;
+        // Lógica restaurada para "Guardar Cambios"
+        if (target.id === 'save-changes-btn') {
+            const button = target;
             const orderId = button.dataset.orderId;
-            const itemsToUpdate = currentOrderForEditing.items
-                .filter(item => item.quantity > 0)
-                .map(item => ({ id: item.dish.id, quantity: item.quantity, notes: item.notes || '' }));
             
+            const updateRequest = {
+                items: currentOrderForEditing.items
+                    .filter(item => item.quantity > 0)
+                    .map(item => ({ id: item.dish.id, quantity: item.quantity, notes: item.notes || '' }))
+            };
+
             button.disabled = true;
             button.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Guardando...`;
-            const result = await updateOrder(orderId, { items: itemsToUpdate });
+            const result = await updateOrder(orderId, updateRequest);
             button.disabled = false;
             button.innerHTML = 'Guardar Cambios';
 
@@ -129,19 +139,12 @@ function initOrderDetails() {
         }
     });
 
-    // --- LA SOLUCIÓN ESTÁ AQUÍ ---
-    // Añadimos un listener para el evento 'input' en el modal de detalles.
     orderDetailsModalElement.addEventListener('input', (event) => {
-        // Se activa cada vez que se escribe en un campo de nota.
         if (event.target.classList.contains('modal-item-note')) {
             const input = event.target;
             const listItem = input.closest('li');
             const dishId = listItem.dataset.itemId;
-
-            // Buscamos el ítem correspondiente en nuestra variable de estado.
             const itemInState = currentOrderForEditing.items.find(item => item.dish.id === dishId);
-
-            // Actualizamos la nota en el estado con el valor del input.
             if (itemInState) {
                 itemInState.notes = input.value;
             }

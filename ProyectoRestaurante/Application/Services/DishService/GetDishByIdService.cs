@@ -10,12 +10,10 @@ namespace Application.Services.DishService
     public class GetDishByIdService : IGetDishByIdService
     {
         private readonly IDishQuery _dishQuery;
-        private readonly IDishCommand _dishCommand;
         private readonly ICategoryQuery _categoryQuery;
-        public GetDishByIdService(IDishQuery dishQuery, IDishCommand dishCommand, ICategoryQuery categoryQuery)
+        public GetDishByIdService(IDishQuery dishQuery, ICategoryQuery categoryQuery)
         {
             _dishQuery = dishQuery;
-            _dishCommand = dishCommand;
             _categoryQuery = categoryQuery;
         }
         public async Task<DishResponse?> GetDishById(Guid id)

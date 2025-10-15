@@ -5,7 +5,7 @@ import { renderCategoryOptions } from '../../Components/renderCategories.js';
 import { renderAdminDishes } from '../../Components/renderAdminDishes.js';
 
 async function refreshDishesPanel() {
-    const dishes = await getDishes(null, null, false); 
+    const dishes = await getDishes({ onlyActive: false }); 
     state.dishes = dishes;
     renderAdminDishes(state.dishes);
 }
