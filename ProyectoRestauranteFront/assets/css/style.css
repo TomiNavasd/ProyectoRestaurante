@@ -1,6 +1,78 @@
-.tab-content {
-  padding: 1rem;
-  border: 1px solid #dee2e6; /* Color de borde por defecto de Bootstrap */
-  border-top: none;
-  border-radius: 0 0 0.375rem 0.375rem;
+/* /assets/css/style.css */
+
+/* --- PALETA DE COLORES "GRIS URBANO & ORO" --- */
+:root {
+    --color-fondo-principal: #F8F9FA;
+    --color-fondo-secundario: #E9ECEF;
+    --color-principal-oscuro: #343A40;
+    --color-acento-oro: #D4AF37;
+    --color-acento-verde: #28A745;
+    --color-texto-principal: #212529;
+    --color-texto-secundario: #6c757d;
+    
+    /* Fuentes */
+    --font-principal: 'Montserrat', sans-serif;
+    --font-secundaria: 'Lato', sans-serif;
+}
+
+/* --- ESTILOS GENERALES Y TIPOGRAFÍA --- */
+body {
+    background-color: var(--color-fondo-principal);
+    color: var(--color-texto-principal);
+    font-family: var(--font-secundaria);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-principal);
+    color: var(--color-principal-oscuro);
+    font-weight: 300;
+}
+
+/* --- BARRA DE NAVEGACIÓN PRINCIPAL --- */
+.navbar.bg-dark {
+    background-color: var(--color-principal-oscuro) !important;
+    padding: 0.5rem 0;
+}
+.navbar-brand {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.navbar-logo {
+    height: 80px;
+}
+.navbar .nav-link, .navbar .btn {
+    font-family: var(--font-principal);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+}
+.navbar .nav-link.active {
+    color: var(--color-acento-oro) !important;
+}
+
+/* --- ESTILOS PARA EL MODAL DE NOTIFICACIÓN GENÉRICO --- */
+#notification-modal .modal-title {
+    font-family: var(--font-principal);
+    font-weight: 500;
+}
+
+/* --- CORRECCIÓN PARA EL TÍTULO DE LA NOTIFICACIÓN --- */
+#notification-modal .modal-header.text-white .modal-title {
+    color: #FFFFFF; /* Fuerza el color del texto a blanco */
+}
+
+/* --- ESTILO PARA EL NUEVO BOTÓN DE CARRITO --- */
+#cart-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Lo hacemos redondo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#cart-button .badge {
+    /* Ajuste fino de la posición del contador */
+    transform: translate(-30%, -30%);
 }

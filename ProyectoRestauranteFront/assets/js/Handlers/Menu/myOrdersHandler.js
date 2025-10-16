@@ -1,6 +1,7 @@
 import { getOrderById, updateOrder } from '../../APIs/OrderApi.js';
 import { renderActiveOrders } from '../../Components/renderMyOrders.js';
 import { renderOrderModal } from '../../Components/renderOrderModal.js';
+import { showNotification } from '../../notification.js';
 
 async function loadActiveOrders() {
     const savedOrderNumbers = JSON.parse(localStorage.getItem('myOrders')) || [];
@@ -31,7 +32,7 @@ function initMyOrdersActions() {
 
         const orderDetails = await getOrderById(orderId);
         if (!orderDetails) {
-            alert("No se pudieron cargar los detalles de la orden.");
+            showNotification("No se pudieron cargar los detalles de la orden.");
             return;
         }
 
@@ -70,7 +71,7 @@ function initMyOrdersActions() {
 
             // Verificación extra para asegurarnos de que tenemos el ID
             if (!orderId) {
-                alert("Error crítico: No se pudo identificar el número de orden.");
+                showNotification("Error crítico: No se pudo identificar el número de orden.");
                 return;
             }
 
@@ -95,9 +96,9 @@ function initMyOrdersActions() {
             button.innerHTML = 'Guardar Cambios';
 
             if (result.error) {
-                alert(`Error al guardar: ${result.error}`);
+                showNotification(`Error al guardar: ${result.error}`);
             } else {
-                alert(`Orden #${orderId} actualizada con éxito.`);
+                showNotification(`Orden #${orderId} actualizada con éxito.`);
                 bootstrapModal.hide();
                 loadActiveOrders();
             }

@@ -13,8 +13,11 @@ import { renderActiveOrders } from '../Components/renderMyOrders.js';
 import { initFilters } from '../Handlers/Menu/filterHandler.js';
 import { initCartHandlers } from '../Handlers/Menu/cartHandler.js';
 import { initMyOrders } from '../Handlers/Menu/myOrdersHandler.js';
+import { initNotificationModal } from '../notification.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+
+    initNotificationModal();
     // Carga de datos
     const [categories, dishes, deliveryTypes] = await Promise.all([
         getCategories(), 

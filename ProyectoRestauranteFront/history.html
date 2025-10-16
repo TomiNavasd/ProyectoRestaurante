@@ -5,59 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Órdenes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/Panel/history.css">
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="panel.html">Panel de Administración</a>
-            
+    <nav class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="panel.html">
+                <img src="https://i.ibb.co/7xNR4bR0/Sin-t-tulo-Folleto-A4-con-doblez-en-el-medio-420-mm-x-297-mm-2.png" alt="Mi Restaurante Logo" class="navbar-logo">
+            </a>
             <div class="d-flex align-items-center">
+                <a href="index.html" class="btn btn-outline-warning me-3"><i class="bi bi-shop"></i> Ir al Menú</a>
                 <div class="navbar-nav d-flex flex-row">
-                    <a class="nav-link px-2" href="panel.html">Panel de Cocina</a>
-                    <a class="nav-link px-2" href="menu-admin.html">Gestión de Menú</a>
-                    <a class="nav-link px-2" href="history.html">Historial</a>
+                    <a class="nav-link px-2" href="panel.html"><i class="bi bi-grid"></i> Panel</a>
+                    <a class="nav-link px-2" href="menu-admin.html"><i class="bi bi-card-list"></i> Menú</a>
+                    <a class="nav-link px-2 active" href="history.html"><i class="bi bi-clock-history"></i> Historial</a>
                 </div>
-
-                <a href="index.html" class="btn btn-outline-warning me-3">Ir al Menú</a>
-                
             </div>
         </div>
     </nav>
 
     <main class="container mt-4">
-        <h1>Historial de Órdenes</h1>
-        <div class="row g-3 align-items-center my-3 p-3 bg-light rounded shadow-sm">
-            <div class="col-auto"><label for="date-from">Desde:</label></div>
-            <div class="col-auto"><input type="date" id="date-from" class="form-control"></div>
-            <div class="col-auto"><label for="date-to">Hasta:</label></div>
-            <div class="col-auto"><input type="date" id="date-to" class="form-control"></div>
-            <div class="col-auto"><button id="filter-btn" class="btn btn-primary">Filtrar</button></div>
+        <div class="history-container">
+            <div class="page-header">
+                <h1><i class="bi bi-archive"></i> Historial de Órdenes</h1>
+            </div>
+
+            <div class="row g-3 align-items-center filter-bar">
+                <div class="col-auto"><label for="date-from" class="form-label">Desde:</label></div>
+                <div class="col-auto"><input type="date" id="date-from" class="form-control"></div>
+                <div class="col-auto"><label for="date-to" class="form-label">Hasta:</label></div>
+                <div class="col-auto"><input type="date" id="date-to" class="form-control"></div>
+                <div class="col-auto ms-auto">
+                    <button id="filter-btn" class="btn btn-primary"><i class="bi bi-funnel-fill"></i> Filtrar</button>
+                </div>
+            </div>
+            
+            <div id="history-orders-container" class="d-flex flex-column gap-3">
+                </div>
         </div>
-        <div id="history-orders-container" class="d-flex flex-column gap-3"></div>
     </main>
 
     <div class="modal fade" id="order-details-modal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-white text-white">
                     <h5 class="modal-title" id="modal-order-number"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="modal-order-body"></div>
-                <div class="modal-footer">
+                <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary d-none" id="save-changes-btn">Guardar Cambios</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="add-dishes-modal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
+    <div class="modal fade" id="notification-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header text-white" id="notification-modal-header">
+                <h5 class="modal-title" id="notification-modal-title"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="notification-modal-body" style="font-size: 1.1rem;">
                 </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+            </div>
         </div>
+    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

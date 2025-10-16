@@ -1,0 +1,129 @@
+/* /assets/css/orders.css */
+
+/* --- TÍTULO DE LA PÁGINA --- */
+.orders-title {
+    font-family: var(--font-principal);
+    font-weight: 300;
+    font-size: 2.8rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-fondo-secundario);
+}
+
+/* --- PESTAÑAS DE NAVEGACIÓN (TABS) --- */
+.nav-tabs {
+    border-bottom-color: #dee2e6;
+    margin-bottom: -1px; /* Solapa el borde con el del panel */
+}
+
+.nav-tabs .nav-link {
+    font-family: var(--font-principal);
+    font-weight: 400;
+    color: var(--color-texto-secundario);
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-bottom: none;
+    padding: 0.75rem 1.25rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--color-texto-principal);
+    border-color: var(--color-fondo-secundario);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--color-acento-oro);
+    background-color: #FFFFFF; /* Fondo blanco para la pestaña activa */
+    border-color: #dee2e6;
+    border-bottom-color: #FFFFFF; /* Oculta el borde inferior */
+    font-weight: 500;
+}
+
+/* --- CONTENIDO DE LAS PESTAÑAS --- */
+.tab-content {
+    background-color: #FFFFFF;
+    padding: 2rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+/* --- TARJETA DE CADA ORDEN INDIVIDUAL --- */
+.order-card {
+    background-color: var(--color-fondo-principal);
+    border: 1px solid var(--color-fondo-secundario);
+    border-radius: 8px;
+    padding: 1.25rem;
+    transition: all 0.2s ease-in-out;
+    margin-bottom: 1rem; /* Espacio entre tarjetas */
+}
+
+.order-card:hover {
+    border-color: var(--color-acento-oro);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+}
+
+.order-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.order-card-header .order-title {
+    font-family: var(--font-principal);
+    font-weight: 500;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.order-card-info {
+    font-size: 0.9rem;
+    color: var(--color-texto-secundario);
+    margin-top: 0.25rem;
+}
+
+.order-card .badge {
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+    min-width: 80px;
+    text-align: center;
+}
+
+
+/* --- ESTILOS PARA LOS MODALES --- */
+#order-details-modal .modal-title,
+#add-dishes-modal .modal-title {
+    font-family: var(--font-principal);
+    font-weight: 300;
+    font-size: 1.75rem;
+}
+
+/* Estilo para los ítems dentro del modal de detalles */
+#modal-item-list .list-group-item {
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-fondo-secundario);
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 1rem;
+}
+
+#modal-item-list h6 {
+    font-weight: 500;
+}
+
+/* Estilo para la lista de platos en el modal de "Agregar Platos" */
+#dishes-list-container .card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-fondo-secundario);
+    box-shadow: none;
+}
+
+#dishes-list-container .card:hover {
+    border-color: var(--color-acento-oro);
+    transform: none;
+}

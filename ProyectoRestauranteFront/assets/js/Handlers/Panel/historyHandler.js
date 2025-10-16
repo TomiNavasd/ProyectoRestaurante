@@ -1,6 +1,7 @@
 import { getOrders, getOrderById } from '../../APIs/OrderApi.js';
 import { renderOrders } from '../../Components/renderOrdersPage.js';
 import { renderOrderModal } from '../../Components/renderOrderModal.js';
+import { showNotification } from '../../notification.js';
 
 // Función para cargar las órdenes con filtros
 async function loadHistory(filters = {}) {
@@ -39,7 +40,7 @@ function initViewDetailsModal() {
 
             bootstrapModal.show();
         } else {
-            alert('No se pudieron cargar los detalles de la orden.');
+            showNotification('No se pudieron cargar los detalles de la orden.');
         }
     });
 }

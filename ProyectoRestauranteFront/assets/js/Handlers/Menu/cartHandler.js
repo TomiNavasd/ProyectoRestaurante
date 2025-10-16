@@ -1,6 +1,7 @@
 import { state } from '../../state.js';
 import { createOrder } from '../../APIs/OrderApi.js';
 import { renderCart } from '../../Components/renderCart.js';
+import { showNotification } from '../../notification.js';
 
 function addToCart(dish) {
     const existingItem = state.cart.find(item => item.id === dish.id);
@@ -98,7 +99,7 @@ function validateOrderForm() {
     }
 
     if (errorMessage) {
-        alert(errorMessage);
+        showNotification(errorMessage);
         deliveryDetailInput.classList.add('is-invalid');
         return false; // La validación falla
     }
@@ -113,7 +114,7 @@ function initOrderSubmission() {
 
     placeOrderBtn.addEventListener('click', async () => {
         if (state.cart.length === 0) {
-            alert('Tu comanda está vacía.');
+            showNotification('Tu comanda está vacía.');
             return;
         }
 
@@ -145,9 +146,9 @@ function initOrderSubmission() {
         placeOrderBtn.textContent = 'Realizar Pedido';
 
         if (result.error) {
-            alert(`Error al crear la orden: ${result.error}`);
+            showNotification(`Error al crear la orden: ${result.error}`);
         } else {
-            alert(`¡Orden #${result.orderNumber} creada con éxito!`);
+            showNotification(`¡Orden #${result.orderNumber} creada con éxito!`);
             
             const savedOrders = JSON.parse(localStorage.getItem('myOrders')) || [];
             savedOrders.push(result.orderNumber);

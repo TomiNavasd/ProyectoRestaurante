@@ -1,0 +1,79 @@
+/* /assets/css/history.css */
+
+/* --- CONTENEDOR PRINCIPAL Y ENCABEZADO --- */
+.history-container {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+}
+
+.page-header {
+    border-bottom: 1px solid var(--color-fondo-secundario);
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+    font-weight: 400;
+}
+
+/* --- BARRA DE FILTROS POR FECHA --- */
+.filter-bar {
+    background-color: var(--color-fondo-principal);
+    border: 1px solid var(--color-fondo-secundario);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.filter-bar .form-label {
+    font-family: var(--font-principal);
+    font-weight: 500;
+    color: var(--color-texto-secundario);
+}
+
+/* --- TARJETA DE CADA ORDEN INDIVIDUAL --- */
+.order-card-history {
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-fondo-secundario);
+    border-radius: 8px;
+    padding: 1.25rem;
+    transition: all 0.2s ease-in-out;
+    margin-bottom: 1rem;
+}
+
+.order-card-history:hover {
+    border-color: var(--color-acento-oro);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+}
+
+.order-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.order-card-header .order-title {
+    font-family: var(--font-principal);
+    font-weight: 500;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.order-card-info {
+    font-size: 0.9rem;
+    color: var(--color-texto-secundario);
+    margin-top: 0.25rem;
+}
+
+/* --- ESTILO PARA EL BADGE DE ESTADO --- */
+.order-card-history .badge {
+    background-color: var(--color-principal-oscuro) !important;
+    color: #FFFFFF !important;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+}

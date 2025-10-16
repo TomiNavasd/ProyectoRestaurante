@@ -1,3 +1,6 @@
 import { initOrdersPage } from '../Handlers/Orders/ordersHandler.js';
-
-document.addEventListener('DOMContentLoaded', initOrdersPage);
+import { initNotificationModal } from '../notification.js';
+document.addEventListener('DOMContentLoaded', () => {
+    initOrdersPage();
+    initNotificationModal();
+});

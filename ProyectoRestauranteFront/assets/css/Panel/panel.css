@@ -1,0 +1,102 @@
+    :root {
+    --color-fondo-principal: #F8F9FA;
+    --color-fondo-secundario: #E9ECEF;
+    --color-principal-oscuro: #343A40;
+    --color-acento-oro: #D4AF37;
+    --color-acento-verde: #28A745;
+    --color-acento-rojo: #DC3545;
+    --color-texto-principal: #212529;
+    --color-texto-secundario: #6C757D;
+    --color-texto-detalle: #F8F9FA;
+    }
+
+    /* --- ESTRUCTURA GENERAL --- */
+    .panel-column {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.07);
+    height: calc(100vh - 180px);
+    display: flex;
+    flex-direction: column;
+    }
+
+    /* --- TÍTULOS DE SECCIÓN --- */
+    .panel-column h3 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    color: var(--color-principal-oscuro);
+    border-bottom: 2px solid var(--color-acento-oro);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    letter-spacing: 1px;
+    }
+
+    /* --- CONTENEDOR DE ÓRDENES --- */
+    .orders-container {
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    flex-grow: 1;
+    }
+    .orders-container::-webkit-scrollbar {
+    width: 6px;
+    }
+    .orders-container::-webkit-scrollbar-thumb {
+    background: var(--color-principal-oscuro);
+    border-radius: 10px;
+    }
+
+    /* --- TARJETAS DE ÓRDENES --- */
+    .order-card-panel {
+    background-color: var(--color-fondo-principal);
+    border: 1px solid var(--color-fondo-secundario);
+    border-radius: 10px;
+    transition: all 0.2s ease-in-out;
+    }
+    .order-card-panel:hover {
+    box-shadow: 0 3px 10px rgba(52, 58, 64, 0.15);
+    transform: scale(1.02);
+    }
+    .order-card-panel .card-header {
+    background-color: var(--color-fondo-secundario);
+    font-weight: 500;
+    border-bottom: none;
+    }
+    .order-card-panel .list-group-item {
+    border: none;
+    border-top: 1px solid var(--color-fondo-secundario);
+    }
+
+    /* --- BOTONES DE ESTADO --- */
+    .status-action-btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: 0.2s ease;
+    }
+    .status-action-btn.btn-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    }
+    .status-action-btn.btn-success {
+    background-color: #d4edda;
+    color: #155724;
+    }
+    .status-action-btn:hover {
+    opacity: 0.9;
+    transform: scale(1.03);
+    }
+
+    /* --- BOTONES DE ACCIÓN --- */
+    .order-action-btn {
+    background-color: var(--color-principal-oscuro);
+    color: #fff;
+    border: none;
+    transition: 0.2s ease;
+    }
+    .order-action-btn:hover {
+    background-color: var(--color-acento-oro);
+    color: var(--color-principal-oscuro);
+    }

@@ -3,6 +3,7 @@ import { createDish, getDishes, updateDish, deleteDish } from '../../APIs/DishAp
 import { getCategories } from '../../APIs/CategoryApi.js';
 import { renderCategoryOptions } from '../../Components/renderCategories.js';
 import { renderAdminDishes } from '../../Components/renderAdminDishes.js';
+import { showNotification } from '../../notification.js';
 
 async function refreshDishesPanel() {
     const dishes = await getDishes({ onlyActive: false }); 
@@ -35,9 +36,9 @@ function initCreateDishForm() {
         };
         const result = await createDish(dishRequest);
         if (result.error) {
-            alert(`Error al crear el plato: ${result.error}`);
+            showNotification(`Error al crear el plato: ${result.error}`);
         } else {
-            alert(`¡Plato "${result.name}" creado con éxito!`);
+            showNotification(`¡Plato "${result.name}" creado con éxito!`);
             form.reset();
             const modalElement = document.getElementById('create-dish-modal');
             const bootstrapModal = bootstrap.Modal.getInstance(modalElement);
@@ -70,9 +71,9 @@ function initEditDishForm() {
         const result = await updateDish(dishId, dishUpdateRequest);
 
         if (result.error) {
-            alert(`Error al actualizar el plato: ${result.error}`);
+            showNotification(`Error al actualizar el plato: ${result.error}`);
         } else {
-            alert(`Plato "${result.name}" actualizado con éxito.`);
+            showNotification(`Plato "${result.name}" actualizado con éxito.`);
             const modalElement = document.getElementById('edit-dish-modal');
             const bootstrapModal = bootstrap.Modal.getInstance(modalElement);
             bootstrapModal.hide();
@@ -111,7 +112,7 @@ function initMenuManagement() {
                 if (confirmation) {
                     const result = await deleteDish(dishId);
                     if (result.error) {
-                        alert(`Error: ${result.error}`);
+                        showNotification(`Error: ${result.error}`);
                     } else {
                         await refreshDishesPanel();
                     }
@@ -129,7 +130,7 @@ function initMenuManagement() {
                     };
                     const result = await updateDish(dishId, updateRequest);
                     if (result.error) {
-                        alert(`Error: ${result.error}`);
+                        showNotification(`Error: ${result.error}`);
                     } else {
                         await refreshDishesPanel();
                     }

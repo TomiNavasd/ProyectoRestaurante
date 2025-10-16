@@ -2,6 +2,7 @@ import { state } from '../../state.js';
 import { getDishes } from '../../APIs/DishApi.js';
 import { renderDishes } from '../../Components/renderDishes.js';
 
+
 // Función helper para no repetir código
 async function applyFiltersAndRender() {
     const activeDishes = await getDishes(state.currentFilter);

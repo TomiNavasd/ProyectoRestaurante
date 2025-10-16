@@ -13,9 +13,6 @@ export function renderOrders(orders, containerId, emptyMessage) {
         const isHistory = order.status.id >= 4;
         let buttonHtml;
 
-        // --- ESTA ES LA CORRECCIÓN ---
-        // En lugar de un 'if' ternario, usamos un bloque if/else normal
-        // para construir el HTML del botón.
         if (isHistory) {
             buttonHtml = `
                 <button class="btn btn-sm btn-outline-secondary view-details-btn" 
@@ -46,7 +43,7 @@ export function renderOrders(orders, containerId, emptyMessage) {
                             <small class="text-muted">Realizado el: ${new Date(order.createdAt).toLocaleDateString()}</small>
                         </div>
                         <div class="d-flex flex-column align-items-end">
-                             <span class="badge ${isHistory ? 'bg-secondary' : 'bg-success'} mb-2">
+                            <span class="badge ${isHistory ? 'bg-secondary' : 'bg-success'} mb-2">
                                 ${order.status.name}
                             </span>
                             ${buttonHtml}

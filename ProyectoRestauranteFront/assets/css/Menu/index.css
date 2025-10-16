@@ -1,0 +1,115 @@
+/* /assets/css/index.css */
+
+/* --- TÍTULO PRINCIPAL "NUESTRO MENÚ" --- */
+.menu-title {
+    font-family: var(--font-principal);
+    font-weight: 300;
+    font-size: 3.5rem; /* Más grande e imponente */
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 4px; /* Más espaciado para un look premium */
+    color: var(--color-principal-oscuro);
+    margin-bottom: 3rem !important;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-acento-oro); /* Línea dorada */
+}
+
+/* --- FILTROS DE CATEGORÍA --- */
+#filters-container .btn {
+    font-family: var(--font-principal);
+    border-radius: 50rem;
+    padding: 0.5rem 1.25rem;
+    margin: 0.2rem;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+#filters-container .btn.active {
+    background-color: var(--color-principal-oscuro);
+    border-color: var(--color-principal-oscuro);
+    color: #FFFFFF;
+}
+
+/* --- TARJETAS DE PLATOS --- */
+.dish-card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-fondo-secundario);
+    border-radius: 4px;
+    box-shadow: none;
+    transition: all 0.3s ease-in-out;
+}
+.dish-card:hover {
+    border-color: var(--color-acento-oro);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    transform: translateY(-4px);
+}
+.dish-card .card-img-top {
+    width: 100%;
+    height: 220px; /* Un poco más altas */
+    object-fit: cover;
+}
+.dish-card .dish-name {
+    font-family: var(--font-principal);
+    font-weight: 500;
+}
+.dish-card .dish-description {
+    font-family: var(--font-secundaria);
+}
+.dish-card .dish-price {
+    font-family: var(--font-principal);
+    font-weight: 400;
+}
+.dish-card .btn-primary {
+    font-family: var(--font-principal);
+}
+
+
+
+/* --- ESTILOS PARA LA COMANDA (OFFCANVAS) --- */
+#cart-offcanvas .offcanvas-title {
+    font-weight: 300;
+    font-size: 1.75rem;
+}
+
+#cart-items-container .list-group-item {
+    border: 1px solid var(--color-fondo-secundario);
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 1rem;
+}
+#cart-items-container h6 {
+    font-weight: 500;
+}
+#cart-items-container .btn-sm {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#cart-items-container .btn-danger {
+    background-color: transparent;
+    border: none;
+    color: var(--color-acento-rojo);
+    font-size: 1.2rem;
+}
+#cart-items-container .btn-danger:hover {
+    color: #a71d2a;
+}
+#cart-items-container .item-note-input {
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+}
+
+#delivery-form {
+    background-color: var(--color-fondo-secundario);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+#delivery-form h5 {
+    font-weight: 400;
+    border-bottom: 1px solid #dcdcdc;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}

@@ -6,23 +6,33 @@
     <title>Menú del Restaurante</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="assets/css/Menu/index.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="index.html">Mi Restaurante</a>
-            <div>
-                <a href="orders.html" class="btn btn-outline-light me-2">Mis Pedidos</a>
-                <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#cart-offcanvas">
-                    <i class="bi bi-cart"></i> Comanda <span id="cart-counter" class="badge bg-danger">0</span>
-                </button>
-
-                <a href="panel.html" class="btn btn-outline-warning me-2">Ir al Panel</a>
-
-            </div>
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <img src="https://i.ibb.co/wNHgD3yP/Sin-t-tulo-Folleto-A4-con-doblez-en-el-medio-420-mm-x-297-mm-3.png" alt="Mi Restaurante Logo" class="navbar-logo">
+                </a>
+                
+        <div class="d-flex align-items-center">
+            <a href="orders.html" class="btn btn-outline-light me-3">Mis Pedidos</a>
+            <a href="panel.html" class="btn btn-outline-warning me-3">Ir al Panel</a>
+            
+            <button class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#cart-offcanvas" id="cart-button">
+                <i class="bi bi-cart-fill fs-5"></i>
+                <span id="cart-counter" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    0
+                    <span class="visually-hidden">items in cart</span>
+                </span>
+            </button>
         </div>
-    </nav>
+            </div>
+        </nav>
 
     <main class="container mt-4">
         <h1 class="mb-4">Nuestro Menú</h1>
@@ -75,6 +85,22 @@
                 <button id="place-order-btn" class="btn btn-success w-100 mt-2">Realizar Pedido</button>
             </div>
         </div>
+    </div>
+
+        <div class="modal fade" id="notification-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header text-white" id="notification-modal-header">
+                <h5 class="modal-title" id="notification-modal-title"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="notification-modal-body" style="font-size: 1.1rem;">
+                </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

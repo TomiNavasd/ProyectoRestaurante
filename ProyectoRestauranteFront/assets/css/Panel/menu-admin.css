@@ -1,0 +1,129 @@
+    /* --- CONTENEDOR PRINCIPAL --- */
+    .menu-admin-container {
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 2rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+    animation: fadeIn 0.4s ease-in-out;
+    }
+
+    /* --- ANIMACIÓN SUAVE AL CARGAR --- */
+    @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- ENCABEZADO --- */
+    .page-header {
+    border-bottom: 2px solid var(--color-fondo-secundario);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    }
+    .page-header h1 {
+    font-weight: 500;
+    font-size: 1.6rem;
+    color: var(--color-principal-oscuro);
+    }
+
+    /* --- GRID DE PLATOS --- */
+    #panel-dish-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.2rem;
+    }
+
+    /* --- TARJETAS DE PLATOS --- */
+    .dish-item-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--color-fondo-secundario);
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .dish-item-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* --- INFO DEL PLATO --- */
+    .dish-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    }
+    .dish-info img {
+    width: 65px;
+    height: 65px;
+    border-radius: 10px;
+    object-fit: cover;
+    }
+    .dish-name-desc h6 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--color-texto-principal);
+    }
+    .dish-name-desc p {
+    font-size: 0.85rem;
+    margin: 0;
+    color: var(--color-texto-secundario);
+    }
+
+    /* --- ESTADO DEL PLATO --- */
+    .status-badge {
+    padding: 0.4em 0.9em;
+    border-radius: 50rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    }
+    .status-active {
+    background-color: var(--color-acento-verde);
+    color: #fff;
+    }
+    .status-inactive {
+    background-color: var(--color-fondo-secundario);
+    color: var(--color-texto-secundario);
+    }
+
+    /* --- ACCIONES (BOTONES EDITAR / DESACTIVAR) --- */
+    .dish-actions {
+    align-self: flex-end;
+    margin-top: 0.8rem;
+    }
+    .dish-actions .btn {
+    margin-left: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    }
+    .dish-actions .btn-secondary {
+    background-color: var(--color-fondo-secundario);
+    color: var(--color-texto-principal);
+    }
+    .dish-actions .btn-secondary:hover {
+    background-color: #d6dce1;
+    }
+
+    /* --- MODALES --- */
+    .modal-header { border-bottom: none; }
+    .modal-content { border-radius: 12px; }
+    .form-label {
+    color: var(--color-principal-oscuro);
+    font-weight: 500;
+    }
+    .form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid var(--color-fondo-secundario);
+    }
+
+    /* --- SCROLLBAR SUAVE --- */
+    #panel-dish-list::-webkit-scrollbar {
+    width: 6px;
+    }
+    #panel-dish-list::-webkit-scrollbar-thumb {
+    background-color: var(--color-principal-oscuro);
+    border-radius: 10px;
+    }

@@ -1,5 +1,6 @@
 import { getOrderById } from '../../APIs/OrderApi.js';
 import { renderOrderModal } from '../../Components/renderOrderModal.js';
+import { showNotification } from '../../notification.js';
 
 /**
  * Inicializa la lógica para abrir y poblar el modal "Ver Detalle" de una orden.
@@ -27,7 +28,7 @@ export function initViewOrderDetails() {
             renderOrderModal(orderDetails);
             bootstrapModal.show();
         } else {
-            alert('No se pudieron cargar los detalles de la orden.');
+            showNotification('No se pudieron cargar los detalles de la orden.');
         }
     });
 }

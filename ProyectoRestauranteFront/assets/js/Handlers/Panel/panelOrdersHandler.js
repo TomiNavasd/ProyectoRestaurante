@@ -5,6 +5,7 @@ import { getDishes } from '../../APIs/DishApi.js';
 import { renderOrderPanel } from '../../Components/renderOrderPanel.js';
 import { renderOrderModal } from '../../Components/renderOrderModal.js';
 import { renderDishesToModal } from '../../Components/renderAddDishesModal.js';
+import { showNotification } from '../../notification.js';
 
 async function refreshPanel() {
     const orders = await getOrders();
@@ -35,7 +36,7 @@ function initOrderActions() {
                 renderOrderModal(orderDetails);
                 bootstrapOrderModal.show();
             } else {
-                alert('No se pudieron cargar los detalles.');
+                showNotification('No se pudieron cargar los detalles.');
             }
         }
 
@@ -45,7 +46,7 @@ function initOrderActions() {
             const { orderId, itemId, newStatus } = button.dataset;
             const result = await updateOrderItemStatus(orderId, itemId, newStatus);
             if (!result || result.error) {
-                alert(result?.error || 'Ocurrió un error al actualizar el ítem.');
+                showNotification(result?.error || 'Ocurrió un error al actualizar el ítem.');
             }
             await refreshPanel();
         }
@@ -63,7 +64,7 @@ function initOrderActions() {
                     await updateOrderItemStatus(orderId, itemId, newStatusId);
                 }
             }
-            alert(`¡Orden #${orderId} marcada como entregada!`);
+            showNotification(`¡Orden #${orderId} marcada como entregada!`);
             await refreshPanel();
         }
     });

@@ -5,6 +5,7 @@ import { getOrderById, updateOrder } from '../../APIs/OrderApi.js';
 import { renderOrders } from '../../Components/renderOrdersPage.js';
 import { renderOrderModal } from '../../Components/renderOrderModal.js';
 import { renderDishesToModal } from '../../Components/renderAddDishesModal.js';
+import { showNotification } from '../../notification.js';
 
 async function loadAndClassifyOrders() {
     const savedOrderNumbers = JSON.parse(localStorage.getItem('myOrders')) || [];
@@ -43,7 +44,7 @@ function initOrderDetails() {
         const orderDetails = await getOrderById(orderId);
 
         if (!orderDetails) {
-            alert("No se pudieron cargar los detalles de la orden.");
+            showNotification("No se pudieron cargar los detalles de la orden.");
             return;
         }
         currentOrderForEditing = JSON.parse(JSON.stringify(orderDetails));
@@ -130,9 +131,9 @@ function initOrderDetails() {
             button.innerHTML = 'Guardar Cambios';
 
             if (result.error) {
-                alert(`Error al guardar: ${result.error}`);
+                showNotification(`Error al guardar: ${result.error}`);
             } else {
-                alert(`Orden #${orderId} actualizada con éxito.`);
+                showNotification(`Orden #${orderId} actualizada con éxito.`);
                 bootstrapOrderModal.hide();
                 loadAndClassifyOrders();
             }
