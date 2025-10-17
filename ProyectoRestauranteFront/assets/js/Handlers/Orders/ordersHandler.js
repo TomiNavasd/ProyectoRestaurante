@@ -1,159 +1,172 @@
-// /assets/js/Handlers/Orders/ordersHandler.js
-
 import { getDishes } from '../../APIs/DishApi.js';
 import { getOrderById, updateOrder } from '../../APIs/OrderApi.js';
 import { renderOrders } from '../../Components/renderOrdersPage.js';
 import { renderOrderModal } from '../../Components/renderOrderModal.js';
 import { renderDishesToModal } from '../../Components/renderAddDishesModal.js';
-import { showNotification } from '../../notification.js';
+import { mostrarNot } from '../../notification.js';
 
-async function loadAndClassifyOrders() {
-    const savedOrderNumbers = JSON.parse(localStorage.getItem('myOrders')) || [];
-    if (savedOrderNumbers.length === 0) {
+/**
+ * carga las ordenes desde localStorage las pide a la api y se clasifican en curso y en historial
+ */
+async function cargarYClasificarPedidos() {
+    const ordenesGuardadas = JSON.parse(localStorage.getItem('myOrders')) || [];
+    if (ordenesGuardadas.length === 0) {
         renderOrders([], 'active-orders-container', 'No tienes pedidos en curso.');
         renderOrders([], 'history-orders-container', 'No tienes pedidos en tu historial.');
         return;
     }
-    const orderPromises = savedOrderNumbers.map(id => getOrderById(id));
-    const results = await Promise.allSettled(orderPromises);
-    const validOrders = results
-        .filter(result => result.status === 'fulfilled' && result.value !== null)
-        .map(result => result.value);
-    const activeOrders = validOrders.filter(order => order.status.id < 4);
-    const historyOrders = validOrders.filter(order => order.status.id >= 4);
-    renderOrders(activeOrders, 'active-orders-container', 'No tienes pedidos en curso.');
-    renderOrders(historyOrders, 'history-orders-container', 'No tienes pedidos en tu historial.');
+
+    // se usa Promise.allSettled para que si una orden falla no se rompa todo
+    const promesasDeOrdenes = ordenesGuardadas.map(id => getOrderById(id));
+    const resultados = await Promise.allSettled(promesasDeOrdenes);
+    
+    const ordenesValidas = resultados
+        .filter(resultado => resultado.status === 'fulfilled' && resultado.value !== null)
+        .map(resultado => resultado.value);
+
+    const ordenesActivas = ordenesValidas.filter(orden => orden.status.id < 4);
+    const ordenesHistorial = ordenesValidas.filter(orden => orden.status.id >= 4);
+    
+    renderOrders(ordenesActivas, 'active-orders-container', 'No tienes pedidos en curso.');
+    renderOrders(ordenesHistorial, 'history-orders-container', 'No tienes pedidos en tu historial.');
 }
 
-function initOrderDetails() {
-    const mainContainer = document.querySelector('main');
-    const orderDetailsModalElement = document.getElementById('order-details-modal');
-    const addDishesModalElement = document.getElementById('add-dishes-modal');
+/**
+ * configura todos los eventos de los detalles y la modificacion de una orden
+ */
+function configurarDetallesDeOrden() {
+    const contenedorPrincipal = document.querySelector('main');
+    const modalDetalles = document.getElementById('order-details-modal');
+    const modalAgregarPlatos = document.getElementById('add-dishes-modal');
     
-    if (!mainContainer || !orderDetailsModalElement || !addDishesModalElement) return;
+    if (!contenedorPrincipal || !modalDetalles || !modalAgregarPlatos) return;
 
-    const bootstrapOrderModal = new bootstrap.Modal(orderDetailsModalElement);
-    const bootstrapAddDishesModal = new bootstrap.Modal(addDishesModalElement);
-    let currentOrderForEditing = null;
+    const instanciaModalDetalles = new bootstrap.Modal(modalDetalles);
+    const instanciaModalAgregarPlatos = new bootstrap.Modal(modalAgregarPlatos);
+    
+    // variable de fuente de verdad mientras editamos una orden
+    let ordenEnEdicion = null;
 
-    mainContainer.addEventListener('click', async (event) => {
-        const targetButton = event.target.closest('.view-details-btn');
-        if (!targetButton) return;
+    contenedorPrincipal.addEventListener('click', async (event) => {
+        const botonVerDetalle = event.target.closest('.view-details-btn');
+        if (!botonVerDetalle) return;
         
-        const orderId = targetButton.dataset.orderId;
-        const orderDetails = await getOrderById(orderId);
+        const ordenId = botonVerDetalle.dataset.orderId;
+        const detallesDeLaOrden = await getOrderById(ordenId);
 
-        if (!orderDetails) {
-            showNotification("No se pudieron cargar los detalles de la orden.");
+        if (!detallesDeLaOrden) {
+            mostrarNot("No se pudieron cargar los detalles de la orden.", 'error');
             return;
         }
-        currentOrderForEditing = JSON.parse(JSON.stringify(orderDetails));
-        renderOrderModal(orderDetails);
-        bootstrapOrderModal.show();
+        // se crea una copia profunda para poder modificarla sin afectar otros datos
+        ordenEnEdicion = JSON.parse(JSON.stringify(detallesDeLaOrden));
+        renderOrderModal(detallesDeLaOrden);
+        instanciaModalDetalles.show();
     });
     
-    addDishesModalElement.addEventListener('show.bs.modal', async () => {
-        const currentItemIds = new Set(currentOrderForEditing.items.map(item => item.dish.id));
-        const allDishes = await getDishes();
-        renderDishesToModal(allDishes, currentItemIds);
+    // la logica para el flujo entre modales es Detalles->Agregar platos->Volver a detalles
+    modalAgregarPlatos.addEventListener('show.bs.modal', async () => {
+        const idsDeItemsActuales = new Set(ordenEnEdicion.items.map(item => item.dish.id));
+        const todosLosPlatos = await getDishes();
+        renderDishesToModal(todosLosPlatos, idsDeItemsActuales);
     });
 
-    addDishesModalElement.addEventListener('click', (event) => {
-        const addButton = event.target.closest('.add-dish-to-order-btn');
-        if (addButton && !addButton.disabled) {
-            const { dishId, dishName } = addButton.dataset;
-            const existingItem = currentOrderForEditing.items.find(item => item.dish.id === dishId);
-            if (existingItem) {
-                existingItem.quantity++;
+    modalAgregarPlatos.addEventListener('click', (event) => {
+        const botonAgregar = event.target.closest('.add-dish-to-order-btn');
+        if (botonAgregar && !botonAgregar.disabled) {
+            const { dishId, dishName } = botonAgregar.dataset;
+            const itemExistente = ordenEnEdicion.items.find(item => item.dish.id === dishId);
+            if (itemExistente) {
+                itemExistente.quantity++;
             } else {
-                currentOrderForEditing.items.push({ dish: { id: dishId, name: dishName }, quantity: 1, notes: '' });
+                ordenEnEdicion.items.push({ dish: { id: dishId, name: dishName }, quantity: 1, notes: '' });
             }
-            addButton.disabled = true;
-            addButton.textContent = 'Agregado';
+            botonAgregar.disabled = true;
+            botonAgregar.textContent = 'Agregado';
         }
         if (event.target.id === 'confirm-dishes-btn') {
-            bootstrapAddDishesModal.hide();
+            instanciaModalAgregarPlatos.hide();
         }
     });
 
-    addDishesModalElement.addEventListener('hidden.bs.modal', () => {
-        renderOrderModal(currentOrderForEditing);
-        bootstrapOrderModal.show();
+    modalAgregarPlatos.addEventListener('hidden.bs.modal', () => {
+        // se cierra el modal de agregar volvemos a renderizar el de detalles con la info actualizada
+        renderOrderModal(ordenEnEdicion);
+        instanciaModalDetalles.show();
     });
     
-    // --- LÓGICA COMPLETA Y RESTAURADA ---
-    orderDetailsModalElement.addEventListener('click', async (event) => {
-        const target = event.target;
+    // Listener para todas las acciones DENTRO del modal de detalles
+    modalDetalles.addEventListener('click', async (event) => {
+        const objetivo = event.target;
 
-        if (target.matches('[data-bs-target="#add-dishes-modal"]')) {
-            bootstrapOrderModal.hide();
+        if (objetivo.matches('[data-bs-target="#add-dishes-modal"]')) {
+            instanciaModalDetalles.hide();
         }
 
-        // Lógica restaurada para botones +/-
-        if (target.classList.contains('modal-quantity-btn')) {
-            const listItem = target.closest('li');
-            const dishId = listItem.dataset.itemId;
-            const itemInState = currentOrderForEditing.items.find(item => item.dish.id === dishId);
-            if (!itemInState) return;
+        if (objetivo.classList.contains('modal-quantity-btn')) {
+            const elementoLista = objetivo.closest('li');
+            const platoId = elementoLista.dataset.itemId;
+            const itemEnEstado = ordenEnEdicion.items.find(item => item.dish.id === platoId);
+            if (!itemEnEstado) return;
 
-            const action = target.dataset.action;
-            if (action === 'increase') {
-                itemInState.quantity++;
-            } else if (action === 'decrease' && itemInState.quantity > 0) {
-                itemInState.quantity--;
+            const accion = objetivo.dataset.action;
+            if (accion === 'increase') {
+                itemEnEstado.quantity++;
+            } else if (accion === 'decrease' && itemEnEstado.quantity > 0) {
+                itemEnEstado.quantity--;
             }
             
-            // Si la cantidad llega a cero, podrías optar por eliminar el item
-            if (itemInState.quantity === 0) {
-                currentOrderForEditing.items = currentOrderForEditing.items.filter(item => item.dish.id !== dishId);
-                listItem.remove(); // Eliminamos el elemento del DOM
+            if (itemEnEstado.quantity === 0) {
+                ordenEnEdicion.items = ordenEnEdicion.items.filter(item => item.dish.id !== platoId);
+                elementoLista.remove();
             } else {
-                listItem.dataset.quantity = itemInState.quantity;
-                listItem.querySelector('.item-quantity').textContent = itemInState.quantity;
+                elementoLista.dataset.quantity = itemEnEstado.quantity;
+                elementoLista.querySelector('.item-quantity').textContent = itemEnEstado.quantity;
             }
         }
         
-        // Lógica restaurada para "Guardar Cambios"
-        if (target.id === 'save-changes-btn') {
-            const button = target;
-            const orderId = button.dataset.orderId;
+        if (objetivo.id === 'save-changes-btn') {
+            const botonGuardar = objetivo;
+            const ordenId = botonGuardar.dataset.orderId;
             
-            const updateRequest = {
-                items: currentOrderForEditing.items
+            const datosParaActualizar = {
+                items: ordenEnEdicion.items
                     .filter(item => item.quantity > 0)
                     .map(item => ({ id: item.dish.id, quantity: item.quantity, notes: item.notes || '' }))
             };
 
-            button.disabled = true;
-            button.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Guardando...`;
-            const result = await updateOrder(orderId, updateRequest);
-            button.disabled = false;
-            button.innerHTML = 'Guardar Cambios';
+            botonGuardar.disabled = true;
+            botonGuardar.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Guardando...`;
+            const resultado = await updateOrder(ordenId, datosParaActualizar);
+            botonGuardar.disabled = false;
+            botonGuardar.innerHTML = 'Guardar Cambios';
 
-            if (result.error) {
-                showNotification(`Error al guardar: ${result.error}`);
+            if (resultado.error) {
+                mostrarNot(`Error al guardar: ${resultado.error}`, 'error');
             } else {
-                showNotification(`Orden #${orderId} actualizada con éxito.`);
-                bootstrapOrderModal.hide();
-                loadAndClassifyOrders();
+                mostrarNot(`Orden #${ordenId} actualizada con éxito.`);
+                instanciaModalDetalles.hide();
+                await cargarYClasificarPedidos(); // await para asegurar que se refresque bien
             }
         }
     });
 
-    orderDetailsModalElement.addEventListener('input', (event) => {
+    modalDetalles.addEventListener('input', (event) => {
         if (event.target.classList.contains('modal-item-note')) {
             const input = event.target;
-            const listItem = input.closest('li');
-            const dishId = listItem.dataset.itemId;
-            const itemInState = currentOrderForEditing.items.find(item => item.dish.id === dishId);
-            if (itemInState) {
-                itemInState.notes = input.value;
+            const platoId = input.closest('li').dataset.itemId;
+            const itemEnEstado = ordenEnEdicion.items.find(item => item.dish.id === platoId);
+            if (itemEnEstado) {
+                itemEnEstado.notes = input.value;
             }
         }
     });
 }
 
+/**
+ * punto de entrada para la pagina mis pedidos
+ */
 export function initOrdersPage() {
-    loadAndClassifyOrders();
-    initOrderDetails();
+    cargarYClasificarPedidos();
+    configurarDetallesDeOrden();
 }

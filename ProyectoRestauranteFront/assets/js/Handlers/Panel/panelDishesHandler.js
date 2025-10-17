@@ -3,63 +3,66 @@ import { createDish, getDishes, updateDish, deleteDish } from '../../APIs/DishAp
 import { getCategories } from '../../APIs/CategoryApi.js';
 import { renderCategoryOptions } from '../../Components/renderCategories.js';
 import { renderAdminDishes } from '../../Components/renderAdminDishes.js';
-import { showNotification } from '../../notification.js';
+import { mostrarNot } from '../../notification.js';
 
-async function refreshDishesPanel() {
-    const dishes = await getDishes({ onlyActive: false }); 
-    state.dishes = dishes;
+// actualiza vista de gestion con todos los platos de la base de datos
+async function refrescarPanelDePlatos() {
+    // pedimos todos los platos incluyendo los inactivos porque desde aca los podemos gestionar
+    const todosLosPlatos = await getDishes({ onlyActive: false }); 
+    state.dishes = todosLosPlatos;
     renderAdminDishes(state.dishes);
 }
 
-function populateEditForm(dish) {
-    document.getElementById('edit-dish-id').value = dish.id;
-    document.getElementById('edit-dish-name').value = dish.name;
-    document.getElementById('edit-dish-description').value = dish.description;
-    document.getElementById('edit-dish-price').value = dish.price;
-    document.getElementById('edit-dish-category').value = dish.category.id;
-    document.getElementById('edit-dish-image').value = dish.image;
-    document.getElementById('edit-dish-active').checked = dish.isActive;
+// carga los datos de un plato existente en el formulario de edicion
+function rellenarFormularioEdicion(plato) {
+    document.getElementById('edit-dish-id').value = plato.id;
+    document.getElementById('edit-dish-name').value = plato.name;
+    document.getElementById('edit-dish-description').value = plato.description;
+    document.getElementById('edit-dish-price').value = plato.price;
+    document.getElementById('edit-dish-category').value = plato.category.id;
+    document.getElementById('edit-dish-image').value = plato.image;
+    document.getElementById('edit-dish-active').checked = plato.isActive;
 }
 
-function initCreateDishForm() {
-    // ... (Tu código para crear plato se mantiene exactamente igual) ...
+// logica para el formulario de crear un plato nuevo
+function iniciarFormularioCrear() {
     const form = document.getElementById('create-dish-form');
     if (!form) return;
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const dishRequest = {
+        const datosDelPlato = {
             name: document.getElementById('dish-name').value,
             description: document.getElementById('dish-description').value,
             price: parseFloat(document.getElementById('dish-price').value),
             category: parseInt(document.getElementById('dish-category').value),
             image: document.getElementById('dish-image').value
         };
-        const result = await createDish(dishRequest);
-        if (result.error) {
-            showNotification(`Error al crear el plato: ${result.error}`);
+        const resultado = await createDish(datosDelPlato);
+
+        if (resultado.error) {
+            mostrarNot(`Error al crear el plato: ${resultado.error}`);
         } else {
-            showNotification(`¡Plato "${result.name}" creado con éxito!`);
+            mostrarNot(`¡Plato "${resultado.name}" creado con éxito!`);
+            // limpiamos y cerramos el modal si todo salio bien
             form.reset();
             const modalElement = document.getElementById('create-dish-modal');
             const bootstrapModal = bootstrap.Modal.getInstance(modalElement);
             bootstrapModal.hide();
-            await refreshDishesPanel(); // Refrescamos la lista para ver el nuevo plato
+            await refrescarPanelDePlatos();
         }
     });
 }
 
-// --- NUEVA FUNCIÓN PARA MANEJAR EL GUARDADO DE LA EDICIÓN ---
-function initEditDishForm() {
+// logica para el formulario de edityar un plato existente
+function iniciarFormularioEditar() {
     const form = document.getElementById('edit-dish-form');
     if (!form) return;
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
-
         const dishId = document.getElementById('edit-dish-id').value;
-
-        // Recolectamos los datos actualizados del formulario de edición
-        const dishUpdateRequest = {
+        const datosActualizados = {
             name: document.getElementById('edit-dish-name').value,
             description: document.getElementById('edit-dish-description').value,
             price: parseFloat(document.getElementById('edit-dish-price').value),
@@ -68,87 +71,83 @@ function initEditDishForm() {
             isActive: document.getElementById('edit-dish-active').checked
         };
 
-        const result = await updateDish(dishId, dishUpdateRequest);
+        const resultado = await updateDish(dishId, datosActualizados);
 
-        if (result.error) {
-            showNotification(`Error al actualizar el plato: ${result.error}`);
+        if (resultado.error) {
+            mostrarNot(`Error al actualizar el plato: ${resultado.error}`);
         } else {
-            showNotification(`Plato "${result.name}" actualizado con éxito.`);
+            mostrarNot(`Plato "${resultado.name}" actualizado con éxito.`);
             const modalElement = document.getElementById('edit-dish-modal');
             const bootstrapModal = bootstrap.Modal.getInstance(modalElement);
             bootstrapModal.hide();
-            await refreshDishesPanel(); // Refrescamos la lista de platos para ver los cambios
+            await refrescarPanelDePlatos();
         }
     });
 }
 
-function initMenuManagement() {
-    const dishListContainer = document.getElementById('panel-dish-list');
-    if (!dishListContainer) return;
+// activa botones de lista de platos Editar y Activar/Desactivar
+function iniciarGestionMenu() {
+    const listaPlatos = document.getElementById('panel-dish-list');
+    if (!listaPlatos) return;
 
-    dishListContainer.addEventListener('click', async (event) => {
-        // Buscamos si el clic fue en un botón de editar o en uno de estado
-        const editButton = event.target.closest('.edit-dish-btn');
-        const statusButton = event.target.closest('.status-toggle-btn'); // <-- ESTA LÍNEA ES LA CLAVE
-
-        // Lógica para el botón EDITAR
-        if (editButton) {
-            const dishId = editButton.dataset.dishId;
-            const dishToEdit = state.dishes.find(d => d.id === dishId);
-            if (dishToEdit) {
-                populateEditForm(dishToEdit);
+    listaPlatos.addEventListener('click', async (event) => {
+        const botonEditar = event.target.closest('.edit-dish-btn');
+        if (botonEditar) {
+            const dishId = botonEditar.dataset.dishId;
+            const platoAEditar = state.dishes.find(d => d.id === dishId);
+            if (platoAEditar) {
+                rellenarFormularioEdicion(platoAEditar);
             }
         }
 
-        // Lógica para el botón ACTIVAR/DESACTIVAR
-        if (statusButton) { // <-- Ahora 'statusButton' sí está definido
-            const dishId = statusButton.dataset.dishId;
-            const action = statusButton.dataset.action;
-            const dish = state.dishes.find(d => d.id === dishId);
-            if (!dish) return;
+        const botonEstado = event.target.closest('.status-toggle-btn');
+        if (botonEstado) {
+            const dishId = botonEstado.dataset.dishId;
+            const accion = botonEstado.dataset.action;
+            const plato = state.dishes.find(d => d.id === dishId);
+            if (!plato) return;
 
-            if (action === 'deactivate') {
-                const confirmation = confirm(`¿Estás seguro de que quieres DESACTIVAR "${dish.name}"?`);
-                if (confirmation) {
-                    const result = await deleteDish(dishId);
-                    if (result.error) {
-                        showNotification(`Error: ${result.error}`);
-                    } else {
-                        await refreshDishesPanel();
-                    }
-                }
-            } else if (action === 'activate') {
-                const confirmation = confirm(`¿Estás seguro de que quieres ACTIVAR "${dish.name}"?`);
-                if (confirmation) {
-                    const updateRequest = {
-                        name: dish.name,
-                        description: dish.description,
-                        price: dish.price,
-                        category: dish.category.id,
-                        image: dish.image,
+            const esDesactivar = accion === 'deactivate';
+            const mensajeConfirmacion = `¿Estás seguro de que quieres ${esDesactivar ? 'DESACTIVAR' : 'ACTIVAR'} "${plato.name}"?`;
+            
+            if (confirm(mensajeConfirmacion)) {
+                let resultado;
+                if (esDesactivar) {
+                    // softdelete se hace a traves de la api
+                    resultado = await deleteDish(dishId);
+                } else {
+                    const datosParaActivar = {
+                        name: plato.name,
+                        description: plato.description,
+                        price: plato.price,
+                        category: plato.category.id,
+                        image: plato.image,
                         isActive: true
                     };
-                    const result = await updateDish(dishId, updateRequest);
-                    if (result.error) {
-                        showNotification(`Error: ${result.error}`);
-                    } else {
-                        await refreshDishesPanel();
-                    }
+                    resultado = await updateDish(dishId, datosParaActivar);
+                }
+
+                if (resultado.error) {
+                    mostrarNot(`Error: ${resultado.error}`);
+                } else {
+                    await refrescarPanelDePlatos();
                 }
             }
         }
     });
 }
 
-// --- FUNCIÓN PRINCIPAL DE INICIALIZACIÓN (ACTUALIZADA) ---
+// exporta inicializar la pagina de gestion
 export async function initDishAdminHandlers() {
-    await refreshDishesPanel();
+    await refrescarPanelDePlatos();
 
     const categories = await getCategories();
     renderCategoryOptions(categories);
+    // para no tener que llamar a la api de categorias otra vez
+    // copiamos las opciones del primer select al segundo
     document.getElementById('edit-dish-category').innerHTML = document.getElementById('dish-category').innerHTML;
 
-    initCreateDishForm();
-    initEditDishForm();
-    initMenuManagement();
+    iniciarFormularioCrear();
+    iniciarFormularioEditar();
+    iniciarGestionMenu();
 }

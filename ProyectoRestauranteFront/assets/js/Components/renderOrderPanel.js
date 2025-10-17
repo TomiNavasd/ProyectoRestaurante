@@ -1,6 +1,6 @@
 /**
- * Dibuja todas las órdenes en sus respectivas columnas de estado.
- * @param {Array} orders - El array de órdenes.
+ * las ordenes en sus respectivas columnas de estado
+ * @param {Array} orders array de ordenes
  */
 export function renderOrderPanel(orders) {
     const pendingContainer = document.getElementById('orders-pending');
@@ -9,12 +9,12 @@ export function renderOrderPanel(orders) {
 
     if (!pendingContainer || !preparingContainer || !readyContainer) return;
 
-    // Limpiamos los contenedores antes de volver a renderizar
+    // limpiamos los contenedores antes de volver a renderizar
     pendingContainer.innerHTML = '';
     preparingContainer.innerHTML = '';
     readyContainer.innerHTML = '';
 
-    // Si no hay órdenes, mostramos un mensaje y salimos
+    // si no hay ordenes mostramos un mensaje y salimos
     if (!orders || orders.length === 0) {
         pendingContainer.innerHTML = '<p class="text-muted text-center">No hay órdenes pendientes.</p>';
         preparingContainer.innerHTML = '<p class="text-muted text-center">No hay órdenes en preparación.</p>';
@@ -22,11 +22,11 @@ export function renderOrderPanel(orders) {
         return;
     }
 
-    // Iteramos sobre cada orden para construir su HTML
+    // iteramos sobre cada orden para construir html
     for (const order of orders) {
-        // Lógica para mostrar el botón "Entregar" solo si la orden está en estado "Listo"
+        // logica para mostrar el botón Entregar solo si la orden está lista
         let deliverButtonHtml = '';
-        if (order.status.id === 3) { // Asumiendo que 3 es el ID para "Listo"
+        if (order.status.id === 3) {
             deliverButtonHtml = `
                 <button class="btn btn-sm btn-info order-action-btn ms-2"
                         data-order-id="${order.orderNumber}"
@@ -35,7 +35,7 @@ export function renderOrderPanel(orders) {
                 </button>
             `;
         }
-
+        //mapeo
         const cardHtml = `
             <div class="card shadow-sm">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -70,7 +70,7 @@ export function renderOrderPanel(orders) {
             </div>
         `;
 
-        // Añadimos la tarjeta a la columna correspondiente
+        // acomodo en la columna correspondiente segun el estado
         switch (order.status.id) {
             case 1: pendingContainer.innerHTML += cardHtml; break; // Pendiente
             case 2: preparingContainer.innerHTML += cardHtml; break; // En Preparación

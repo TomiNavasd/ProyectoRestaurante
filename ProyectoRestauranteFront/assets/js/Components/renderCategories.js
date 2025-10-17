@@ -1,28 +1,34 @@
-
 /**
- * Dibuja los botones de filtro de categorías en el HTML.
- * @param {Array} categories - El array de categorías.
+ * los botones de las categorías en la página del menu
+ * @param {Array} categorias lista de categorías que viene de la API.
  */
-export function renderCategories(categories) {
-    const container = document.getElementById('filters-container');
-    if (!container) return;
+export function renderCategories(categorias) {
+    const contenedor = document.getElementById('filters-container');
+    if (!contenedor) return;
 
-    const buttonsHtml = categories.map(cat => 
-        `<button class="btn btn-outline-secondary me-2" data-category-id="${cat.id}">${cat.name}</button>`
+    // mapeo
+    const htmlDeLosBotones = categorias.map(categoria => 
+        `<button class="btn btn-outline-secondary me-2" data-category-id="${categoria.id}">${categoria.name}</button>`
     ).join('');
 
-    container.innerHTML = `<button class="btn btn-secondary me-2 active" data-category-id="">Todos</button>` + buttonsHtml;
+    // html final
+    contenedor.innerHTML = `<button class="btn btn-secondary me-2 active" data-category-id="">Todos</button>` + htmlDeLosBotones;
 }
-/**
- * Rellena el selector de categorías en el formulario de creación de platos.
- * @param {Array} categories - El array de categorías.
- */
-export function renderCategoryOptions(categories) {
-    const select = document.getElementById('dish-category');
-    if (!select) return;
 
-    select.innerHTML = '<option value="" disabled selected>Selecciona una categoría</option>'; // Opción por defecto
-    select.innerHTML += categories.map(cat => 
-        `<option value="${cat.id}">${cat.name}</option>`
+/**
+ * rellena en los formularios de categorías para crear o editar platos
+ * @param {Array} categorias lista de categorías
+ */
+export function renderCategoryOptions(categorias) {
+    const selector = document.getElementById('dish-category');
+    if (!selector) return;
+
+    // pongo una primera opción deshabilitada
+    let opcionesHtml = '<option value="" disabled selected>Selecciona una categoría</option>';
+    
+    opcionesHtml += categorias.map(categoria => 
+        `<option value="${categoria.id}">${categoria.name}</option>`
     ).join('');
+
+    selector.innerHTML = opcionesHtml;
 }

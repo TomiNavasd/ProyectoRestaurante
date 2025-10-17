@@ -1,7 +1,7 @@
-const API_BASE_URL = 'https://localhost:7280/api/v1'; // Ajusta tu puerto
+const API_BASE_URL = 'https://localhost:7280/api/v1';
 
 /**
- * Obtiene todas las categorías desde la API.
+ * para obtener categorias de la APi
  * @returns {Promise<Array>}
  */
 export async function getCategories() {

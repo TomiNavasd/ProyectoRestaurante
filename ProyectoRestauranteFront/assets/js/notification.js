@@ -1,52 +1,50 @@
-// /assets/js/notification.js
-
-let notificationModal;
+// esta variable queda afuera para que sea global dentro de este archivo
+// no tenemos que crear una nueva instancia del modal cada vez
+let instanciaModalNotificacion;
 
 /**
- * Inicializa el modal de notificación. Debe ser llamado después de que el DOM cargue.
+ * prepara el modal de notificación para ser usado
  */
 export function initNotificationModal() {
-    const modalElement = document.getElementById('notification-modal');
-    if (modalElement) {
-        notificationModal = new bootstrap.Modal(modalElement);
+    const elementoModal = document.getElementById('notification-modal');
+    if (elementoModal) {
+        instanciaModalNotificacion = new bootstrap.Modal(elementoModal);
     }
 }
 
 /**
- * Muestra una notificación personalizada. Solo necesita el mensaje.
- * Cierra automáticamente cualquier otro modal que esté abierto.
- * @param {string} message - El mensaje a mostrar.
+ * muestra una notificación personalizada con un mensaje.
+ * @param {string} mensaje texto que queremos mostrar en la notificacion 
  */
-export function showNotification(message) {
-    if (!notificationModal) {
-        // Si algo falla, volvemos al alert nativo.
-        alert(message);
+export function mostrarNot(mensaje) {
+    // si por alguna razón el modal no se pudo inicializar volvemos al alert()
+    if (!instanciaModalNotificacion) {
+        alert(mensaje);
         return;
     }
 
-    const modalTitle = document.getElementById('notification-modal-title');
-    const modalBody = document.getElementById('notification-modal-body');
-    const modalHeader = document.getElementById('notification-modal-header');
+    const tituloModal = document.getElementById('notification-modal-title');
+    const cuerpoModal = document.getElementById('notification-modal-body');
+    const cabeceraModal = document.getElementById('notification-modal-header');
     
-    // Estilo genérico y elegante para todas las notificaciones
-    modalHeader.className = 'modal-header bg-dark text-white';
-    modalTitle.textContent = 'Aviso del Sistema';
-    modalBody.textContent = message;
+    cabeceraModal.className = 'modal-header bg-dark text-white';
+    tituloModal.textContent = 'Aviso del Sistema';
+    cuerpoModal.textContent = mensaje;
 
-    // --- LÓGICA CLAVE PARA EVITAR MODALES SUPERPUESTOS ---
-    const anyOpenModal = document.querySelector('.modal.show');
-    if (anyOpenModal) {
-        const bootstrapModal = bootstrap.Modal.getInstance(anyOpenModal);
-        
-        // Esperamos a que el modal actual se cierre por completo...
-        anyOpenModal.addEventListener('hidden.bs.modal', () => {
-            // ...y solo entonces mostramos nuestra notificación.
-            notificationModal.show();
-        }, { once: true }); // 'once: true' asegura que esto solo se ejecute una vez.
+    const otroModalAbierto = document.querySelector('.modal.show');
 
-        bootstrapModal.hide();
+    if (otroModalAbierto) {
+        // si encontramos uno primero lo cerramos
+        const instanciaModalAbierto = bootstrap.Modal.getInstance(otroModalAbierto);
+
+        otroModalAbierto.addEventListener('hidden.bs.modal', () => {
+            // solo en ese momento mostramos nuestra noti
+            instanciaModalNotificacion.show();
+        }, { once: true }); // es para que este listener se ejecute una sola vez y no se acumule
+
+        instanciaModalAbierto.hide();
     } else {
-        // Si no hay otros modales abiertos, simplemente la mostramos.
-        notificationModal.show();
+        // si no hay otros modales abiertos, la mostramos directamente
+        instanciaModalNotificacion.show();
     }
 }

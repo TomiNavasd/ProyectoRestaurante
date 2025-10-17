@@ -1,5 +1,3 @@
-
-// Imports con rutas corregidas (subimos un nivel con '../')
 import { state } from '../state.js';
 import { getCategories } from '../APIs/CategoryApi.js';
 import { getDishes } from '../APIs/DishApi.js';

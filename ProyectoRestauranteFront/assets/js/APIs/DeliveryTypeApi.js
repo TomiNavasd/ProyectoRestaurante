@@ -1,7 +1,7 @@
-const API_BASE_URL = 'https://localhost:7280/api/v1'; // Ajusta tu puerto
+const API_BASE_URL = 'https://localhost:7280/api/v1';
 
 /**
- * Obtiene todos los tipos de entrega desde la API.
+ * obtener los deliverytypes desde la api
  * @returns {Promise<Array>}
  */
 export async function getDeliveryTypes() {

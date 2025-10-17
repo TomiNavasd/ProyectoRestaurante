@@ -1,61 +1,78 @@
 import { getOrders, getOrderById } from '../../APIs/OrderApi.js';
 import { renderOrders } from '../../Components/renderOrdersPage.js';
 import { renderOrderModal } from '../../Components/renderOrderModal.js';
-import { showNotification } from '../../notification.js';
+import { mostrarNot } from '../../notification.js';
 
-// Función para cargar las órdenes con filtros
-async function loadHistory(filters = {}) {
-    const container = document.getElementById('history-orders-container');
-    container.innerHTML = `<p class="text-center">Cargando...</p>`;
+/**
+ * carga ordenes desde la api las filtra para el historial y las muestra en pantalla
+ * @param {object} filtros filtro de fechas
+ */
+async function cargarHistorial(filtros = {}) {
+    const contenedor = document.getElementById('history-orders-container');
+    contenedor.innerHTML = `<p class="text-center">Cargando historial...</p>`;
     
-    const allOrders = await getOrders(filters);
+    const todasLasOrdenes = await getOrders(filtros);
     
-    // Mostramos solo órdenes ya entregadas (ID 4) o cerradas (ID 5)
-    const historyOrders = allOrders.filter(order => order.status.id >= 4);
-
-    // Reutilizamos el componente para renderizar, indicando que NO muestre botones de modificar
-    renderOrders(historyOrders, 'history-orders-container', 'No se encontraron órdenes.', false);
+    // historial solo muestra ordenes que ya fueron entregadas ID 4
+    const ordenesDelHistorial = todasLasOrdenes.filter(orden => orden.status.id >= 4);
+    // reutilizamos el componente renderOrders pero le indicamos que no es editable
+    renderOrders(ordenesDelHistorial, 'history-orders-container', 'No se encontraron órdenes para las fechas seleccionadas.', false);
 }
 
-// Lógica completa para manejar el modal "Ver Detalle"
-function initViewDetailsModal() {
-    const mainContainer = document.querySelector('main');
-    const modalElement = document.getElementById('order-details-modal');
-    if (!mainContainer || !modalElement) return;
+/**
+ * configura el evento para abrir el modal de ver detalle en cada orden
+ */
+function activarModalDetalles() {
+    const contenedorPrincipal = document.querySelector('main');
+    const elementoModal = document.getElementById('order-details-modal');
+    if (!contenedorPrincipal || !elementoModal) return;
 
-    const bootstrapModal = new bootstrap.Modal(modalElement);
+    const instanciaModal = new bootstrap.Modal(elementoModal);
     
-    mainContainer.addEventListener('click', async (event) => {
-        const button = event.target.closest('.view-details-btn');
-        if (!button) return;
+    contenedorPrincipal.addEventListener('click', async (event) => {
+        const botonVerDetalle = event.target.closest('.view-details-btn');
+        if (!botonVerDetalle) return;
         
-        const orderId = button.dataset.orderId;
-        const orderDetails = await getOrderById(orderId);
+        const ordenId = botonVerDetalle.dataset.orderId;
+        const detallesDeLaOrden = await getOrderById(ordenId);
         
-        if (orderDetails) {
-            renderOrderModal(orderDetails);
-            // Ocultamos el botón "Agregar Platos" ya que en el historial no se puede modificar
-            const addButtonContainer = document.querySelector('#order-details-modal .d-grid');
-            if(addButtonContainer) addButtonContainer.style.display = 'none';
+        if (detallesDeLaOrden) {
+            renderOrderModal(detallesDeLaOrden);
+            // ocultamos el boton agregar plato
+            const contenedorBotonAgregar = document.querySelector('#order-details-modal .d-grid');
+            if(contenedorBotonAgregar) {
+                contenedorBotonAgregar.style.display = 'none';
+            }
 
-            bootstrapModal.show();
+            instanciaModal.show();
         } else {
-            showNotification('No se pudieron cargar los detalles de la orden.');
+            mostrarNot('No se pudieron cargar los detalles de la orden.', 'error');
         }
     });
 }
 
+/**
+ * punto de entrada para inicializar toda la pagina de historial
+ */
 export function initHistoryPage() {
-    const filterBtn = document.getElementById('filter-btn');
+    const botonFiltrar = document.getElementById('filter-btn');
     
-    filterBtn.addEventListener('click', () => {
-        const filters = {
-            from: document.getElementById('date-from').value ? `${document.getElementById('date-from').value}T00:00:00` : null,
-            to: document.getElementById('date-to').value ? `${document.getElementById('date-to').value}T23:59:59` : null
-        };
-        loadHistory(filters);
+    botonFiltrar.addEventListener('click', () => {
+        const fechaDesde = document.getElementById('date-from').value;
+        const fechaHasta = document.getElementById('date-to').value;
+
+        const filtros = {};
+        // aseguro de que el filtro incluya el dia completo
+        if (fechaDesde) {
+            filtros.from = `${fechaDesde}T00:00:00`;
+        }
+        if (fechaHasta) {
+            filtros.to = `${fechaHasta}T23:59:59`;
+        }
+        
+        cargarHistorial(filtros);
     });
 
-    loadHistory(); // Carga inicial
-    initViewDetailsModal(); // Activamos la lógica del modal
+    cargarHistorial(); // carga sin filtro
+    activarModalDetalles(); // logica de detalles
 }

@@ -1,159 +1,158 @@
 import { state } from '../../state.js';
 import { createOrder } from '../../APIs/OrderApi.js';
 import { renderCart } from '../../Components/renderCart.js';
-import { showNotification } from '../../notification.js';
+import { mostrarNot } from '../../notification.js';
 
-function addToCart(dish) {
-    const existingItem = state.cart.find(item => item.id === dish.id);
-    if (existingItem) {
-        existingItem.quantity++;
+// funciones para manipular el estado del carrito agregando, quitando, aumentando y disminuyendo la cantidad
+function agregarAlCarrito(plato) {
+    const itemExistente = state.cart.find(item => item.id === plato.id);
+    if (itemExistente) {
+        itemExistente.quantity++;
     } else {
-        state.cart.push({ id: dish.id, name: dish.name, price: dish.price, quantity: 1, notes: '' });
+        state.cart.push({ id: plato.id, name: plato.name, price: plato.price, quantity: 1, notes: '' });
     }
     renderCart(state.cart);
 }
 
-function increaseQuantity(dishId) {
-    const item = state.cart.find(i => i.id === dishId);
-    if (item) {
-        item.quantity++;
+function aumentarCantidad(platoId) {
+    const itemEnCarrito = state.cart.find(i => i.id === platoId);
+    if (itemEnCarrito) {
+        itemEnCarrito.quantity++;
         renderCart(state.cart);
     }
 }
 
-function decreaseQuantity(dishId) {
-    const item = state.cart.find(i => i.id === dishId);
-    if (item && item.quantity > 1) {
-        item.quantity--;
+function disminuirCantidad(platoId) {
+    const itemEnCarrito = state.cart.find(i => i.id === platoId);
+    if (itemEnCarrito && itemEnCarrito.quantity > 1) {
+        itemEnCarrito.quantity--;
         renderCart(state.cart);
-    } else if (item && item.quantity === 1) {
-        removeFromCart(dishId);
+    } else if (itemEnCarrito && itemEnCarrito.quantity === 1) {
+        // si la cantidad es 1 y se disminuye lo quitamos del carrito.
+        quitarDelCarrito(platoId);
     }
 }
 
-function removeFromCart(dishId) {
-    state.cart = state.cart.filter(item => item.id !== dishId);
+function quitarDelCarrito(platoId) {
+    state.cart = state.cart.filter(item => item.id !== platoId);
     renderCart(state.cart);
 }
 
-function initCartEvents() {
-    const dishListContainer = document.getElementById('dish-list-container');
-    const cartContainer = document.getElementById('cart-items-container');
+//  configurar los eventos de la UI 
 
-    dishListContainer.addEventListener('click', (event) => {
+function configurarEventosDelCarrito() {
+    const contenedorListaPlatos = document.getElementById('dish-list-container');
+    const contenedorCarrito = document.getElementById('cart-items-container');
+
+    // listener para el botón agregar a la comanda en las tarjetas de los platos
+    contenedorListaPlatos.addEventListener('click', (event) => {
         if (!event.target.classList.contains('add-to-cart-btn')) return;
-        const dishId = event.target.dataset.dishId;
-        const dishToAdd = state.dishes.find(dish => dish.id === dishId);
-        if (dishToAdd) addToCart(dishToAdd);
+        const platoId = event.target.dataset.dishId;
+        const platoParaAgregar = state.dishes.find(plato => plato.id === platoId);
+        if (platoParaAgregar) {
+            agregarAlCarrito(platoParaAgregar);
+        }
     });
 
-    cartContainer.addEventListener('input', (event) => {
+    // listener para las acciones DENTRO del carrito notas, +, -
+    contenedorCarrito.addEventListener('input', (event) => {
         if (event.target.classList.contains('item-note-input')) {
-            const dishId = event.target.dataset.dishId;
-            const itemInState = state.cart.find(item => item.id === dishId);
-            if (itemInState) {
-                itemInState.notes = event.target.value;
+            const platoId = event.target.dataset.dishId;
+            const itemEnEstado = state.cart.find(item => item.id === platoId);
+            if (itemEnEstado) {
+                itemEnEstado.notes = event.target.value;
             }
         }
     });
 
-    cartContainer.addEventListener('click', (event) => {
-        const target = event.target;
-        if (!target.classList.contains('cart-action-btn')) return;
+    contenedorCarrito.addEventListener('click', (event) => {
+        const objetivo = event.target;
+        if (!objetivo.classList.contains('cart-action-btn')) return;
         
-        const { dishId, action } = target.dataset;
-        if (action === 'increase') increaseQuantity(dishId);
-        if (action === 'decrease') decreaseQuantity(dishId);
-        if (action === 'remove') removeFromCart(dishId);
+        const { dishId, action } = objetivo.dataset;
+        if (action === 'increase') aumentarCantidad(dishId);
+        if (action === 'decrease') disminuirCantidad(dishId);
+        if (action === 'remove') quitarDelCarrito(dishId);
     });
 }
 
-// --- FUNCIÓN DE VALIDACIÓN ACTUALIZADA ---
-function validateOrderForm() {
-    const deliverySelect = document.getElementById('delivery-type');
-    const deliveryDetailInput = document.getElementById('delivery-address');
-    const deliveryTypeId = deliverySelect.value;
-    const detailValue = deliveryDetailInput.value.trim();
+/**
+ * valida el formulario de entrega segun las reglas del negocio
+ * @returns {boolean} true si es válido false si no
+ */
+function validarFormularioPedido() {
+    const selectorEntrega = document.getElementById('delivery-type');
+    const inputDetalleEntrega = document.getElementById('delivery-address');
+    const idTipoEntrega = selectorEntrega.value;
+    const valorDetalle = inputDetalleEntrega.value.trim();
+    let mensajeError = '';
 
-    deliveryDetailInput.classList.remove('is-invalid');
+    inputDetalleEntrega.classList.remove('is-invalid');
 
-    let errorMessage = '';
-
-    // Aplicamos la regla de validación según el tipo de entrega
-    switch (deliveryTypeId) {
-        case '1': // Delivery
-            if (detailValue === '') {
-                errorMessage = 'Por favor, ingresa una dirección para el delivery.';
-            }
-            break;
-        case '2': // Take away
-            if (detailValue === '') {
-                errorMessage = 'Por favor, ingresa un nombre para el retiro.';
-            }
-            break;
-        case '3': // Dine in
-            if (detailValue === '') {
-                errorMessage = 'Por favor, ingresa el número de mesa.';
-            }
-            break;
+    switch (idTipoEntrega) {
+        case '1': if (valorDetalle === '') mensajeError = 'Por favor, ingresa una dirección para el delivery.'; break;
+        case '2': if (valorDetalle === '') mensajeError = 'Por favor, ingresa un nombre para el retiro.'; break;
+        case '3': if (valorDetalle === '') mensajeError = 'Por favor, ingresa el número de mesa.'; break;
     }
 
-    if (errorMessage) {
-        showNotification(errorMessage);
-        deliveryDetailInput.classList.add('is-invalid');
-        return false; // La validación falla
+    if (mensajeError) {
+        mostrarNot(mensajeError, 'error');
+        inputDetalleEntrega.classList.add('is-invalid');
+        return false;
     }
-
-    return true; // La validación es exitosa
+    return true;
 }
 
-// --- FUNCIÓN DE SUBMISIÓN (SIN CAMBIOS EN LA LÓGICA DE ENVÍO) ---
-function initOrderSubmission() {
-    const placeOrderBtn = document.getElementById('place-order-btn');
-    if (!placeOrderBtn) return;
+/**
+ * logica de envio de la orden
+ */
+function configurarEnvioDeOrden() {
+    const botonRealizarPedido = document.getElementById('place-order-btn');
+    if (!botonRealizarPedido) return;
 
-    placeOrderBtn.addEventListener('click', async () => {
+    botonRealizarPedido.addEventListener('click', async () => {
         if (state.cart.length === 0) {
-            showNotification('Tu comanda está vacía.');
+            mostrarNot('Tu comanda está vacía.', 'error');
             return;
         }
 
-        if (!validateOrderForm()) { // Ahora usa la nueva lógica de validación
-            return;
-        }
+        if (!validarFormularioPedido()) return;
         
-        placeOrderBtn.disabled = true;
-        placeOrderBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Creando...`;
+        botonRealizarPedido.disabled = true;
+        botonRealizarPedido.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Creando...`;
 
-        const deliveryTypeId = parseInt(document.getElementById('delivery-type').value, 10);
-        const deliveryAddress = document.getElementById('delivery-address').value;
-        const orderNotes = document.getElementById('order-notes').value;
+        const idTipoEntrega = parseInt(document.getElementById('delivery-type').value, 10);
+        const detalleEntrega = document.getElementById('delivery-address').value;
+        const notasGenerales = document.getElementById('order-notes').value;
 
-        // La lógica de envío es correcta
-        const deliveryPayload = {
-            id: deliveryTypeId,
-            to: deliveryTypeId === 1 ? deliveryAddress : (deliveryAddress || "") 
+        // backend espera un string vacío para el campo 'to' si no es delivery
+        const datosEntrega = {
+            id: idTipoEntrega,
+            to: idTipoEntrega === 1 ? detalleEntrega : (detalleEntrega || "") 
         };
-        const orderRequest = {
+
+        const pedidoAEnviar = {
             items: state.cart.map(item => ({ id: item.id, quantity: item.quantity, notes: item.notes || '' })),
-            delivery: deliveryPayload,
-            notes: orderNotes
+            delivery: datosEntrega,
+            notes: notasGenerales
         };
         
-        const result = await createOrder(orderRequest);
+        const resultado = await createOrder(pedidoAEnviar);
 
-        placeOrderBtn.disabled = false;
-        placeOrderBtn.textContent = 'Realizar Pedido';
+        botonRealizarPedido.disabled = false;
+        botonRealizarPedido.textContent = 'Realizar Pedido';
 
-        if (result.error) {
-            showNotification(`Error al crear la orden: ${result.error}`);
+        if (resultado.error) {
+            mostrarNot(`Error al crear la orden: ${resultado.error}`, 'error');
         } else {
-            showNotification(`¡Orden #${result.orderNumber} creada con éxito!`);
+            mostrarNot(`¡Orden #${resultado.orderNumber} creada con éxito!`);
             
-            const savedOrders = JSON.parse(localStorage.getItem('myOrders')) || [];
-            savedOrders.push(result.orderNumber);
-            localStorage.setItem('myOrders', JSON.stringify(savedOrders));
+            // se guarda el número de la nueva orden para verla en "mis pedidos"
+            const ordenesGuardadas = JSON.parse(localStorage.getItem('myOrders')) || [];
+            ordenesGuardadas.push(resultado.orderNumber);
+            localStorage.setItem('myOrders', JSON.stringify(ordenesGuardadas));
             
+            // Limpiamos todo.
             state.cart = [];
             renderCart(state.cart);
             document.getElementById('delivery-address').value = '';
@@ -162,49 +161,50 @@ function initOrderSubmission() {
     });
 }
 
-// --- FUNCIÓN DE UI ACTUALIZADA ---
-function initDeliveryTypeHandler() {
-    const deliverySelect = document.getElementById('delivery-type');
-    const detailContainer = document.getElementById('address-input-container'); 
-    const detailLabel = detailContainer.querySelector('label');
-    const detailInput = document.getElementById('delivery-address');
+/**
+ * controla la ui del formulario de entrega (cambia etiquetas y placeholders)
+ */
+function configurarManejadorTipoEntrega() {
+    const selectorEntrega = document.getElementById('delivery-type');
+    const contenedorDetalle = document.getElementById('address-input-container'); 
+    const etiquetaDetalle = contenedorDetalle.querySelector('label');
+    const inputDetalle = document.getElementById('delivery-address');
 
-    if (!deliverySelect || !detailContainer || !detailLabel || !detailInput) return;
+    if (!selectorEntrega || !contenedorDetalle || !etiquetaDetalle || !inputDetalle) return;
 
-    const updateDeliveryUI = () => {
-        const selectedId = deliverySelect.value;
-        
-        // El campo de detalle es visible para todos los tipos de entrega
-        detailContainer.classList.remove('d-none');
-        detailInput.value = '';
-        detailInput.classList.remove('is-invalid');
+    const actualizarInterfazEntrega = () => {
+        const idSeleccionado = selectorEntrega.value;
+        contenedorDetalle.classList.remove('d-none');
+        inputDetalle.value = '';
+        inputDetalle.classList.remove('is-invalid');
 
-        // Cambiamos el texto del label y el placeholder según la selección
-        switch (selectedId) {
-            case '1': // Delivery
-                detailLabel.textContent = 'Dirección';
-                detailInput.placeholder = 'Ingresa la dirección de entrega';
+        switch (idSeleccionado) {
+            case '1':
+                etiquetaDetalle.textContent = 'Dirección';
+                inputDetalle.placeholder = 'Ingresa la dirección de entrega';
                 break;
-            case '2': // Take away
-                detailLabel.textContent = 'Nombre';
-                detailInput.placeholder = 'Ingresa el nombre para el retiro';
+            case '2':
+                etiquetaDetalle.textContent = 'Nombre';
+                inputDetalle.placeholder = 'Ingresa el nombre para el retiro';
                 break;
-            case '3': // Dine in
-                detailLabel.textContent = 'N° de Mesa';
-                detailInput.placeholder = 'Ingresa el número de mesa';
+            case '3':
+                etiquetaDetalle.textContent = 'N° de Mesa';
+                inputDetalle.placeholder = 'Ingresa el número de mesa';
                 break;
             default:
-                // Si no hay selección, ocultamos el campo
-                detailContainer.classList.add('d-none');
+                contenedorDetalle.classList.add('d-none');
         }
     };
 
-    deliverySelect.addEventListener('change', updateDeliveryUI);
-    updateDeliveryUI(); // Llamada inicial para establecer el estado correcto
+    selectorEntrega.addEventListener('change', actualizarInterfazEntrega);
+    actualizarInterfazEntrega(); // llamada inicial para que se vea bien al cargar
 }
 
+/**
+ * entrada principal para toda la logica del carrito y la comanda.
+ */
 export function initCartHandlers() {
-    initCartEvents();
-    initOrderSubmission();
-    initDeliveryTypeHandler();
+    configurarEventosDelCarrito();
+    configurarEnvioDeOrden();
+    configurarManejadorTipoEntrega();
 }

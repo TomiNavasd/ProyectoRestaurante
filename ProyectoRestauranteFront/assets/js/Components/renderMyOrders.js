@@ -1,23 +1,30 @@
-export function renderActiveOrders(orders) {
-    const container = document.getElementById('active-orders-container');
-    if (!container) return;
+/**
+ * lista de ordenes activas en su contenedor correspondiente
+ * @param {Array} ordenes lista de órdenes activas a mostrar.
+ */
+export function renderActiveOrders(ordenes) {
+    const contenedor = document.getElementById('active-orders-container');
+    // sino encontramos el div, salimos para evitar errores.
+    if (!contenedor) return;
 
-    if (orders.length === 0) {
-        container.innerHTML = '<p class="text-muted">No tienes pedidos activos recientes.</p>';
+    // Si no hay pedidos activos
+    if (ordenes.length === 0) {
+        contenedor.innerHTML = '<p class="text-muted">No tienes pedidos activos recientes.</p>';
         return;
     }
 
-    container.innerHTML = orders.map(order => `
+    // mapeo
+    contenedor.innerHTML = ordenes.map(orden => `
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <h5 class="card-title">Orden #${order.orderNumber}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Estado: ${order.status.name}</h6>
+                        <h5 class="card-title">Orden #${orden.orderNumber}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Estado: ${orden.status.name}</h6>
                     </div>
-                    <div>
-                        <p class="card-text"><strong>Total: $${order.totalAmount.toFixed(2)}</strong></p>
-                        <button class="btn btn-sm btn-outline-primary" data-order-id="${order.orderNumber}">Ver Detalle / Modificar</button>
+                    <div class="text-end">
+                        <p class="card-text"><strong>Total: $${orden.totalAmount.toFixed(2)}</strong></p>
+                        <button class="btn btn-sm btn-outline-primary view-details-btn" data-order-id="${orden.orderNumber}">Ver Detalle / Modificar</button>
                     </div>
                 </div>
             </div>

@@ -1,8 +1,8 @@
-const API_BASE_URL = 'https://localhost:7280/api/v1'; // Ajusta tu puerto
+const API_BASE_URL = 'https://localhost:7280/api/v1'; 
 
 /**
- * Obtiene los platos desde la API, con filtros opcionales.
- * @param {object} [filters={}] - Objeto con filtros (name, category, sortByPrice).
+ * obtener todos los platos con filtros opcionales.
+ * @param {object} [filters={}] objeto con filtros (name, category, sortByPrice).
  * @returns {Promise<Array>}
  */
 export async function getDishes(filters = {}) {
@@ -26,8 +26,8 @@ export async function getDishes(filters = {}) {
 }
 
 /**
- * Envía un nuevo plato a la API para ser creado.
- * @param {object} dishRequest - El objeto con los datos del nuevo plato.
+ * crea un nuevo plato en la API.
+ * @param {object} dishRequest el objeto con los datos del nuevo plato.
  * @returns {Promise<object>}
  */
 export async function createDish(dishRequest) {
@@ -52,9 +52,9 @@ export async function createDish(dishRequest) {
 }
 
 /**
- * Envía los datos actualizados de un plato a la API.
- * @param {string} dishId - El ID del plato a actualizar.
- * @param {object} dishUpdateRequest - El objeto con los datos actualizados del plato.
+ * actualiza un plato en la API.
+ * @param {string} dishId el ID del plato a actualizar.
+ * @param {object} dishUpdateRequest el objeto con los datos actualizados del plato.
  * @returns {Promise<object>}
  */
 export async function updateDish(dishId, dishUpdateRequest) {
@@ -79,13 +79,12 @@ export async function updateDish(dishId, dishUpdateRequest) {
 }
 
 /**
- * Envía una petición para desactivar (soft delete) un plato.
- * @param {string} dishId - El ID del plato a desactivar.
+ * manda una petición para desactivar (soft delete) un plato.
+ * @param {string} dishId el id del plato a desactivar.
  * @returns {Promise<object>}
  */
 export async function deleteDish(dishId) {
     try {
-        // Recordá que tu backend usa DELETE para la desactivación
         const response = await fetch(`${API_BASE_URL}/Dish/${dishId}`, {
             method: 'DELETE',
         });
@@ -95,7 +94,7 @@ export async function deleteDish(dishId) {
             throw new Error(errorData.message || 'Error al desactivar el plato.');
         }
         
-        // Si la respuesta es exitosa pero no tiene contenido (lo más común en un DELETE)
+        // si la respuesta es 204 (No Content),salio bien 
         if (response.status === 204) {
             return { success: true };
         }

@@ -1,114 +1,126 @@
 import { getOrderById, updateOrder } from '../../APIs/OrderApi.js';
 import { renderActiveOrders } from '../../Components/renderMyOrders.js';
 import { renderOrderModal } from '../../Components/renderOrderModal.js';
-import { showNotification } from '../../notification.js';
+import { mostrarNot } from '../../notification.js';
 
-async function loadActiveOrders() {
-    const savedOrderNumbers = JSON.parse(localStorage.getItem('myOrders')) || [];
-    if (savedOrderNumbers.length === 0) {
+/**
+ * carga las ordenes desde localStorage, las pide a la api y las muestra en pedidos en Curso
+ */
+async function cargarPedidosActivos() {
+    const numerosDeOrdenGuardados = JSON.parse(localStorage.getItem('myOrders')) || [];
+    if (numerosDeOrdenGuardados.length === 0) {
         renderActiveOrders([]);
         return;
     }
 
-    const orderPromises = savedOrderNumbers.map(id => getOrderById(id));
-    const orders = await Promise.all(orderPromises);
+    // meto el Promise.allSettled por si una orden falla no se rompa todo el proceso
+    const promesasDePedidos = numerosDeOrdenGuardados.map(id => getOrderById(id));
+    const resultados = await Promise.allSettled(promesasDePedidos);
 
-    const activeOrders = orders.filter(order => order && order.status.id < 4);
-    renderActiveOrders(activeOrders);
+    const pedidos = resultados
+        .filter(resultado => resultado.status === 'fulfilled' && resultado.value)
+        .map(resultado => resultado.value);
+
+    // pedido activo es cualquiera que no haya sido entregado
+    const pedidosActivos = pedidos.filter(pedido => pedido.status.id < 4);
+    renderActiveOrders(pedidosActivos);
 }
 
-function initMyOrdersActions() {
-    const activeOrdersContainer = document.getElementById('active-orders-container');
-    const modalElement = document.getElementById('order-details-modal');
-    const bootstrapModal = new bootstrap.Modal(modalElement);
+/**
+ * configura los eventos de la pagina por ej abrir el modal de detalles
+ * y manejar las acciones dentro de el.cambiar cantidades, guardar.....)
+ */
+function configurarAccionesDePedidos() {
+    const contenedorPedidosActivos = document.getElementById('active-orders-container');
+    const elementoModal = document.getElementById('order-details-modal');
+    
+    if (!contenedorPedidosActivos || !elementoModal) return;
 
-    // Listener para abrir el modal
-    activeOrdersContainer.addEventListener('click', async (event) => {
-        const targetButton = event.target.closest('.btn-outline-primary');
-        if (!targetButton) return;
+    const instanciaModal = new bootstrap.Modal(elementoModal);
 
-        const orderId = targetButton.dataset.orderId;
-        if (!orderId) return;
+    // variable q guarda una copia de la orden que estamos editando tipo testigo
+    let pedidoEnEdicion = null;
 
-        const orderDetails = await getOrderById(orderId);
-        if (!orderDetails) {
-            showNotification("No se pudieron cargar los detalles de la orden.");
+    // listener para abrir el modal al hacer clic en ver detalle/modificar
+    contenedorPedidosActivos.addEventListener('click', async (event) => {
+        const botonVerDetalle = event.target.closest('.btn-outline-primary');
+        if (!botonVerDetalle) return;
+
+        const ordenId = botonVerDetalle.dataset.orderId;
+        if (!ordenId) return;
+
+        const detallesDelPedido = await getOrderById(ordenId);
+        if (!detallesDelPedido) {
+            mostrarNot("No se pudieron cargar los detalles de la orden.", 'error');
             return;
         }
+        
+        // copia para poder modificarla sin afectar el estado original.
+        pedidoEnEdicion = JSON.parse(JSON.stringify(detallesDelPedido));
 
-        renderOrderModal(orderDetails);
-        bootstrapModal.show();
+        renderOrderModal(detallesDelPedido);
+        instanciaModal.show();
     });
 
-    // Listener para las acciones DENTRO del modal
-    modalElement.addEventListener('click', async (event) => {
-        const target = event.target;
+    // Listener para todas las acciones DENTRO del modal
+    elementoModal.addEventListener('click', async (event) => {
+        const objetivo = event.target;
 
-        // Lógica para botones + y -
-        if (target.classList.contains('modal-quantity-btn')) {
-            const action = target.dataset.action;
-            const listItem = target.closest('li');
-            const quantitySpan = listItem.querySelector('.item-quantity');
-            let quantity = parseInt(listItem.dataset.quantity);
+        if (objetivo.classList.contains('modal-quantity-btn')) {
+            const elementoLista = objetivo.closest('li');
+            const platoId = elementoLista.dataset.itemId;
+            const itemEnEstado = pedidoEnEdicion.items.find(item => item.dish.id === platoId);
+            if (!itemEnEstado) return;
 
-            if (action === 'increase') {
-                quantity++;
-            } else if (action === 'decrease' && quantity > 0) {
-                quantity--;
+            const accion = objetivo.dataset.action;
+            if (accion === 'increase') {
+                itemEnEstado.quantity++;
+            } else if (accion === 'decrease' && itemEnEstado.quantity > 0) {
+                itemEnEstado.quantity--;
             }
-
-            listItem.dataset.quantity = quantity;
-            quantitySpan.textContent = quantity;
+            
+            elementoLista.dataset.quantity = itemEnEstado.quantity;
+            elementoLista.querySelector('.item-quantity').textContent = itemEnEstado.quantity;
         }
 
-        // Lógica para el botón "Guardar Cambios"
-        if (target.id === 'save-changes-btn') {
-            const button = target;
-
-            // ¡LA CORRECCIÓN ESTÁ AQUÍ! Obtenemos el orderId desde el botón de guardar,
-            // donde lo pusimos en el renderOrderModal.
-            const orderId = button.dataset.orderId;
-
-            // Verificación extra para asegurarnos de que tenemos el ID
-            if (!orderId) {
-                showNotification("Error crítico: No se pudo identificar el número de orden.");
+        if (objetivo.id === 'save-changes-btn') {
+            const botonGuardar = objetivo;
+            const ordenId = botonGuardar.dataset.orderId;
+            if (!ordenId) {
+                mostrarNot("Error: No se pudo identificar la orden.", 'error');
                 return;
             }
 
-            button.disabled = true;
-            button.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Guardando...`;
+            botonGuardar.disabled = true;
+            botonGuardar.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Guardando...`;
+            
+            // hago la peticion usando nuestra variable pedidoEnEdicion como fuente de verdad
+            const datosParaActualizar = {
+                items: pedidoEnEdicion.items
+                    .filter(item => item.quantity > 0)
+                    .map(item => ({ id: item.dish.id, quantity: item.quantity, notes: item.notes || '' }))
+            };
+            
+            const resultado = await updateOrder(ordenId, datosParaActualizar);
 
-            const itemsToUpdate = [];
-            document.querySelectorAll('#modal-item-list li').forEach(item => {
-                const quantity = parseInt(item.dataset.quantity);
-                if (quantity > 0) {
-                    itemsToUpdate.push({
-                        id: item.dataset.itemId,
-                        quantity: quantity
-                    });
-                }
-            });
+            botonGuardar.disabled = false;
+            botonGuardar.innerHTML = 'Guardar Cambios';
 
-            const updateRequest = { items: itemsToUpdate };
-            const result = await updateOrder(orderId, updateRequest);
-
-            button.disabled = false;
-            button.innerHTML = 'Guardar Cambios';
-
-            if (result.error) {
-                showNotification(`Error al guardar: ${result.error}`);
+            if (resultado.error) {
+                mostrarNot(`Error al guardar: ${resultado.error}`, 'error');
             } else {
-                showNotification(`Orden #${orderId} actualizada con éxito.`);
-                bootstrapModal.hide();
-                loadActiveOrders();
+                mostrarNot(`Orden #${ordenId} actualizada con éxito.`);
+                instanciaModal.hide();
+                await cargarPedidosActivos(); // await para asegurar que se refresque
             }
         }
     });
 }
-export function initMyOrders() {
-    // 1. Carga las órdenes guardadas al iniciar la página.
-    loadActiveOrders();
 
-    // 2. Activa los listeners para los botones "Ver Detalle" y las acciones del modal.
-    initMyOrdersActions();
+/**
+ * punto de entrada para la pagina mis pedidos
+ */
+export function initMyOrders() {
+    cargarPedidosActivos();
+    configurarAccionesDePedidos();
 }

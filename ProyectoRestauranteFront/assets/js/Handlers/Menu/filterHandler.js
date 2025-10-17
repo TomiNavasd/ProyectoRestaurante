@@ -2,46 +2,58 @@ import { state } from '../../state.js';
 import { getDishes } from '../../APIs/DishApi.js';
 import { renderDishes } from '../../Components/renderDishes.js';
 
-
-// Función helper para no repetir código
-async function applyFiltersAndRender() {
-    const activeDishes = await getDishes(state.currentFilter);
-    renderDishes(activeDishes);
+/**
+ * agarra los filtros actuales del state pide los platos a la api y los vuelve a mostrar
+ * (lo cree para no repetir codigo)
+ */
+async function aplicarFiltrosYRenderear() {
+    // le pasamos el objeto completo de filtros a la api
+    const platosFiltrados = await getDishes(state.currentFilter);
+    renderDishes(platosFiltrados);
 }
 
+/**
+ * punto de entrada para configurar todos los manejadores de eventos de los filtros
+ */
 export function initFilters() {
-    const filtersContainer = document.getElementById('filters-container');
-    const searchInput = document.getElementById('search-input');
-    const sortByPriceSelect = document.getElementById('sort-by-price'); // <-- NUEVO
-    let debounceTimeout;
+    const contenedorCategorias = document.getElementById('filters-container');
+    const inputBusqueda = document.getElementById('search-input');
+    const selectOrdenarPrecio = document.getElementById('sort-by-price');
+    
+    // variable para no sobrecargar la api con búsquedas
+    let retrasoBusqueda;
 
-    // Listener para los botones de categoría
-    filtersContainer.addEventListener('click', async (event) => {
+    contenedorCategorias.addEventListener('click', async (event) => {
         if (event.target.tagName !== 'BUTTON') return;
         
-        const categoryId = event.target.dataset.categoryId;
-        state.currentFilter.category = categoryId;
+        const categoriaId = event.target.dataset.categoryId;
+        state.currentFilter.category = categoriaId;
         
-        const currentActive = filtersContainer.querySelector('.active');
-        if (currentActive) currentActive.classList.remove('active');
+        // quitamos la clase active del botón anterior y la ponemos en el nuevo
+        const botonActivo = contenedorCategorias.querySelector('.active');
+        if (botonActivo) {
+            botonActivo.classList.remove('active');
+        }
         event.target.classList.add('active');
         
-        await applyFiltersAndRender();
+        await aplicarFiltrosYRenderear();
     });
 
-    // Listener para la barra de búsqueda
-    searchInput.addEventListener('input', (event) => {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(async () => {
+    // listener para la barra de búsqueda por nombre.
+    inputBusqueda.addEventListener('input', (event) => {
+        // ejemplo de debounce- esperamos 300ms despues de que el usuario deja de teclear
+        // antes de lanzar la busqueda. asi evitamos hacer una llamada a la api por cada letra
+        clearTimeout(retrasoBusqueda);
+        retrasoBusqueda = setTimeout(async () => {
             state.currentFilter.name = event.target.value;
-            await applyFiltersAndRender();
+            await aplicarFiltrosYRenderear();
         }, 300);
     });
 
-    // --- NUEVO: Listener para el dropdown de ordenamiento ---
-    sortByPriceSelect.addEventListener('change', async (event) => {
-        const sortValue = event.target.value;
-        state.currentFilter.sortByPrice = sortValue || null; // Si el valor es "", lo guardamos como null
-        await applyFiltersAndRender();
+    // listener el selector de ordenamiento por precio.
+    selectOrdenarPrecio.addEventListener('change', async (event) => {
+        const valorSeleccionado = event.target.value;
+        state.currentFilter.sortByPrice = valorSeleccionado || null;
+        await aplicarFiltrosYRenderear();
     });
 }
