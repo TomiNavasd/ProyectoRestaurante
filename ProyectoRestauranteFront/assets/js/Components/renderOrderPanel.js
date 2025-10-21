@@ -24,6 +24,19 @@ export function renderOrderPanel(orders) {
 
     // iteramos sobre cada orden para construir html
     for (const order of orders) {
+
+        const isPending = order.status.id === 1; // Verificamos si la orden está pendiente
+
+        // --- LÓGICA PARA BOTONES DE CANCELACIÓN ---
+        let cancelButtonHtml = '';
+        if (isPending) {
+            cancelButtonHtml = `
+                <button class="btn btn-sm btn-outline-danger cancel-order-btn ms-2"
+                        data-order-id="${order.orderNumber}">
+                    Cancelar Orden
+                </button>
+            `;
+        }
         // logica para mostrar el botón Entregar solo si la orden está lista
         let deliverButtonHtml = '';
         if (order.status.id === 3) {
@@ -52,6 +65,7 @@ export function renderOrderPanel(orders) {
                         </button>
 
                         ${deliverButtonHtml}
+                        ${cancelButtonHtml}
                     </div>
                 </div>
                 <div class="card-body">
@@ -60,7 +74,10 @@ export function renderOrderPanel(orders) {
                             <li class="list-group-item d-flex justify-content-between align-items-center" data-item-id="${item.id}">
                                 <span>${item.quantity}x ${item.dish.name} (${item.status.name})</span>
                                 <div class="btn-group">
-                                    ${item.status.id === 1 ? `<button class="btn btn-sm btn-warning status-action-btn" data-order-id="${order.orderNumber}" data-item-id="${item.id}" data-new-status="2">Preparar</button>` : ''}
+                                    ${item.status.id === 1 ? `
+                                            <button class="btn btn-sm btn-warning status-action-btn" data-order-id="${order.orderNumber}" data-item-id="${item.id}" data-new-status="2">Preparar</button>
+                                            <button class="btn btn-sm btn-danger cancel-item-btn" data-order-id="${order.orderNumber}" data-item-id="${item.id}">X</button>
+                                        ` : ''}
                                     ${item.status.id === 2 ? `<button class="btn btn-sm btn-success status-action-btn" data-order-id="${order.orderNumber}" data-item-id="${item.id}" data-new-status="3">Terminar</button>` : ''}
                                 </div>
                             </li>

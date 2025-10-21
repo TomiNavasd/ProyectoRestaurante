@@ -113,3 +113,37 @@
     padding-bottom: 0.5rem;
     margin-bottom: 1rem;
 }
+
+/* --- ESTILOS PARA SWITCH DE INACTIVOS --- */
+#inactive-toggle-container {
+    white-space: nowrap; /* Evita que "Ver Inactivos" se parta en dos líneas */
+    color: var(--color-texto-secundario);
+    font-family: var(--font-principal);
+    font-size: 0.9rem;
+}
+#inactive-toggle-container .form-check-input {
+    cursor: pointer;
+    border-color: #ccc;
+}
+#inactive-toggle-container .form-check-input:checked {
+    background-color: var(--color-principal-oscuro);
+    border-color: var(--color-principal-oscuro);
+}
+
+/* --- ESTILOS PARA PLATO INACTIVO --- */
+.plato-inactivo {
+    opacity: 0.65;
+    background-color: var(--color-fondo-secundario);
+}
+.plato-inactivo:hover {
+    /* Sobreescribimos el hover normal */
+    transform: none;
+    box-shadow: none;
+    border-color: var(--color-fondo-secundario);
+}
+.plato-inactivo .add-to-cart-btn {
+    /* El botón se mostrará gris y no interactivo */
+    background-color: var(--color-texto-secundario);
+    border-color: var(--color-texto-secundario);
+    cursor: not-allowed;
+}

@@ -103,7 +103,7 @@ namespace ProyectoRestaurante.Controller
             }
         }
 
-        // PATCH: api/v1/order/1001
+        // PUT: api/v1/order/1001
         /// <summary>
         /// Actualizar una orden existente
         /// </summary>

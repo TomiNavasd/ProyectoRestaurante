@@ -127,3 +127,44 @@
     border-color: var(--color-acento-oro);
     transform: none;
 }
+
+/* --- FILTROS Y BÚSQUEDA --- */
+#filters-container .form-control,
+#filters-container .form-select {
+    border-radius: 0.5rem;
+    border-color: var(--color-fondo-secundario);
+    font-family: var(--font-secundaria);
+    padding: 0.6rem 1rem; /* Más altura */
+}
+
+#filters-container .form-control:focus,
+#filters-container .form-select:focus {
+    border-color: var(--color-acento-oro);
+    box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+}
+
+#filters-container .input-group-text {
+    background-color: var(--color-fondo-principal);
+    border-color: var(--color-fondo-secundario);
+    color: var(--color-texto-secundario);
+    border-radius: 0.5rem 0 0 0.5rem; /* Redondeado */
+}
+
+/* Ajuste para que el input de búsqueda también redondee la esquina derecha */
+#filters-container input[type="search"] {
+    border-radius: 0 0.5rem 0.5rem 0 !important;
+}
+
+#filters-container .form-select {
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+/* --- ESTILO PARA ÍTEM MARCADO PARA BORRAR --- */
+.item-marked-for-deletion {
+    opacity: 0.6;
+    background-color: var(--color-fondo-secundario);
+}
+
+.item-marked-for-deletion span {
+    text-decoration: line-through;
+}

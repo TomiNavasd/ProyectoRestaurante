@@ -100,3 +100,14 @@
     background-color: var(--color-acento-oro);
     color: var(--color-principal-oscuro);
     }
+    
+
+        /* --- ESTILO PARA ÍTEM MARCADO PARA BORRAR --- */
+    .item-marked-for-deletion {
+        opacity: 0.6;
+        background-color: var(--color-fondo-secundario);
+    }
+
+    .item-marked-for-deletion span {
+        text-decoration: line-through;
+    }

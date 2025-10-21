@@ -30,17 +30,21 @@ export function renderDishes(platos) {
     // mappeo
     contenedor.innerHTML = platos.map(plato => `
         <div class="col">
-            <div class="card h-100 dish-card">
+            <div class="card h-100 dish-card ${!plato.isActive ? 'plato-inactivo' : ''}">
                 <img src="${obtenerImagen(plato.image)}" class="card-img-top" alt="${plato.name}">
                 <div class="card-body d-flex flex-column">
                     <div>
-                        <h5 class="dish-name">${plato.name}</h5>
+                        <h5 class="dish-name">${plato.name} ${!plato.isActive ? '<span style="font-size: 0.9rem; font-weight: 300;">(Inactivo)</span>' : ''}</h5>
                         <p class="dish-description">${plato.description || ''}</p>
                     </div>
                     <div class="mt-auto pt-3">
                         <p class="dish-price">$${plato.price.toFixed(2)}</p>
-                        <button class="btn btn-primary w-100 add-to-cart-btn" data-dish-id="${plato.id}">
-                            Agregar a la Comanda
+                        <button 
+                            class="btn ${!plato.isActive ? 'btn-secondary' : 'btn-primary'} w-100 add-to-cart-btn" 
+                            data-dish-id="${plato.id}"
+                            ${!plato.isActive ? 'disabled' : ''}
+                        >
+                            ${!plato.isActive ? 'No disponible' : 'Agregar a la Comanda'}
                         </button>
                     </div>
                 </div>

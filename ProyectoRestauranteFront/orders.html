@@ -29,6 +29,23 @@
 
    <main class="container mt-5">
         <h1 class="orders-title">Mis Pedidos</h1>
+        
+        <div class="row mb-4" id="filters-container">
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text" id="search-icon"><i class="bi bi-search"></i></span>
+                    <input type="search" class="form-control" placeholder="Buscar por N° de Orden (ej: 40004)" id="order-search-input" aria-label="Buscar" aria-describedby="search-icon">
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="input-group">
+                    <label class="input-group-text" for="order-status-filter"><i class="bi bi-filter-circle"></i></label>
+                    <select class="form-select" id="order-status-filter">
+                        <option value="all" selected>Filtrar por estado (Todos)</option>
+                        </select>
+                </div>
+            </div>
+        </div>
 
         <ul class="nav nav-tabs" id="ordersTab" role="tablist">
             <li class="nav-item" role="presentation">
@@ -85,7 +102,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="confirm-dishes-btn">Volver a la Orden</button>
+                    <button type="button" class="btn btn-primary" id="confirm-dishes-btn" data-bs-toggle="modal" data-bs-target="#order-details-modal">Volver a la Orden</button>
                 </div>
             </div>
         </div>

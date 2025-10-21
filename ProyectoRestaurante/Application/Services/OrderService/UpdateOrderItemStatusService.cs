@@ -1,9 +1,10 @@
-﻿using Application.Interfaces.IOrder;
+﻿using Application.Enums;
+using Application.Exceptions;
+using Application.Interfaces.IOrder;
 using Application.Interfaces.IOrder.IOrderService;
+using Application.Interfaces.IStatus;
 using Application.Models.Request;
 using Application.Models.Responses.Order;
-using Application.Exceptions;
-using Application.Interfaces.IStatus;
 
 namespace Application.Services.OrderService
 {
@@ -51,7 +52,8 @@ namespace Application.Services.OrderService
                 (1, 2) => true, // Pending -> In preparation
                 (2, 3) => true, // In preparation -> Ready
                 (3, 4) => true, // Ready -> Delivered
-                (4, 5) => true, // Delivered -> Closed
+
+                (1, 5) => true, // Pendiente -> Cancelado/Cerrado
                 _ => false      // Cualquier otra transición no es válida
             };
 
@@ -62,22 +64,38 @@ namespace Application.Services.OrderService
 
             // Actualizar el estado del item y la fecha de la orden
             itemToUpdate.Status = newStatus;
-            order.UpdateDate = DateTime.UtcNow;
 
-            // VERIFICAR SI TODOS LOS ITEMS AHORA TIENEN EL MISMO ESTADO
-            var firstItemStatus = order.OrderItems.First().Status;
-
-            // Luego, usamos All() para comprobar si todos los demás ítems coinciden.
-            var allItemsHaveSameStatus = order.OrderItems.All(item => item.Status == firstItemStatus);
-
-            if (allItemsHaveSameStatus)
+            // CAMBIO CLAVE 2: Recalcular el precio total de la orden.
+            decimal newTotal = 0;
+            foreach (var item in order.OrderItems)
             {
-                // Si todos los items están en estado "3",
-                // la orden principal también pasará a estado "3".
-                order.OverallStatus = firstItemStatus;
+                // Solo sumamos los ítems que NO están cancelados/cerrados.
+                if (item.Status != (int)StatusOrderEnum.Closed)
+                {
+                    // Es crucial que item.Dish no sea nulo, por eso el cambio en la consulta.
+                    if (item.Dish != null)
+                    {
+                        newTotal += item.Dish.Price * item.Quantity;
+                    }
+                }
             }
 
-            // GUARDAR TODOS LOS CAMBIOS
+            // Asignamos el nuevo precio y la fecha de actualización.
+            order.Price = newTotal;
+            order.UpdateDate = DateTime.UtcNow;
+
+            // Lógica mejorada para el estado general de la orden
+            var activeItems = order.OrderItems.Where(i => i.Status != (int)StatusOrderEnum.Closed).ToList();
+            if (activeItems.Any() && activeItems.All(i => i.Status == activeItems.First().Status))
+            {
+                order.OverallStatus = activeItems.First().Status;
+            }
+            else if (!activeItems.Any()) // Si no quedan items activos
+            {
+                order.OverallStatus = (int)StatusOrderEnum.Closed;
+            }
+
+            // Guardar todos los cambios en la orden y sus ítems.
             await _orderCommand.UpdateOrder(order);
 
             return new OrderUpdateResponse

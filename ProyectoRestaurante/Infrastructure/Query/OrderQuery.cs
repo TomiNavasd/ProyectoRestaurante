@@ -22,6 +22,7 @@ namespace Infrastructure.Query
         {
             return await _context.Orders
                          .Include(order => order.OrderItems)
+                         .ThenInclude(oi => oi.Dish)
                          .FirstOrDefaultAsync(order => order.OrderId == id);
         }
 

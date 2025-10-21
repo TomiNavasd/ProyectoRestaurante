@@ -4,19 +4,46 @@ import { renderOrderModal } from '../../Components/renderOrderModal.js';
 import { mostrarNot } from '../../notification.js';
 
 /**
- * carga ordenes desde la api las filtra para el historial y las muestra en pantalla
- * @param {object} filtros filtro de fechas
+ * Carga órdenes desde la API (solo con filtro de fecha) y luego
+ * aplica los filtros de búsqueda y estado en el cliente.
  */
-async function cargarHistorial(filtros = {}) {
+async function cargarHistorial(filtrosAPI = {}) {
     const contenedor = document.getElementById('history-orders-container');
     contenedor.innerHTML = `<p class="text-center">Cargando historial...</p>`;
+
+    // --- 1. LLAMAR A LA API (SOLO CON FILTROS DE FECHA) ---
+    const todasLasOrdenes = await getOrders(filtrosAPI);
     
-    const todasLasOrdenes = await getOrders(filtros);
+    // --- 2. FILTRAR PRIMERO POR ESTADOS DE HISTORIAL (4 y 5) ---
+    // (Asumiendo 4 = Entregado/Delivery, 5 = Cerrado/Closed)
+    let ordenesBaseHistorial = todasLasOrdenes.filter(
+        orden => orden.status.id === 4 || orden.status.id === 5
+    );
+
+    // --- 3. LEER FILTROS DEL DOM ---
+    const searchText = document.getElementById('history-search-input').value.trim();
+    const statusId = document.getElementById('history-status-filter').value;
+
+    // --- 4. APLICAR FILTROS ADICIONALES ---
+    let ordenesFiltradas = ordenesBaseHistorial;
+
+    // (A) Filtro de Búsqueda por N° de Orden
+    if (searchText) {
+        ordenesFiltradas = ordenesFiltradas.filter(orden =>
+            orden.orderNumber.toString().includes(searchText)
+        );
+    }
+
+    // (B) Filtro de Estado
+    if (statusId !== 'all') {
+        // Si se seleccionó "Closed" (5) o "Delivery" (4)
+        ordenesFiltradas = ordenesFiltradas.filter(orden => 
+            orden.status.id == statusId
+        );
+    }
     
-    // historial solo muestra ordenes que ya fueron entregadas ID 4
-    const ordenesDelHistorial = todasLasOrdenes.filter(orden => orden.status.id >= 4);
-    // reutilizamos el componente renderOrders pero le indicamos que no es editable
-    renderOrders(ordenesDelHistorial, 'history-orders-container', 'No se encontraron órdenes para las fechas seleccionadas.', false);
+    // --- 5. RENDERIZAR ---
+    renderOrders(ordenesFiltradas, 'history-orders-container', 'No se encontraron órdenes que coincidan con los filtros.', false);
 }
 
 /**
@@ -52,12 +79,17 @@ function activarModalDetalles() {
 }
 
 /**
+ * --- 4. FUNCIÓN ACTUALIZADA ---
  * punto de entrada para inicializar toda la pagina de historial
  */
 export function initHistoryPage() {
     const botonFiltrar = document.getElementById('filter-btn');
+    // --- Añadir selectores para nuevos filtros ---
+    const searchInput = document.getElementById('history-search-input');
+    const statusFilter = document.getElementById('history-status-filter');
     
-    botonFiltrar.addEventListener('click', () => {
+    // --- Función centralizada para filtrar ---
+    const ejecutarFiltro = () => {
         const fechaDesde = document.getElementById('date-from').value;
         const fechaHasta = document.getElementById('date-to').value;
 
@@ -70,8 +102,18 @@ export function initHistoryPage() {
             filtros.to = `${fechaHasta}T23:59:59`;
         }
         
+        // La función cargarHistorial ahora leerá los otros filtros (search, status)
         cargarHistorial(filtros);
-    });
+    };
+
+    // --- Asignar listeners a TODOS los filtros ---
+    botonFiltrar.addEventListener('click', ejecutarFiltro);
+    searchInput.addEventListener('input', ejecutarFiltro); // Se filtra al escribir
+    statusFilter.addEventListener('change', ejecutarFiltro); // Se filtra al cambiar
+    // También filtramos si cambian las fechas, para no depender solo del botón
+    document.getElementById('date-from').addEventListener('change', ejecutarFiltro);
+    document.getElementById('date-to').addEventListener('change', ejecutarFiltro);
+
 
     cargarHistorial(); // carga sin filtro
     activarModalDetalles(); // logica de detalles

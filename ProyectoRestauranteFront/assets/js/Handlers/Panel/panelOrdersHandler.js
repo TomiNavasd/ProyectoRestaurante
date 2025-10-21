@@ -4,6 +4,7 @@ import { renderOrderPanel } from '../../Components/renderOrderPanel.js';
 import { renderOrderModal } from '../../Components/renderOrderModal.js';
 import { renderDishesToModal } from '../../Components/renderAddDishesModal.js';
 import { mostrarNot } from '../../notification.js';
+import { mostrarConfirm } from '../../confirmation.js';
 
 //carga de las ordenes
 async function refrescarPanel() {
@@ -27,7 +28,7 @@ function configurarAccionesDelPanel() {
 
     // unico listener en el main para manejar todos los clics de las tarjetas de ordenes
     contenedorPrincipal.addEventListener('click', async (event) => {
-        const boton = event.target.closest('.view-details-btn, .status-action-btn, .order-action-btn');
+        const boton = event.target.closest('.view-details-btn, .status-action-btn, .order-action-btn, .cancel-order-btn, .cancel-item-btn');
         if (!boton) return;
 
         //logica para el boton ver detalles
@@ -38,7 +39,10 @@ function configurarAccionesDelPanel() {
             if (detallesDeLaOrden) {
                 // se crea una copia para poder modificarla sin afectar otros datos
                 ordenEnEdicion = JSON.parse(JSON.stringify(detallesDeLaOrden));
-                renderOrderModal(detallesDeLaOrden);
+                
+                // Usamos la COPIA (ordenEnEdicion) para renderizar
+                renderOrderModal(ordenEnEdicion); 
+                
                 instanciaModalDetalles.show();
             } else {
                 mostrarNot('No se pudieron cargar los detalles de la orden.', 'error');
@@ -67,7 +71,6 @@ function configurarAccionesDelPanel() {
             const tarjetaOrden = boton.closest('.card');
             const elementosItem = tarjetaOrden.querySelectorAll('.list-group-item');
 
-            // usamos un bucle para procesar los items en secuencia
             for (const item of elementosItem) {
                 const itemId = item.dataset.itemId;
                 if (itemId) {
@@ -77,7 +80,49 @@ function configurarAccionesDelPanel() {
             mostrarNot(`¡Orden #${ordenId} marcada como entregada!`);
             await refrescarPanel();
         }
+
+        // --- LÓGICA PARA CANCELAR ORDEN COMPLETA ---
+        if (boton.classList.contains('cancel-order-btn')) {
+            const ordenId = boton.dataset.orderId;
+            
+            const confirmado = await mostrarConfirm(`¿Estás seguro de que quieres CANCELAR la orden #${ordenId} completa?`);
+
+            if (confirmado) { 
+                boton.disabled = true;
+                const tarjetaOrden = boton.closest('.card');
+                const elementosItem = tarjetaOrden.querySelectorAll('.list-group-item');
+
+                for (const itemEl of elementosItem) {
+                    const itemId = itemEl.dataset.itemId;
+                    if (itemId) {
+                        await updateOrderItemStatus(ordenId, itemId, 5);
+                    }
+                }
+                mostrarNot(`Orden #${ordenId} cancelada con éxito.`);
+                await refrescarPanel();
+            }
+        }
+
+        // --- LÓGICA PARA CANCELAR UN ÍTEM INDIVIDUAL ---
+        if (boton.classList.contains('cancel-item-btn')) {
+            const { orderId, itemId } = boton.dataset;
+            
+            const confirmado = await mostrarConfirm(`¿Estás seguro de que quieres CANCELAR este ítem de la orden #${orderId}?`);
+            
+            if (confirmado) { 
+                boton.disabled = true;
+                const resultado = await updateOrderItemStatus(orderId, itemId, 5); // 5 = "Cancelado"
+                if (resultado.error) {
+                    mostrarNot(resultado.error, 'error');
+                } else {
+                    mostrarNot('Ítem cancelado con éxito.');
+                }
+                await refrescarPanel();
+            }
+        }
     });
+
+    
 
     //logica para el flujo entre modales Ver Detalles->Agregar platos->Volver a detalles
 
@@ -92,10 +137,21 @@ function configurarAccionesDelPanel() {
         if (botonAgregar && !botonAgregar.disabled) {
             const { dishId, dishName } = botonAgregar.dataset;
             const itemExistente = ordenEnEdicion.items.find(item => item.dish.id === dishId);
+            
             if (itemExistente) {
-                itemExistente.quantity++;
+                // Si está marcado para borrar (cant 0) y lo vuelve a agregar
+                if (itemExistente.quantity === 0) {
+                    itemExistente.quantity = 1;
+                } else {
+                    itemExistente.quantity++;
+                }
             } else {
-                ordenEnEdicion.items.push({ dish: { id: dishId, name: dishName }, quantity: 1, notes: '' });
+                ordenEnEdicion.items.push({ 
+                    dish: { id: dishId, name: dishName }, 
+                    quantity: 1, 
+                    notes: '',
+                    status: { id: 1, name: 'Pending' } 
+                });
             }
             botonAgregar.disabled = true;
             botonAgregar.textContent = 'Agregado';
@@ -105,19 +161,15 @@ function configurarAccionesDelPanel() {
         }
     });
 
-    modalAgregarPlatos.addEventListener('hidden.bs.modal', () => {
+    modalAgregarPlatos.addEventListener('hide.bs.modal', () => {
         renderOrderModal(ordenEnEdicion);
-        instanciaModalDetalles.show();
     });
     
     //logica para las interacciones dentro del modal de detalles
     modalDetallesOrden.addEventListener('click', async (event) => {
         const objetivo = event.target;
 
-        if (objetivo.matches('[data-bs-target="#add-dishes-modal"]')) {
-            instanciaModalDetalles.hide();
-        }
-
+        // ===== INICIO: CAMBIO #1 (Lógica Botón Cantidad) =====
         if (objetivo.classList.contains('modal-quantity-btn')) {
             const elementoLista = objetivo.closest('li');
             const platoId = elementoLista.dataset.itemId;
@@ -127,24 +179,35 @@ function configurarAccionesDelPanel() {
             const accion = objetivo.dataset.action;
             if (accion === 'increase') {
                 itemEnEstado.quantity++;
-            } else if (accion === 'decrease' && itemEnEstado.quantity > 0) {
+            } else if (accion === 'decrease' && itemEnEstado.quantity > 0) { // No deja bajar de 0
                 itemEnEstado.quantity--;
             }
 
+            // Actualizar el DOM en lugar de borrar
+            elementoLista.dataset.quantity = itemEnEstado.quantity;
+            elementoLista.querySelector('.item-quantity').textContent = itemEnEstado.quantity;
+            
+            const spanNombre = elementoLista.querySelector('.d-flex span'); // Selector del nombre
+
             if (itemEnEstado.quantity === 0) {
-                ordenEnEdicion.items = ordenEnEdicion.items.filter(item => item.dish.id !== platoId);
-                elementoLista.remove();
+                // Aplicar estilo de borrado
+                elementoLista.classList.add('item-marked-for-deletion');
+                if (spanNombre) spanNombre.classList.add('text-decoration-line-through');
             } else {
-                elementoLista.dataset.quantity = itemEnEstado.quantity;
-                elementoLista.querySelector('.item-quantity').textContent = itemEnEstado.quantity;
+                // Quitar estilo de borrado (si el usuario se arrepiente y presiona '+')
+                elementoLista.classList.remove('item-marked-for-deletion');
+                if (spanNombre) spanNombre.classList.remove('text-decoration-line-through');
             }
         }
+        // ===== FIN: CAMBIO #1 =====
         
+        // ===== INICIO: CAMBIO #2 (Lógica Botón Guardar) =====
         if (objetivo.id === 'save-changes-btn') {
             const ordenId = objetivo.dataset.orderId;
+            
             const datosParaActualizar = {
+                // ¡YA NO FILTRAMOS! Enviamos todos los ítems (incluidos los de cant 0)
                 items: ordenEnEdicion.items
-                    .filter(item => item.quantity > 0)
                     .map(item => ({ id: item.dish.id, quantity: item.quantity, notes: item.notes || '' }))
             };
 
@@ -164,6 +227,7 @@ function configurarAccionesDelPanel() {
                 await refrescarPanel();
             }
         }
+        // ===== FIN: CAMBIO #2 =====
     });
 
     modalDetallesOrden.addEventListener('input', (event) => {
@@ -176,7 +240,6 @@ function configurarAccionesDelPanel() {
         }
     });
 }
-
 
 export function initOrderStatusHandlers() {
     refrescarPanel();

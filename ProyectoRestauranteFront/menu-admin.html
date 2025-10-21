@@ -129,6 +129,22 @@
         </div>
     </div>
 
+    <div class="modal fade" id="confirmation-modal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="confirmationModalLabel"><i class="bi bi-question-circle-fill me-2"></i>Confirmación Requerida</h5>
+                </div>
+                <div class="modal-body" id="confirmation-modal-body" style="font-size: 1.1rem;">
+                    </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-outline-secondary" id="confirm-modal-btn-cancelar">Cancelar</button>
+                    <button type="button" class="btn btn-warning text-dark fw-semibold" id="confirm-modal-btn-confirmar">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="notification-modal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -144,6 +160,8 @@
         </div>
     </div>
     </div>
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="assets/js/Pages/MenuAdmin.js"></script>

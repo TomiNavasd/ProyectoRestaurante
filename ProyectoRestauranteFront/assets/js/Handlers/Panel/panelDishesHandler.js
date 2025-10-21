@@ -4,6 +4,7 @@ import { getCategories } from '../../APIs/CategoryApi.js';
 import { renderCategoryOptions } from '../../Components/renderCategories.js';
 import { renderAdminDishes } from '../../Components/renderAdminDishes.js';
 import { mostrarNot } from '../../notification.js';
+import { mostrarConfirm } from '../../confirmation.js';
 
 // actualiza vista de gestion con todos los platos de la base de datos
 async function refrescarPanelDePlatos() {
@@ -110,10 +111,11 @@ function iniciarGestionMenu() {
             const esDesactivar = accion === 'deactivate';
             const mensajeConfirmacion = `¿Estás seguro de que quieres ${esDesactivar ? 'DESACTIVAR' : 'ACTIVAR'} "${plato.name}"?`;
             
-            if (confirm(mensajeConfirmacion)) {
+            const confirmado = await mostrarConfirm(mensajeConfirmacion);
+            
+            if (confirmado) { // Usamos la variable 'confirmado'
                 let resultado;
                 if (esDesactivar) {
-                    // softdelete se hace a traves de la api
                     resultado = await deleteDish(dishId);
                 } else {
                     const datosParaActivar = {

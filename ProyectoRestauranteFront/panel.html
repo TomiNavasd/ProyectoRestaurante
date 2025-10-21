@@ -88,9 +88,25 @@
             </div>
             <div class="modal-footer bg-light">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-success fw-semibold" id="confirm-dishes-btn">Volver a la Orden</button>
+<button type="button" class="btn btn-success fw-semibold" id="confirm-dishes-btn" data-bs-toggle="modal" data-bs-target="#order-details-modal">Volver a la Orden</button>
             </div>
         </div>
+        </div>
+    </div>
+
+        <div class="modal fade" id="confirmation-modal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="confirmationModalLabel"><i class="bi bi-question-circle-fill me-2"></i>Confirmación Requerida</h5>
+                </div>
+                <div class="modal-body" id="confirmation-modal-body" style="font-size: 1.1rem;">
+                    </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-outline-secondary" id="confirm-modal-btn-cancelar">Cancelar</button>
+                    <button type="button" class="btn btn-warning text-dark fw-semibold" id="confirm-modal-btn-confirmar">Confirmar</button>
+                </div>
+            </div>
         </div>
     </div>
 

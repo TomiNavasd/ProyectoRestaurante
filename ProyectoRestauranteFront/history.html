@@ -40,6 +40,16 @@
                 <div class="col-auto"><input type="date" id="date-from" class="form-control"></div>
                 <div class="col-auto"><label for="date-to" class="form-label">Hasta:</label></div>
                 <div class="col-auto"><input type="date" id="date-to" class="form-control"></div>
+
+                <div class="col-md-3 col-sm-6">
+                    <input type="search" class="form-control" placeholder="Buscar por N° de Orden" id="history-search-input">
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <select class="form-select" id="history-status-filter">
+                        <option value="all" selected>Filtrar por estado (Todos)</option>
+                        </select>
+                </div>
+
                 <div class="col-auto ms-auto">
                     <button id="filter-btn" class="btn btn-primary"><i class="bi bi-funnel-fill"></i> Filtrar</button>
                 </div>
