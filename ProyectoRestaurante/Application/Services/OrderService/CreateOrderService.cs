@@ -73,6 +73,9 @@ namespace Application.Services.OrderService
             var dishIds = orderRequest.items.Select(i => i.id).ToList();
             var dishesFromDb = await _dishQuery.GetDishesByIds(dishIds);
 
+            // Convertir a Diccionario para búsqueda rápida (Opcional pero recomendado)
+            var dishDictionary = dishesFromDb.ToDictionary(d => d.DishId);
+
             if (dishesFromDb.Count != dishIds.Count)
                 throw new BadRequestException("Uno o más platos especificados no existen.");
 
@@ -91,6 +94,7 @@ namespace Application.Services.OrderService
                 CreateDate = DateTime.UtcNow
             };
             await _orderCommand.InsertOrder(order);
+            
             var listadeItems = orderRequest.items;
             var listaorderItems = listadeItems.Select(item => new OrderItem
             {
@@ -100,7 +104,9 @@ namespace Application.Services.OrderService
                 Status = 1,
                 Order = order.OrderId,
             }).ToList();
-            order.Price = await CalculateTotalPrice(listadeItems);
+
+            order.Price = CalculateTotalPrice(listadeItems, dishDictionary);
+
             await _orderItemCommand.InsertOrderItems(listaorderItems);
             await _orderCommand.UpdateOrder(order);
             
@@ -113,14 +119,21 @@ namespace Application.Services.OrderService
             };
 
         }
-        private async Task<decimal> CalculateTotalPrice(List<Items> orderItems)
+        private decimal CalculateTotalPrice(List<Items> orderItems, Dictionary<Guid, Dish> dishDictionary)
         {
             decimal totalPrice = 0;
             foreach (var item in orderItems)
             {
-                var dish = await _dishQuery.GetDishById(item.id);
-                totalPrice += dish.Price * item.quantity;
-                
+                // Busca el plato en el diccionario (mucho más rápido)
+                if (dishDictionary.TryGetValue(item.id, out var dish))
+                {
+                    totalPrice += dish.Price * item.quantity;
+                }
+                else
+                {
+                    // Esto no debería ocurrir si las validaciones anteriores están bien, pero es buena práctica
+                    throw new NotFoundException($"Plato con ID {item.id} no encontrado en la lista pre-cargada durante el cálculo del total.");
+                }
             }
             return totalPrice;
         }

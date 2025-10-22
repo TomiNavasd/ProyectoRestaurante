@@ -27,7 +27,7 @@ namespace Application.Services.OrderService
         }
         public async Task<OrderUpdateResponse> UpdateOrder(long orderId, OrderUpdateRequest ItemRequest)
         {
-            // Validacion 1 Orden Encontrada y Modificable
+
             var order = await _orderQuery.GetOrderById(orderId);
             if (order == null)
             {
@@ -54,7 +54,7 @@ namespace Application.Services.OrderService
                 throw new BadRequestException("Uno o más platos especificados no están disponibles.");
 
 
-            // Lista para los ítems que se van a borrar
+            // lista para los ítems que se van a borrar
             var itemsToRemove = new List<OrderItem>();
 
             foreach (var itemRequest in ItemRequest.Items)
@@ -83,7 +83,7 @@ namespace Application.Services.OrderService
                             Notes = itemRequest.notes,
                             Status = 1, // Pendiente
                         };
-                        order.OrderItems.Add(newItem); // EF rastrea esto como 'Added'
+                        order.OrderItems.Add(newItem);
                     }
                 }
                 else // itemRequest.quantity == 0
@@ -123,15 +123,15 @@ namespace Application.Services.OrderService
             {
                 orderNumber = (int) order.OrderId,
                 totalAmount = (double)order.Price,
-                updateAt = order.UpdateDate //modificar
+                updateAt = order.UpdateDate 
             };
         }
         private async Task<decimal> Calculate(List<OrderItem> newOrderItems)
         {
-            // 2. Obtenemos los IDs de TODOS los ítems en la lista
+            
             var dishIds = newOrderItems.Select(i => i.DishId).Distinct().ToList();
 
-            // 3. Usamos el _dishQuery de la clase para obtener TODOS los platos
+            
             var dishes = await _dishQuery.GetDishesByIds(dishIds);
             var dishObt = dishes.ToDictionary(d => d.DishId);
 
@@ -139,14 +139,13 @@ namespace Application.Services.OrderService
 
             foreach (var item in newOrderItems)
             {
-                // El resto de tu lógica funciona perfecto
                 if (dishObt.TryGetValue(item.DishId, out var dish))
                 {
                     total += dish.Price * item.Quantity;
                 }
                 else
                 {
-                    // (Es bueno tener un control por si algo falla)
+                    // por si algo falla
                     throw new NotFoundException($"No se pudo encontrar el precio del plato con ID {item.DishId} al recalcular el total.");
                 }
             }

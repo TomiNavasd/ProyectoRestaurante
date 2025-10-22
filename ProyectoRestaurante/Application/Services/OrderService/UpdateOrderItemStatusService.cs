@@ -36,7 +36,6 @@ namespace Application.Services.OrderService
                 throw new NotFoundException("Item no encontrado en la orden.");
             }
 
-            // El nuevo estado es válido (lanza 400)
             int newStatus = request.status;
             var statusExists = await _statusQuery.StatusExists(newStatus);
             if (!statusExists)
@@ -44,7 +43,6 @@ namespace Application.Services.OrderService
                 throw new BadRequestException("El estado especificado no es válido.");
             }
 
-            //Lógica del Flujo de Estados
             int currentStatus = itemToUpdate.Status;
 
             bool isValidTransition = (currentStatus, newStatus) switch
@@ -62,17 +60,15 @@ namespace Application.Services.OrderService
                 throw new BadRequestException($"No se puede cambiar de estado '{currentStatus}' a '{newStatus}'.");
             }
 
-            // Actualizar el estado del item y la fecha de la orden
             itemToUpdate.Status = newStatus;
 
-            // CAMBIO CLAVE 2: Recalcular el precio total de la orden.
             decimal newTotal = 0;
             foreach (var item in order.OrderItems)
             {
-                // Solo sumamos los ítems que NO están cancelados/cerrados.
+                // solo sumamos los ítems que NO están cancelados/cerrados.
                 if (item.Status != (int)StatusOrderEnum.Closed)
                 {
-                    // Es crucial que item.Dish no sea nulo, por eso el cambio en la consulta.
+                    // es crucial que item.Dish no sea nulo, por eso el cambio en la consulta.
                     if (item.Dish != null)
                     {
                         newTotal += item.Dish.Price * item.Quantity;
@@ -80,22 +76,21 @@ namespace Application.Services.OrderService
                 }
             }
 
-            // Asignamos el nuevo precio y la fecha de actualización.
+            // asignamos el nuevo precio y la fecha de actualización.
             order.Price = newTotal;
             order.UpdateDate = DateTime.UtcNow;
 
-            // Lógica mejorada para el estado general de la orden
             var activeItems = order.OrderItems.Where(i => i.Status != (int)StatusOrderEnum.Closed).ToList();
             if (activeItems.Any() && activeItems.All(i => i.Status == activeItems.First().Status))
             {
                 order.OverallStatus = activeItems.First().Status;
             }
-            else if (!activeItems.Any()) // Si no quedan items activos
+            else if (!activeItems.Any()) // si no quedan items activos
             {
                 order.OverallStatus = (int)StatusOrderEnum.Closed;
             }
 
-            // Guardar todos los cambios en la orden y sus ítems.
+            // guardar todos los cambios en la orden y sus ítems.
             await _orderCommand.UpdateOrder(order);
 
             return new OrderUpdateResponse
