@@ -19,8 +19,6 @@ export function initFilters() {
     const contenedorCategorias = document.getElementById('filters-container');
     const inputBusqueda = document.getElementById('search-input');
     const selectOrdenarPrecio = document.getElementById('sort-by-price');
-
-    // ===== NUEVO SELECTOR =====
     const switchInactivos = document.getElementById('show-inactive-toggle');
     
     // variable para no sobrecargar la api con búsquedas
@@ -59,11 +57,10 @@ export function initFilters() {
         state.currentFilter.sortByPrice = valorSeleccionado || null;
         await aplicarFiltrosYRenderear();
     });
-    // ===== NUEVO LISTENER AÑADIDO =====
     // listener para el switch de ver inactivos
     switchInactivos.addEventListener('change', async (event) => {
-        // Si está 'checked' (marcado), queremos ver TODOS (onlyActive = false)
-        // Si está 'unchecked' (desmarcado), queremos ver SOLO ACTIVOS (onlyActive = true)
+        // si está marcado queremos ver TODOS (onlyActive = false)
+        // si está desmarcado queremos ver SOLO ACTIVOS (onlyActive = true)
         state.currentFilter.onlyActive = !event.target.checked;
         
         // Llamamos a la función que actualiza la vista

@@ -56,7 +56,7 @@
     }
 
     /**
-     * Tipo de entrega con los datos que vienen de la API
+     * tipo de entrega con los datos que vienen de la API
      * @param {Array} deliveryTypes array los tipos de entrega (Delivery, take away...)
      */
     export function renderDeliveryTypes(deliveryTypes) {

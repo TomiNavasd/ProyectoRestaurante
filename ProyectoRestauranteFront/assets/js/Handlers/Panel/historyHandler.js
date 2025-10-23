@@ -4,45 +4,42 @@ import { renderOrderModal } from '../../Components/renderOrderModal.js';
 import { mostrarNot } from '../../notification.js';
 
 /**
- * Carga órdenes desde la API (solo con filtro de fecha) y luego
- * aplica los filtros de búsqueda y estado en el cliente.
+ * carga ordenes desde la api solo con filtro de fecha y despues
+ * aplica los filtros de busqueda y estado
  */
 async function cargarHistorial(filtrosAPI = {}) {
     const contenedor = document.getElementById('history-orders-container');
     contenedor.innerHTML = `<p class="text-center">Cargando historial...</p>`;
 
-    // --- 1. LLAMAR A LA API (SOLO CON FILTROS DE FECHA) ---
+    //llamar a la api
     const todasLasOrdenes = await getOrders(filtrosAPI);
     
-    // --- 2. FILTRAR PRIMERO POR ESTADOS DE HISTORIAL (4 y 5) ---
-    // (Asumiendo 4 = Entregado/Delivery, 5 = Cerrado/Closed)
+    // filtrar primero por estados
     let ordenesBaseHistorial = todasLasOrdenes.filter(
         orden => orden.status.id === 4 || orden.status.id === 5
     );
 
-    // --- 3. LEER FILTROS DEL DOM ---
+    //leer filtros del dom
     const searchText = document.getElementById('history-search-input').value.trim();
     const statusId = document.getElementById('history-status-filter').value;
 
-    // --- 4. APLICAR FILTROS ADICIONALES ---
+    //filtros adicionales
     let ordenesFiltradas = ordenesBaseHistorial;
 
-    // (A) Filtro de Búsqueda por N° de Orden
+    //filtro busqueda
     if (searchText) {
         ordenesFiltradas = ordenesFiltradas.filter(orden =>
             orden.orderNumber.toString().includes(searchText)
         );
     }
 
-    // (B) Filtro de Estado
+    //filtroestado
     if (statusId !== 'all') {
-        // Si se seleccionó "Closed" (5) o "Delivery" (4)
+        // solo 4 y 5 status
         ordenesFiltradas = ordenesFiltradas.filter(orden => 
             orden.status.id == statusId
         );
     }
-    
-    // --- 5. RENDERIZAR ---
     renderOrders(ordenesFiltradas, 'history-orders-container', 'No se encontraron órdenes que coincidan con los filtros.', false);
 }
 
@@ -79,16 +76,14 @@ function activarModalDetalles() {
 }
 
 /**
- * --- 4. FUNCIÓN ACTUALIZADA ---
  * punto de entrada para inicializar toda la pagina de historial
  */
 export function initHistoryPage() {
     const botonFiltrar = document.getElementById('filter-btn');
-    // --- Añadir selectores para nuevos filtros ---
     const searchInput = document.getElementById('history-search-input');
     const statusFilter = document.getElementById('history-status-filter');
     
-    // --- Función centralizada para filtrar ---
+    //funcion de filtrar
     const ejecutarFiltro = () => {
         const fechaDesde = document.getElementById('date-from').value;
         const fechaHasta = document.getElementById('date-to').value;
@@ -102,15 +97,13 @@ export function initHistoryPage() {
             filtros.to = `${fechaHasta}T23:59:59`;
         }
         
-        // La función cargarHistorial ahora leerá los otros filtros (search, status)
         cargarHistorial(filtros);
     };
 
     // --- Asignar listeners a TODOS los filtros ---
     botonFiltrar.addEventListener('click', ejecutarFiltro);
-    searchInput.addEventListener('input', ejecutarFiltro); // Se filtra al escribir
-    statusFilter.addEventListener('change', ejecutarFiltro); // Se filtra al cambiar
-    // También filtramos si cambian las fechas, para no depender solo del botón
+    searchInput.addEventListener('input', ejecutarFiltro); // se filtra al escribir
+    statusFilter.addEventListener('change', ejecutarFiltro); // se filtra al cambiar
     document.getElementById('date-from').addEventListener('change', ejecutarFiltro);
     document.getElementById('date-to').addEventListener('change', ejecutarFiltro);
 

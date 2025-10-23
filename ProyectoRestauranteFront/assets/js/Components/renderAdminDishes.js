@@ -1,5 +1,5 @@
 /**
- * Dibuja la lista de platos en el panel de gestión de menu
+ * dibuja la lista de platos en el panel de gestión de menu
  * @param {Array} platos lista de platos a mostrar.
  */
 export function renderAdminDishes(platos) {

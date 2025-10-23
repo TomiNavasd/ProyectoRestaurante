@@ -1,5 +1,5 @@
 /* --- CONTENEDOR PRINCIPAL Y ENCABEZADO --- */
-.history-container {
+.reports-container {
     background-color: #FFFFFF;
     border-radius: 12px;
     padding: 2rem;
@@ -31,8 +31,43 @@
     color: var(--color-texto-secundario);
 }
 
-/* --- TARJETA DE CADA ORDEN INDIVIDUAL --- */
-.order-card-history {
+.filter-bar .form-control,
+.filter-bar .form-select {
+    height: calc(1.5em + 0.75rem + 2px);
+}
+
+.filter-bar input[type="date"]:focus {
+    border-color: var(--color-acento-oro);
+    box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+}
+
+/* --- CAJA DE RESUMEN --- */
+.summary-box h4 {
+    font-family: var(--font-principal);
+    font-weight: 500;
+    color: var(--color-principal-oscuro);
+}
+.summary-box p {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+.summary-box strong {
+    color: var(--color-texto-principal);
+}
+#total-profit-display {
+    font-weight: bold;
+    color: var(--color-acento-verde);
+}
+
+/* --- TÍTULO LISTA DE ÓRDENES --- */
+.reports-container h4 {
+    font-family: var(--font-principal);
+    font-weight: 400;
+    color: var(--color-principal-oscuro);
+}
+
+/* --- TARJETAS DE ÓRDENES (Reutiliza estilo de history.css si es similar) --- */
+.order-card-report {
     background-color: #FFFFFF;
     border: 1px solid var(--color-fondo-secundario);
     border-radius: 8px;
@@ -40,12 +75,10 @@
     transition: all 0.2s ease-in-out;
     margin-bottom: 1rem;
 }
-
-.order-card-history:hover {
+.order-card-report:hover {
     border-color: var(--color-acento-oro);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
 }
-
 .order-card-header {
     display: flex;
     justify-content: space-between;
@@ -53,37 +86,21 @@
     flex-wrap: wrap;
     gap: 1rem;
 }
-
 .order-card-header .order-title {
     font-family: var(--font-principal);
     font-weight: 500;
     font-size: 1.2rem;
     margin: 0;
 }
-
 .order-card-info {
     font-size: 0.9rem;
     color: var(--color-texto-secundario);
     margin-top: 0.25rem;
 }
-
-/* --- ESTILO PARA EL BADGE DE ESTADO --- */
-.order-card-history .badge {
+.order-card-report .badge {
     background-color: var(--color-principal-oscuro) !important;
     color: #FFFFFF !important;
     font-size: 0.8rem;
     font-weight: 500;
     padding: 0.4em 0.8em;
-}
-
-/* --- ESTILOS PARA NUEVOS FILTROS --- */
-.filter-bar .form-control,
-.filter-bar .form-select {
-    height: calc(1.5em + 0.75rem + 2px);
-}
-
-.filter-bar input[type="search"]:focus,
-.filter-bar .form-select:focus {
-    border-color: var(--color-acento-oro);
-    box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
 }

@@ -113,7 +113,7 @@ function iniciarGestionMenu() {
             
             const confirmado = await mostrarConfirm(mensajeConfirmacion);
             
-            if (confirmado) { // Usamos la variable 'confirmado'
+            if (confirmado) { // usamos la variable confirmado
                 let resultado;
                 if (esDesactivar) {
                     resultado = await deleteDish(dishId);
@@ -145,8 +145,7 @@ export async function initDishAdminHandlers() {
 
     const categories = await getCategories();
     renderCategoryOptions(categories);
-    // para no tener que llamar a la api de categorias otra vez
-    // copiamos las opciones del primer select al segundo
+    // para no tener que llamar a la api de categorias otra vez copiamos las opciones del primer select al segundo
     document.getElementById('edit-dish-category').innerHTML = document.getElementById('dish-category').innerHTML;
 
     iniciarFormularioCrear();

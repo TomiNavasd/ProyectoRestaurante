@@ -38,24 +38,25 @@
         <h1 class="mb-4">Nuestro Menú</h1>
         
         <div class="row mb-4 align-items-center">
-            <div id="filters-container" class="col-md-6 mb-2"></div>
-            
-<div class="row mb-4 align-items-center">
-            <div id="filters-container" class="col-md-6 mb-2">
-                </div>
-            
-            <div class="col-md-6 d-flex gap-3 align-items-center">
-                <input type="text" id="search-input" class="form-control" placeholder="Buscar plato...">
-                
-                <select id="sort-by-price" class="form-select" style="width: 200px;">
-                    <option value="">Ordenar por...</option>
-                    <option value="asc">Menor precio</option>
-                    <option value="desc">Mayor precio</option>
-                </select>
+            <!-- filtros (izquierda) -->
+            <div id="filters-container" class="col-md-6 mb-3">
+                <!-- aquí tu JS añadirá los botones de filtro -->
+            </div>
 
-                <div class="form-check form-switch" id="inactive-toggle-container">
-                    <input class="form-check-input" type="checkbox" role="switch" id="show-inactive-toggle">
-                    <label class="form-check-label" for="show-inactive-toggle">Ver Inactivos</label>
+            <!-- buscador y orden (derecha) -->
+            <div class="col-md-6 mb-3">
+                <div class="d-flex justify-content-md-end align-items-center gap-3">
+                    <input type="text" id="search-input" class="form-control" placeholder="Buscar plato..." style="max-width:420px;">
+                    <select id="sort-by-price" class="form-select" style="width:180px;">
+                        <option value="">Ordenar por...</option>
+                        <option value="asc">Menor precio</option>
+                        <option value="desc">Mayor precio</option>
+                    </select>
+
+                    <div class="form-check form-switch d-flex align-items-center" id="inactive-toggle-container" style="white-space:nowrap;">
+                        <input class="form-check-input me-2" type="checkbox" role="switch" id="show-inactive-toggle">
+                        <label class="form-check-label" for="show-inactive-toggle">Ver Inactivos</label>
+                    </div>
                 </div>
             </div>
         </div>

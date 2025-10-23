@@ -4,15 +4,13 @@ import { initNotificationModal } from '../notification.js';
 import { getStatus } from '../APIs/StatusApi.js';
 
 /**
- * Rellena el dropdown de filtros de estado SOLO con estados de historial
+ * rellena el selector de filtros de estado solo con estados de historial
  */
 function rellenarFiltroDeEstados(estados) {
     const selectFiltro = document.getElementById('history-status-filter');
     if (!selectFiltro) return;
 
-    // ===== ¡LÓGICA CORREGIDA! =====
-    // Filtramos SOLO los estados que pertenecen al historial (ID 4 y 5)
-    // (Asumiendo 4='Entregado/Delivery', 5='Cerrado/Closed')
+    // filtro los estados que pertenecen al historial
     const estadosDelHistorial = estados.filter(estado => estado.id === 4 || estado.id === 5);
 
     estadosDelHistorial.forEach(estado => {
@@ -27,9 +25,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     initAdminNav();
     initNotificationModal();
     
-    // Cargar datos de estados
     const listaDeEstados = await getStatus();
-    rellenarFiltroDeEstados(listaDeEstados); // Rellenar solo con 4 y 5
+    rellenarFiltroDeEstados(listaDeEstados); // rellenar solo con 4 y 5
     
     initHistoryPage(); 
 });

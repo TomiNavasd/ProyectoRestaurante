@@ -9,7 +9,6 @@ import { mostrarNot } from '../../notification.js';
  * carga las ordenes desde localStorage las pide a la api y se clasifican en curso y en historial
  */
 async function cargarYClasificarPedidos() {
-    // ===== 1. LEER VALORES DE LOS FILTROS =====
     const searchText = document.getElementById('order-search-input').value.trim();
     const statusId = document.getElementById('order-status-filter').value;
 
@@ -20,7 +19,7 @@ async function cargarYClasificarPedidos() {
         return;
     }
 
-    // (Tu lógica de fetch se mantiene intacta)
+    //mapeo
     const promesasDeOrdenes = ordenesGuardadas.map(id => getOrderById(id));
     const resultados = await Promise.allSettled(promesasDeOrdenes);
     
@@ -28,24 +27,23 @@ async function cargarYClasificarPedidos() {
         .filter(resultado => resultado.status === 'fulfilled' && resultado.value !== null)
         .map(resultado => resultado.value);
 
-    // ===== 2. APLICAR FILTROS ANTES DE RENDERIZAR =====
+    //filtros antes de renderizar
     let ordenesFiltradas = ordenesValidas;
 
-    // Filtro de Búsqueda por N° de Orden
+    // filtro por nro de orden
     if (searchText) {
         ordenesFiltradas = ordenesFiltradas.filter(orden => 
             orden.orderNumber.toString().includes(searchText)
         );
     }
 
-    // Filtro de Estado
+    // filtro de status
     if (statusId !== 'all') {
         ordenesFiltradas = ordenesFiltradas.filter(orden => 
-            orden.status.id == statusId // '==' compara string con número
+            orden.status.id == statusId // == compara string con número
         );
     }
     
-    // (Tu lógica de clasificación ahora usa la lista filtrada)
     const ordenesActivas = ordenesFiltradas.filter(orden => orden.status.id < 4);
     const ordenesHistorial = ordenesFiltradas.filter(orden => orden.status.id >= 4);
     
@@ -84,7 +82,7 @@ function configurarDetallesDeOrden() {
         // se crea una copia profunda para poder modificarla sin afectar otros datos
         ordenEnEdicion = JSON.parse(JSON.stringify(detallesDeLaOrden));
         
-        // Renderizar con la copia (ordenEnEdicion)
+        // renderizar con la copia
         renderOrderModal(ordenEnEdicion);
         
         instanciaModalDetalles.show();
@@ -103,14 +101,14 @@ function configurarDetallesDeOrden() {
             const { dishId, dishName } = botonAgregar.dataset;
             const itemExistente = ordenEnEdicion.items.find(item => item.dish.id === dishId);
             if (itemExistente) {
-                // Si está marcado para borrar (cant 0) y lo vuelve a agregar
+                // si esta marcado para borrar y lo vuelve a agregar
                 if (itemExistente.quantity === 0) {
                     itemExistente.quantity = 1; 
                 } else {
                     itemExistente.quantity++;
                 }
             } else {
-                // Añadir 'status' por defecto
+                // añadir status por defecto
                 ordenEnEdicion.items.push({ 
                     dish: { id: dishId, name: dishName }, 
                     quantity: 1, 
@@ -124,7 +122,6 @@ function configurarDetallesDeOrden() {
 
     });
 
-    // Flujo de modales (hide.bs.modal y sin .show())
     modalAgregarPlatos.addEventListener('hide.bs.modal', () => {
         // se cierra el modal de agregar volvemos a renderizar el de detalles con la info actualizada
         renderOrderModal(ordenEnEdicion);
@@ -134,7 +131,6 @@ function configurarDetallesDeOrden() {
     modalDetalles.addEventListener('click', async (event) => {
         const objetivo = event.target;
 
-        // ===== INICIO: CAMBIO #1 (Lógica Botón Cantidad) =====
         if (objetivo.classList.contains('modal-quantity-btn')) {
             const elementoLista = objetivo.closest('li');
             const platoId = elementoLista.dataset.itemId;
@@ -144,35 +140,32 @@ function configurarDetallesDeOrden() {
             const accion = objetivo.dataset.action;
             if (accion === 'increase') {
                 itemEnEstado.quantity++;
-            } else if (accion === 'decrease' && itemEnEstado.quantity > 0) { // No deja bajar de 0
+            } else if (accion === 'decrease' && itemEnEstado.quantity > 0) { // hasta 0
                 itemEnEstado.quantity--;
             }
             
-            // Actualizar el DOM en lugar de borrar
+            // actualiza dom antes de borrar
             elementoLista.dataset.quantity = itemEnEstado.quantity;
             elementoLista.querySelector('.item-quantity').textContent = itemEnEstado.quantity;
             
-            const spanNombre = elementoLista.querySelector('.d-flex span'); // Selector del nombre
+            const spanNombre = elementoLista.querySelector('.d-flex span'); // selector del nombre
 
             if (itemEnEstado.quantity === 0) {
-                // Aplicar estilo de borrado
+                // aplicar estilo de borrado
                 elementoLista.classList.add('item-marked-for-deletion');
                 if (spanNombre) spanNombre.classList.add('text-decoration-line-through');
             } else {
-                // Quitar estilo de borrado (si el usuario se arrepiente y presiona '+')
+                // quitar estilo de borrado por si el usuario se arrepiente y agrega
                 elementoLista.classList.remove('item-marked-for-deletion');
                 if (spanNombre) spanNombre.classList.remove('text-decoration-line-through');
             }
         }
-        // ===== FIN: CAMBIO #1 =====
         
-        // ===== INICIO: CAMBIO #2 (Lógica Botón Guardar) =====
         if (objetivo.id === 'save-changes-btn') {
             const botonGuardar = objetivo;
             const ordenId = botonGuardar.dataset.orderId;
             
             const datosParaActualizar = {
-                // ¡YA NO FILTRAMOS! Enviamos todos los ítems (incluidos los de cant 0)
                 items: ordenEnEdicion.items
                     .map(item => ({ id: item.dish.id, quantity: item.quantity, notes: item.notes || '' }))
             };
@@ -191,10 +184,10 @@ function configurarDetallesDeOrden() {
                 await cargarYClasificarPedidos(); // await para asegurar que se refresque bien
             }
         }
-        // ===== FIN: CAMBIO #2 =====
+
     });
 
-    // Lógica de 'input' de notas (sin cambios)
+    // logica de input de notas
     modalDetalles.addEventListener('input', (event) => {
         if (event.target.classList.contains('modal-item-note')) {
             const input = event.target;
@@ -208,15 +201,14 @@ function configurarDetallesDeOrden() {
 }
 
 /**
- * Añade los listeners a los inputs de filtro.
- * (Esta función no cambia)
+ * añade los listeners a los inputs de filtro.
  */
 function configurarFiltros() {
     const searchInput = document.getElementById('order-search-input');
     const statusFilter = document.getElementById('order-status-filter');
 
     if (searchInput) {
-        // 'input' se dispara con cada tecla
+        // input se dispara con cada tecla
         searchInput.addEventListener('input', cargarYClasificarPedidos);
     }
     if (statusFilter) {

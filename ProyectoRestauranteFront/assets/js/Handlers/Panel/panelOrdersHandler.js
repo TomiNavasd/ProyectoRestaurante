@@ -40,7 +40,7 @@ function configurarAccionesDelPanel() {
                 // se crea una copia para poder modificarla sin afectar otros datos
                 ordenEnEdicion = JSON.parse(JSON.stringify(detallesDeLaOrden));
                 
-                // Usamos la COPIA (ordenEnEdicion) para renderizar
+                // usocopia para render
                 renderOrderModal(ordenEnEdicion); 
                 
                 instanciaModalDetalles.show();
@@ -81,7 +81,7 @@ function configurarAccionesDelPanel() {
             await refrescarPanel();
         }
 
-        // --- LÓGICA PARA CANCELAR ORDEN COMPLETA ---
+        // logica para cancelar orden completa
         if (boton.classList.contains('cancel-order-btn')) {
             const ordenId = boton.dataset.orderId;
             
@@ -103,7 +103,7 @@ function configurarAccionesDelPanel() {
             }
         }
 
-        // --- LÓGICA PARA CANCELAR UN ÍTEM INDIVIDUAL ---
+        // logica para cancelar un solo item
         if (boton.classList.contains('cancel-item-btn')) {
             const { orderId, itemId } = boton.dataset;
             
@@ -111,7 +111,7 @@ function configurarAccionesDelPanel() {
             
             if (confirmado) { 
                 boton.disabled = true;
-                const resultado = await updateOrderItemStatus(orderId, itemId, 5); // 5 = "Cancelado"
+                const resultado = await updateOrderItemStatus(orderId, itemId, 5); // 5 = cancelado
                 if (resultado.error) {
                     mostrarNot(resultado.error, 'error');
                 } else {
@@ -139,7 +139,7 @@ function configurarAccionesDelPanel() {
             const itemExistente = ordenEnEdicion.items.find(item => item.dish.id === dishId);
             
             if (itemExistente) {
-                // Si está marcado para borrar (cant 0) y lo vuelve a agregar
+                // si está marcado para borrar lo vuelve a agregar
                 if (itemExistente.quantity === 0) {
                     itemExistente.quantity = 1;
                 } else {
@@ -169,7 +169,6 @@ function configurarAccionesDelPanel() {
     modalDetallesOrden.addEventListener('click', async (event) => {
         const objetivo = event.target;
 
-        // ===== INICIO: CAMBIO #1 (Lógica Botón Cantidad) =====
         if (objetivo.classList.contains('modal-quantity-btn')) {
             const elementoLista = objetivo.closest('li');
             const platoId = elementoLista.dataset.itemId;
@@ -179,34 +178,28 @@ function configurarAccionesDelPanel() {
             const accion = objetivo.dataset.action;
             if (accion === 'increase') {
                 itemEnEstado.quantity++;
-            } else if (accion === 'decrease' && itemEnEstado.quantity > 0) { // No deja bajar de 0
+            } else if (accion === 'decrease' && itemEnEstado.quantity > 0) {
                 itemEnEstado.quantity--;
             }
 
-            // Actualizar el DOM en lugar de borrar
             elementoLista.dataset.quantity = itemEnEstado.quantity;
             elementoLista.querySelector('.item-quantity').textContent = itemEnEstado.quantity;
             
-            const spanNombre = elementoLista.querySelector('.d-flex span'); // Selector del nombre
+            const spanNombre = elementoLista.querySelector('.d-flex span');
 
             if (itemEnEstado.quantity === 0) {
-                // Aplicar estilo de borrado
                 elementoLista.classList.add('item-marked-for-deletion');
                 if (spanNombre) spanNombre.classList.add('text-decoration-line-through');
             } else {
-                // Quitar estilo de borrado (si el usuario se arrepiente y presiona '+')
                 elementoLista.classList.remove('item-marked-for-deletion');
                 if (spanNombre) spanNombre.classList.remove('text-decoration-line-through');
             }
         }
-        // ===== FIN: CAMBIO #1 =====
-        
-        // ===== INICIO: CAMBIO #2 (Lógica Botón Guardar) =====
+
         if (objetivo.id === 'save-changes-btn') {
             const ordenId = objetivo.dataset.orderId;
             
             const datosParaActualizar = {
-                // ¡YA NO FILTRAMOS! Enviamos todos los ítems (incluidos los de cant 0)
                 items: ordenEnEdicion.items
                     .map(item => ({ id: item.dish.id, quantity: item.quantity, notes: item.notes || '' }))
             };
@@ -227,7 +220,6 @@ function configurarAccionesDelPanel() {
                 await refrescarPanel();
             }
         }
-        // ===== FIN: CAMBIO #2 =====
     });
 
     modalDetallesOrden.addEventListener('input', (event) => {

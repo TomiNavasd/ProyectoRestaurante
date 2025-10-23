@@ -10,15 +10,15 @@ export function renderOrders(ordenes, idContenedor, mensajeVacio, esEditable = t
     const contenedor = document.getElementById(idContenedor);
     if (!contenedor) return;
 
-    // Si la lista de ordenes esta vacia, mostramos el mensaje y terminamos
+    // si lista ordenes vacia, mostramos el mensaje y terminamos
     if (!ordenes || ordenes.length === 0) {
         contenedor.innerHTML = `<p class="text-muted text-center p-4">${mensajeVacio}</p>`;
         return;
     }
 
     contenedor.innerHTML = ordenes.map(orden => {
-        // Chequeamos si la orden es parte del historial (Entregado o Cancelado).
-        // esto nos sirve para cambiar el color del badge de estado.
+        // chequear si la orden es parte del historial (Entregado o Cancelado).
+        // esto nos sirve para cambiar el color del botpn de estado.
         const esDelHistorial = orden.status.id >= 4;
         let htmlDelBoton;
 

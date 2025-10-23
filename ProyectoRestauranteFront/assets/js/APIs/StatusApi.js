@@ -1,8 +1,8 @@
 const API_BASE_URL = 'https://localhost:7280/api/v1';
 
 /**
- * Obtiene la lista completa de estados de orden (Pending, In progress, etc.)
- * @returns {Promise<Array>} Una promesa que resuelve a un array de objetos de estado.
+ * obtiene la lista completa de estados de orden
+ * @returns {Promise<Array>} una promesa que resuelve a un array de objetos de estado.
  */
 export async function getStatus() {
     try {

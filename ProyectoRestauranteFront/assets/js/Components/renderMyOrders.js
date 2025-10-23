@@ -7,7 +7,7 @@ export function renderActiveOrders(ordenes) {
     // sino encontramos el div, salimos para evitar errores.
     if (!contenedor) return;
 
-    // Si no hay pedidos activos
+    // si no hay pedidos activos
     if (ordenes.length === 0) {
         contenedor.innerHTML = '<p class="text-muted">No tienes pedidos activos recientes.</p>';
         return;

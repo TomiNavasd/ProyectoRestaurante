@@ -1,8 +1,9 @@
 /**
  * Renderiza el contenido del modal de detalles de la orden.
  * @param {object} order - El objeto de la orden con todos sus detalles.
+ * @param {boolean} [readOnly=false] - Si es true, oculta los controles de edición.
  */
-export function renderOrderModal(order) {
+export function renderOrderModal(order, readOnly = false) {
     const elementoNumeroOrden = document.getElementById('modal-order-number');
     const cuerpoDelModal = document.getElementById('modal-order-body');
     const botonGuardar = document.querySelector('#order-details-modal #save-changes-btn');
@@ -11,7 +12,7 @@ export function renderOrderModal(order) {
 
     elementoNumeroOrden.textContent = `Detalles de la Orden #${order.orderNumber}`;
 
-    const esEditable = order.status.id === 1;
+    const esEditable = order.status.id === 1 && !readOnly;
 
     if (botonGuardar) {
         botonGuardar.dataset.orderId = order.orderNumber;
@@ -27,7 +28,7 @@ export function renderOrderModal(order) {
         etiquetaEntrega = 'N° de Mesa';
     }
 
-const htmlDetallesEntrega = `
+    const htmlDetallesEntrega = `
         <p><strong>Tipo de Entrega:</strong> ${order.deliveryType.name}</p>
         <p><strong>${etiquetaEntrega}:</strong> ${order.deliveryTo || 'N/A'}</p>
     `;
@@ -56,25 +57,22 @@ const htmlDetallesEntrega = `
         <h6>Ítems en la Orden</h6>
         <ul id="modal-item-list" class="list-group">
             ${order.items.map(item => {
-                // --- LÓGICA DE ESTILO ACTUALIZADA ---
-                const isCanceled = item.status.id === 5;
-                // ¡NUEVO! Comprobar si está marcado para borrar (cantidad 0)
-                const isMarkedForDeletion = item.quantity === 0 && !isCanceled;
+                const esCancelado = item.status.id === 5;
+                const marcaCancelar = item.quantity === 0 && !esCancelado;
 
                 let liClass = '';
-                if (isCanceled) liClass = 'list-group-item-light text-muted';
-                if (isMarkedForDeletion) liClass = 'item-marked-for-deletion';
+                if (esCancelado) liClass = 'list-group-item-light text-muted';
+                if (marcaCancelar) liClass = 'item-marked-for-deletion';
 
                 let spanClass = '';
-                if (isCanceled || isMarkedForDeletion) spanClass = 'text-decoration-line-through';
-                // --- FIN LÓGICA DE ESTILO ---
-
+                if (esCancelado || marcaCancelar) spanClass = 'text-decoration-line-through';
+                
                 return `
                     <li class="list-group-item ${liClass}" data-item-id="${item.dish.id}" data-quantity="${item.quantity}">
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="${spanClass}">${item.dish.name}</span>
                             <div class="d-flex align-items-center">
-                                ${esEditable && !isCanceled
+                                ${esEditable && !esCancelado // no semuestra los botones si readOnly
                                     ? `<button class="btn btn-sm btn-outline-secondary modal-quantity-btn" data-action="decrease">-</button>
                                     <span class="mx-2 item-quantity">${item.quantity}</span>
                                     <button class="btn btn-sm btn-outline-secondary modal-quantity-btn" data-action="increase">+</button>`
@@ -82,17 +80,18 @@ const htmlDetallesEntrega = `
                                 }
                             </div>
                         </div>
-                        ${esEditable && !isCanceled
+                        ${esEditable && !esCancelado // nose muestra los input si readOnly
                             ? `<input type="text" class="form-control form-control-sm mt-2 modal-item-note" placeholder="Notas para este plato..." value="${item.notes || ''}">`
                             : `${item.notes ? `<p class="text-muted mt-2 mb-0 fst-italic">Nota: ${item.notes}</p>` : ''}`
                         }
-                        ${isCanceled
+                        ${esCancelado
                             ? `<p class="text-danger small mt-1 mb-0 fw-bold">Plato Cancelado</p>` : ''
                         }
                     </li>
                 `;
             }).join('')}
         </ul>
+        
         ${esEditable 
             ? `<div class="d-grid gap-2 mt-4">
                 <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#add-dishes-modal">
