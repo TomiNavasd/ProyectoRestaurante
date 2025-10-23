@@ -1,9 +1,9 @@
 import { initOrdersPage } from '../Handlers/Orders/ordersHandler.js';
 import { initNotificationModal } from '../notification.js';
-import { getStatus } from '../APIs/StatusApi.js'; // <-- 1. Importar API
+import { getStatus } from '../APIs/StatusApi.js';
 
 /**
- * Rellena el dropdown de filtros de estado
+ * rellena el selectorde filtros de estado
  */
 function rellenarFiltroDeEstados(estados) {
     const selectFiltro = document.getElementById('order-status-filter');
@@ -19,10 +19,8 @@ function rellenarFiltroDeEstados(estados) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     initNotificationModal();
+    const listaDeEstados = await getStatus(); //llamar
+    rellenarFiltroDeEstados(listaDeEstados);  //rellenar
     
-    // --- Carga de datos asíncrona ---
-    const listaDeEstados = await getStatus(); // <-- 2. Llamar
-    rellenarFiltroDeEstados(listaDeEstados);  // <-- 3. Rellenar
-    
-    initOrdersPage(); // <-- 4. Iniciar el handler (que ahora leerá los filtros)
+    initOrdersPage();
 });

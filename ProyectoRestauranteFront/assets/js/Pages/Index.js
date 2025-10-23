@@ -16,8 +16,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     initNotificationModal();
 
-    // --- IMPORTANTE: Definir el estado inicial del filtro ---
-    // (Asumo que state.js puede no tener currentFilter)
     if (!state.currentFilter) {
         state.currentFilter = {
             category: null,
@@ -25,34 +23,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             sortByPrice: null,
         };
     }
-    // Seteamos el estado inicial. El switch está APAGADO (checked: false),
-    // por lo que SÓLO vemos los activos (onlyActive: true).
+    // seteo del estado inicial. sw apagado asi se ve solo activos
     state.currentFilter.onlyActive = true; 
-
-    // --- LÓGICA DE CARGA ORIGINAL (CORREGIDA) ---
-    // 1. Llamamos a getDishes() SIN argumentos, como en tu código original.
     const [categories, dishes, deliveryTypes] = await Promise.all([
         getCategories(), 
-        getDishes(), // <-- ARREGLO: Sin argumentos
+        getDishes(),
         getDeliveryTypes()
     ]);
     
-    // 2. Guardamos TODOS los platos en el estado (como en tu original)
     state.categories = categories;
     state.dishes = dishes; 
 
-    // Renderizado inicial
+    // render inicial
     renderCategories(state.categories);
     
-    // 3. Renderizamos SÓLO los activos, para que coincida con el estado
-    //    inicial del filtro (onlyActive: true).
-    renderDishes(state.dishes.filter(d => d.isActive)); // <-- ARREGLO: Filtramos aquí
+    // render solo activos
+    renderDishes(state.dishes.filter(d => d.isActive));
     
     renderCart(state.cart);
     renderDeliveryTypes(deliveryTypes);
 
-    // Activación de Handlers
-    initFilters(); // initFilters ahora funcionará bien porque state.currentFilter está listo
+
+    initFilters();
     initCartHandlers();
     initMyOrders();
 });
