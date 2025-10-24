@@ -1,4 +1,4 @@
-/* --- CONTENEDOR PRINCIPAL Y ENCABEZADO --- */
+/* contenedor encabezado */
 .history-container {
     background-color: #FFFFFF;
     border-radius: 12px;
@@ -16,7 +16,7 @@
     font-weight: 400;
 }
 
-/* --- BARRA DE FILTROS POR FECHA --- */
+/* filtro fechas */
 .filter-bar {
     background-color: var(--color-fondo-principal);
     border: 1px solid var(--color-fondo-secundario);
@@ -31,7 +31,7 @@
     color: var(--color-texto-secundario);
 }
 
-/* --- TARJETA DE CADA ORDEN INDIVIDUAL --- */
+/* tajetar orden indv */
 .order-card-history {
     background-color: #FFFFFF;
     border: 1px solid var(--color-fondo-secundario);
@@ -67,7 +67,7 @@
     margin-top: 0.25rem;
 }
 
-/* --- ESTILO PARA EL BADGE DE ESTADO --- */
+/* statys */
 .order-card-history .badge {
     background-color: var(--color-principal-oscuro) !important;
     color: #FFFFFF !important;
@@ -76,7 +76,7 @@
     padding: 0.4em 0.8em;
 }
 
-/* --- ESTILOS PARA NUEVOS FILTROS --- */
+/* borrar filtros */
 .filter-bar .form-control,
 .filter-bar .form-select {
     height: calc(1.5em + 0.75rem + 2px);

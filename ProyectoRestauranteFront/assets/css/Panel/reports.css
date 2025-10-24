@@ -1,4 +1,4 @@
-/* --- CONTENEDOR PRINCIPAL Y ENCABEZADO --- */
+/* contenedor y encabazado */
 .reports-container {
     background-color: #FFFFFF;
     border-radius: 12px;
@@ -16,7 +16,7 @@
     font-weight: 400;
 }
 
-/* --- BARRA DE FILTROS POR FECHA --- */
+/* filtros por fecha*/
 .filter-bar {
     background-color: var(--color-fondo-principal);
     border: 1px solid var(--color-fondo-secundario);
@@ -41,7 +41,7 @@
     box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
 }
 
-/* --- CAJA DE RESUMEN --- */
+/* resumen caja*/
 .summary-box h4 {
     font-family: var(--font-principal);
     font-weight: 500;
@@ -59,14 +59,14 @@
     color: var(--color-acento-verde);
 }
 
-/* --- TÍTULO LISTA DE ÓRDENES --- */
+/* lista ordenes titulo*/
 .reports-container h4 {
     font-family: var(--font-principal);
     font-weight: 400;
     color: var(--color-principal-oscuro);
 }
 
-/* --- TARJETAS DE ÓRDENES (Reutiliza estilo de history.css si es similar) --- */
+/* tarjeta de ordenes*/
 .order-card-report {
     background-color: #FFFFFF;
     border: 1px solid var(--color-fondo-secundario);

@@ -10,7 +10,7 @@
     --color-texto-detalle: #F8F9FA;
     }
 
-    /* --- ESTRUCTURA GENERAL --- */
+    /* estructura principal */
     .panel-column {
     background-color: #fff;
     border-radius: 12px;
@@ -21,7 +21,7 @@
     flex-direction: column;
     }
 
-    /* --- TÍTULOS DE SECCIÓN --- */
+    /* los titulos */
     .panel-column h3 {
     font-family: "Montserrat", sans-serif;
     font-weight: 600;
@@ -35,7 +35,7 @@
     letter-spacing: 1px;
     }
 
-    /* --- CONTENEDOR DE ÓRDENES --- */
+    /* contenedor de las ordenes */
     .orders-container {
     overflow-y: auto;
     padding-right: 0.5rem;
@@ -49,7 +49,7 @@
     border-radius: 10px;
     }
 
-    /* --- TARJETAS DE ÓRDENES --- */
+    /* tarjetas de ordeners */
     .order-card-panel {
     background-color: var(--color-fondo-principal);
     border: 1px solid var(--color-fondo-secundario);
@@ -70,7 +70,7 @@
     border-top: 1px solid var(--color-fondo-secundario);
     }
 
-    /* --- BOTONES DE ESTADO --- */
+    /* botones de estados*/
     .status-action-btn {
     border-radius: 8px;
     font-weight: 500;
@@ -89,7 +89,7 @@
     transform: scale(1.03);
     }
 
-    /* --- BOTONES DE ACCIÓN --- */
+    /* botones de accion*/
     .order-action-btn {
     background-color: var(--color-principal-oscuro);
     color: #fff;
@@ -102,7 +102,7 @@
     }
     
 
-        /* --- ESTILO PARA ÍTEM MARCADO PARA BORRAR --- */
+    /* estilo al borrar items */
     .item-marked-for-deletion {
         opacity: 0.6;
         background-color: var(--color-fondo-secundario);

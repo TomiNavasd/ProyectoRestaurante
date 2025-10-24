@@ -1,4 +1,4 @@
-/* --- TÍTULO DE LA PÁGINA --- */
+/*titulo */
 .orders-title {
     font-family: var(--font-principal);
     font-weight: 300;
@@ -9,7 +9,7 @@
     border-bottom: 1px solid var(--color-fondo-secundario);
 }
 
-/* --- PESTAÑAS DE NAVEGACIÓN (TABS) --- */
+/* navs*/
 .nav-tabs {
     border-bottom-color: #dee2e6;
     margin-bottom: -1px;
@@ -39,7 +39,7 @@
     font-weight: 500;
 }
 
-/* --- CONTENIDO DE LAS PESTAÑAS --- */
+/* pestañas*/
 .tab-content {
     background-color: #FFFFFF;
     padding: 2rem;
@@ -48,7 +48,7 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
 
-/* --- TARJETA DE CADA ORDEN INDIVIDUAL --- */
+/* tarjeta orden*/
 .order-card {
     background-color: var(--color-fondo-principal);
     border: 1px solid var(--color-fondo-secundario);
@@ -93,7 +93,7 @@
 }
 
 
-/* --- ESTILOS PARA LOS MODALES --- */
+/* estilo modales */
 #order-details-modal .modal-title,
 #add-dishes-modal .modal-title {
     font-family: var(--font-principal);
@@ -101,7 +101,7 @@
     font-size: 1.75rem;
 }
 
-/* Estilo para los ítems dentro del modal de detalles */
+/* estilo items modal */
 #modal-item-list .list-group-item {
     background-color: #FFFFFF;
     border: 1px solid var(--color-fondo-secundario);
@@ -114,7 +114,7 @@
     font-weight: 500;
 }
 
-/* Estilo para la lista de platos en el modal de "Agregar Platos" */
+/* estilo para la lista de platos en el modal de "Agregar Platos" */
 #dishes-list-container .card {
     background-color: #FFFFFF;
     border: 1px solid var(--color-fondo-secundario);
@@ -126,13 +126,13 @@
     transform: none;
 }
 
-/* --- FILTROS Y BÚSQUEDA --- */
+/* filtrado y busqueda */
 #filters-container .form-control,
 #filters-container .form-select {
     border-radius: 0.5rem;
     border-color: var(--color-fondo-secundario);
     font-family: var(--font-secundaria);
-    padding: 0.6rem 1rem; /* Más altura */
+    padding: 0.6rem 1rem;
 }
 
 #filters-container .form-control:focus,
@@ -145,7 +145,7 @@
     background-color: var(--color-fondo-principal);
     border-color: var(--color-fondo-secundario);
     color: var(--color-texto-secundario);
-    border-radius: 0.5rem 0 0 0.5rem; /* Redondeado */
+    border-radius: 0.5rem 0 0 0.5rem;
 }
 
 #filters-container input[type="search"] {
@@ -156,7 +156,7 @@
     border-radius: 0 0.5rem 0.5rem 0;
 }
 
-/* --- ESTILO PARA ÍTEM MARCADO PARA BORRAR --- */
+/* estilo item borrable */
 .item-marked-for-deletion {
     opacity: 0.6;
     background-color: var(--color-fondo-secundario);

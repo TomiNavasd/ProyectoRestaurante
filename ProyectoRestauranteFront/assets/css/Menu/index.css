@@ -1,5 +1,5 @@
 
-/* --- FILTROS DE CATEGORÍA --- */
+/* filtro categoria */
 #filters-container .btn {
     font-family: var(--font-principal);
     border-radius: 50rem;
@@ -14,7 +14,7 @@
     color: #FFFFFF;
 }
 
-/* --- TARJETAS DE PLATOS --- */
+/* tarjeta plato */
 .dish-card {
     background-color: #FFFFFF;
     border: 1px solid var(--color-fondo-secundario);
@@ -49,7 +49,7 @@
 
 
 
-/* --- ESTILOS PARA LA COMANDA (OFFCANVAS) --- */
+/* estilo comanda */
 #cart-offcanvas .offcanvas-title {
     font-weight: 300;
     font-size: 1.75rem;
@@ -99,7 +99,7 @@
     margin-bottom: 1rem;
 }
 
-/* --- ESTILOS PARA SWITCH DE INACTIVOS --- */
+/* sw inactivo*/
 #inactive-toggle-container {
     white-space: nowrap; 
     color: var(--color-texto-secundario);
@@ -115,7 +115,7 @@
     border-color: var(--color-principal-oscuro);
 }
 
-/* --- ESTILOS PARA PLATO INACTIVO --- */
+/* plato inactivo */
 .plato-inactivo {
     opacity: 0.65;
     background-color: var(--color-fondo-secundario);

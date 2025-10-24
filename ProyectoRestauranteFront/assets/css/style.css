@@ -1,4 +1,4 @@
-/* --- PALETA DE COLORES "GRIS URBANO & ORO" --- */
+/*paleta de colores*/
 :root {
     --color-fondo-principal: #F8F9FA;
     --color-fondo-secundario: #E9ECEF;
@@ -8,12 +8,12 @@
     --color-texto-principal: #212529;
     --color-texto-secundario: #6c757d;
     
-    /* Fuentes */
+    /* fuentes */
     --font-principal: 'Montserrat', sans-serif;
     --font-secundaria: 'Lato', sans-serif;
 }
 
-/* --- ESTILOS GENERALES Y TIPOGRAFÍA --- */
+/* estilos generales */
 body {
     background-color: var(--color-fondo-principal);
     color: var(--color-texto-principal);
@@ -26,7 +26,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 300;
 }
 
-/* --- BARRA DE NAVEGACIÓN PRINCIPAL --- */
+/* barra nav */
 .navbar.bg-dark {
     background-color: var(--color-principal-oscuro) !important;
     padding: 0.5rem 0;
@@ -49,18 +49,18 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--color-acento-oro) !important;
 }
 
-/* --- ESTILOS PARA EL MODAL DE NOTIFICACIÓN GENÉRICO --- */
+/* estilos de notificacion */
 #notification-modal .modal-title {
     font-family: var(--font-principal);
     font-weight: 500;
 }
 
-/* --- CORRECCIÓN PARA EL TÍTULO DE LA NOTIFICACIÓN --- */
+/* correcion de titulo 1 */
 #notification-modal .modal-header.text-white .modal-title {
     color: #FFFFFF; /* Fuerza el color del texto a blanco */
 }
 
-/* --- ESTILO PARA EL NUEVO BOTÓN DE CARRITO --- */
+/* estilo nuevo del boton de carrito */
 #cart-button {
     width: 50px;
     height: 50px;
@@ -71,6 +71,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #cart-button .badge {
-    /* Ajuste fino de la posición del contador */
     transform: translate(-30%, -30%);
+}
+/* correcion de titulo 2 */
+#confirmation-modal .modal-header.bg-dark .modal-title {
+    color: #FFFFFF; 
 }

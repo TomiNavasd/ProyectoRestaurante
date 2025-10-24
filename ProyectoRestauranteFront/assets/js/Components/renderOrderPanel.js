@@ -27,7 +27,7 @@ export function renderOrderPanel(orders) {
 
         const isPending = order.status.id === 1; // Verificamos si la orden está pendiente
 
-        // --- LÓGICA PARA BOTONES DE CANCELACIÓN ---
+        // logica boton cancelaciopn
         let cancelButtonHtml = '';
         if (isPending) {
             cancelButtonHtml = `
@@ -37,7 +37,7 @@ export function renderOrderPanel(orders) {
                 </button>
             `;
         }
-        // logica para mostrar el botón Entregar solo si la orden está lista
+        // logica para mostrar el boton Entregar solo si la orden está lista
         let deliverButtonHtml = '';
         if (order.status.id === 3) {
             deliverButtonHtml = `
